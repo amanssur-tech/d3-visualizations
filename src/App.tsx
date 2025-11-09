@@ -5,6 +5,8 @@ import Navbar from './components/Navbar.jsx';
 import Footer from './components/Footer.jsx';
 import Tooltip from './components/Tooltip.jsx';
 import { ThemeProvider } from './context/ThemeContext.jsx';
+import { SpeedInsights } from '@vercel/speed-insights/react';
+
 
 const Layout = () => {
   const navigation = useNavigation();
@@ -60,6 +62,7 @@ const Layout = () => {
 const App = () => (
   <ThemeProvider>
     <Layout />
+    <SpeedInsights />
   </ThemeProvider>
 );
 
