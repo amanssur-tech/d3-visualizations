@@ -73,9 +73,11 @@ const Navbar = () => {
     >
       <nav className="mx-auto flex max-w-6xl flex-col gap-4 px-4 py-4 text-sm sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
         <div className="flex items-center gap-3">
-          <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-linear-to-br from-cyan-400/90 via-emerald-500/80 to-cyan-600/80 text-white shadow-lg shadow-cyan-500/40">
-            <span className="text-sm font-semibold tracking-tight">D3</span>
-          </div>
+          <img
+            src="/favicons/AM-Logo-D3.svg"
+            alt="Amanullah D3 logo"
+            className="h-11 w-11 rounded-2xl"
+          />
           <div className="leading-tight">
             <p className="text-xs uppercase tracking-[0.4em] text-slate-500 dark:text-slate-400">
               Amanullah
