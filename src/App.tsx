@@ -6,6 +6,7 @@ import Footer from './components/Footer.jsx';
 import Tooltip from './components/Tooltip.jsx';
 import { ThemeProvider } from './context/ThemeContext.jsx';
 import { SpeedInsights } from '@vercel/speed-insights/react';
+import { Analytics } from '@vercel/analytics/react';
 
 
 const Layout = () => {
@@ -63,6 +64,7 @@ const App = () => (
   <ThemeProvider>
     <Layout />
     <SpeedInsights />
+    <Analytics />
   </ThemeProvider>
 );
 

@@ -123,6 +123,6 @@ Built with ❤️ by **[Amanullah Manssur](https://amanssur.com)**
 
 ---
 
-## 🪪 License
-
-Released under the [MIT License](./LICENSE).
+## 🪪 License and Branding Notice
+All source code in this repository is released under the [MIT License](./LICENSE).  
+Logos, monograms, and brand assets belonging to Amanullah Manssur or Manssur Media are **not covered** by this license and may not be reused or redistributed without explicit written permission.
