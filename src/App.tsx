@@ -1,10 +1,11 @@
 import { Outlet, useNavigation } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import Navbar from './components/Navbar.jsx';
-import Footer from './components/Footer.jsx';
-import Tooltip from './components/Tooltip.jsx';
-import { ThemeProvider } from './context/ThemeContext.jsx';
+import { useTranslation } from 'react-i18next';
+import Navbar from './components/Navbar';
+import Footer from './components/Footer';
+import Tooltip from './components/Tooltip';
+import { ThemeProvider } from './context/ThemeContext';
 import { SpeedInsights } from '@vercel/speed-insights/react';
 import { Analytics } from '@vercel/analytics/react';
 
@@ -13,6 +14,7 @@ const Layout = () => {
   const navigation = useNavigation();
   const [hydrated, setHydrated] = useState(false);
   const [routerReady, setRouterReady] = useState(false);
+  const { t } = useTranslation('common');
 
   useEffect(() => {
     if (typeof window === 'undefined') {
@@ -49,7 +51,7 @@ const Layout = () => {
               transition={{ duration: 0.45, ease: 'easeOut' }}
               className="flex min-h-[40vh] items-center justify-center rounded-3xl border border-white/50 bg-white/70 text-sm text-slate-500 shadow-inner backdrop-blur dark:border-white/10 dark:bg-neutral-900/40 dark:text-slate-300"
             >
-              Initialisiere Dashboard…
+              {t('initializingDashboard')}
             </motion.div>
           )}
         </main>

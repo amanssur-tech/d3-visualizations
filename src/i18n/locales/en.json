@@ -1,0 +1,150 @@
+{
+  "common": {
+    "loading": "Loading",
+    "loadingContent": "Loading content…",
+    "initializingDashboard": "Initializing dashboard…",
+    "labels": {
+      "chart": "Chart",
+      "route": "Route"
+    },
+    "actions": {
+      "open": "Open"
+    },
+    "dataSource": "Data source:",
+    "languages": {
+      "english": "English",
+      "german": "German"
+    },
+    "errors": {
+      "dataLoad": "We couldn't load the data. Please try again.",
+      "unknown": "Something went wrong. Please retry."
+    },
+    "theme": {
+      "light": "light mode",
+      "dark": "dark mode"
+    }
+  },
+  "navbar": {
+    "logoAlt": "Amanullah D3 logo",
+    "signature": "Amanullah",
+    "brand": "D3 Visualizations",
+    "links": {
+      "dashboard": "Dashboard",
+      "exercise1": "Exercise 1",
+      "exercise2": "Exercise 2",
+      "about": "About",
+      "github": "GitHub"
+    },
+    "themeToggle": {
+      "toLight": "Switch to light mode",
+      "toDark": "Switch to dark mode"
+    },
+    "languageToggle": {
+      "aria": "Change language",
+      "en": "EN",
+      "de": "DE"
+    }
+  },
+  "footer": {
+    "signature": "Built with React, D3, and ☕️ by Amanullah Manssur."
+  },
+  "dashboard": {
+    "hero": {
+      "eyebrow": "Kebab Shop Monitor",
+      "title": "D3 Visualizations Dashboard",
+      "description": "A modern data story about kebab shops in Germany—optimized for light and dark modes with Framer Motion and D3 animations.",
+      "ctaSecondary": "Jump to Exercise 1"
+    },
+    "stats": {
+      "cities": {
+        "label": "Cities tracked",
+        "value": "8",
+        "detail": "Major German metros"
+      },
+      "years": {
+        "label": "Years of history",
+        "value": "6",
+        "detail": "2020 → 2025"
+      },
+      "refresh": {
+        "label": "Data refresh",
+        "value": "Weekly",
+        "detail": "Automated pipeline"
+      }
+    },
+    "chartCards": {
+      "bar": {
+        "title": "Exercise 1 · City Comparison",
+        "subtitle": "Rounded bars, gradients, and export-ready insights."
+      },
+      "line": {
+        "title": "Exercise 2 · Growth over Time",
+        "subtitle": "Smooth lines comparing Cologne and Berlin from 2020 to 2025."
+      }
+    },
+    "actionCards": {
+      "bar": {
+        "title": "Explore Bar Insights",
+        "description": "Compare every city and uncover the strongest kebab hotspots."
+      },
+      "line": {
+        "title": "Explore Line Trends",
+        "description": "Track Cologne and Berlin across the last few years."
+      },
+      "comingSoon": {
+        "title": "Coming Soon",
+        "description": "New visualizations are in progress—stay tuned for fresh perspectives."
+      },
+      "cta": "Open →"
+    },
+    "about": {
+      "title": "About the project",
+      "description": "This interface was completely refreshed with Tailwind, React, and D3. Every component is responsive, supports dark mode, and layers in calm transitions for a polished dashboard experience.",
+      "highlights": {
+        "motion": "Framer Motion animations",
+        "glass": "Glassmorphism panels",
+        "export": "Export-ready charts"
+      }
+    }
+  },
+  "charts": {
+    "bar": {
+      "header": "Kebab shops by city",
+      "svgTitle": "Kebab shops by city",
+      "svgDescription": "Bar chart comparing the number of kebab shops across major German cities.",
+      "axis": {
+        "city": "City",
+        "count": "Number of kebab shops"
+      }
+    },
+    "line": {
+      "header": "Kebab shops — Cologne vs Berlin (2020–2025)",
+      "svgTitle": "Kebab shops — Cologne vs Berlin (2020–2025)",
+      "svgDescription": "Line chart tracking Cologne and Berlin from 2020 to 2025.",
+      "axis": {
+        "year": "Year",
+        "count": "Number of kebab shops"
+      }
+    },
+    "cityLabels": {
+      "Berlin": "Berlin",
+      "Koeln": "Cologne",
+      "Köln": "Cologne",
+      "Muenchen": "Munich",
+      "Hamburg": "Hamburg",
+      "Frankfurt": "Frankfurt"
+    }
+  },
+  "export": {
+    "saveSvg": "Save as SVG",
+    "savePng": "Save as PNG",
+    "ariaSvg": "Save chart as SVG",
+    "ariaPng": "Save chart as PNG",
+    "exportAll": "Export everything",
+    "preparing": "Preparing downloads…"
+  },
+  "tooltips": {
+    "bar": "<strong>{{city}}</strong><br/>{{count}} kebab shops",
+    "line": "<strong>{{city}}</strong><br/>{{year}}: {{count}} kebab shops"
+  }
+}

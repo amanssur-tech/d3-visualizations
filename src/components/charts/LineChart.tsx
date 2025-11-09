@@ -1,12 +1,13 @@
 import React from 'react';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import * as d3 from 'd3';
-import ExportButtons from '../ExportButtons.jsx';
-import { useD3 } from '../../hooks/useD3.js';
-import { chartConfig } from '../../utils/config.js';
-import { downloadPNG, downloadSVG } from '../../utils/export.js';
-import { createTooltip } from '../../utils/tooltip.js';
+import ExportButtons from '../ExportButtons';
+import { useD3 } from '../../hooks/useD3';
+import { chartConfig } from '../../utils/config';
+import { downloadPNG, downloadSVG } from '../../utils/export';
+import { createTooltip } from '../../utils/tooltip';
+import { useTranslation } from 'react-i18next';
 
 interface LineData {
   Stadt: string;
@@ -27,11 +28,43 @@ const DATA_URL = `${import.meta.env.BASE_URL || '/'}data/Uebung02_Daten.json`;
 const LineChart: React.FC<LineChartProps> = (props): React.ReactElement => {
   const { showHeader = true, showControls = true, enableMotion = true, onExportReady, framed = true } = props;
   const [data, setData] = useState<LineData[] | null>(null);
-  const [error, setError] = useState('');
+  const [errorKey, setErrorKey] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [exportHandlers, setExportHandlers] = useState<{ exportSvg: () => void; exportPng: () => void } | null>(null);
   const legendRef = useRef(null);
   const [firstLoad, setFirstLoad] = useState(true);
+  const { t, i18n } = useTranslation(['charts', 'common', 'tooltips']);
+  const translate = useCallback(
+    (fullKey: string, options?: Record<string, unknown>) => {
+      const knownNamespaces = [
+        'common',
+        'navbar',
+        'footer',
+        'dashboard',
+        'charts',
+        'export',
+        'tooltips',
+      ] as const;
+
+      const [maybeNs, ...rest] = fullKey.split('.');
+      if (maybeNs && rest.length > 0 && (knownNamespaces as readonly string[]).includes(maybeNs)) {
+        const key = rest.join('.');
+        return t(key, { ns: maybeNs, ...(options || {}) } as any);
+      }
+
+      return t(fullKey, options as any);
+    },
+    [t]
+  );
+  const formatCityName = useCallback(
+    (value: string) => {
+      const normalized = value === 'Köln' ? 'Koeln' : value;
+      const fallback = normalized === 'Koeln' ? 'Köln' : normalized === 'Muenchen' ? 'München' : value;
+      const key = `charts.cityLabels.${normalized}`;
+      return translate(key, { defaultValue: fallback });
+    },
+    [translate]
+  );
 
   useEffect(() => {
     setFirstLoad(false);
@@ -42,14 +75,19 @@ const LineChart: React.FC<LineChartProps> = (props): React.ReactElement => {
     const loadData = async () => {
       try {
         const response = await fetch(DATA_URL);
-        if (!response.ok) throw new Error('Fehler beim Laden der Daten');
+        if (!response.ok) throw new Error('DATA_LOAD_ERROR');
         const payload: LineData[] = await response.json();
         if (!cancelled) {
           setData(payload);
+          setErrorKey(null);
         }
       } catch (err: unknown) {
         if (!cancelled) {
-          setError(err instanceof Error ? err.message : String(err));
+          if (err instanceof Error && err.message === 'DATA_LOAD_ERROR') {
+            setErrorKey('common.errors.dataLoad');
+          } else {
+            setErrorKey('common.errors.unknown');
+          }
         }
       } finally {
         if (!cancelled) {
@@ -96,10 +134,8 @@ const LineChart: React.FC<LineChartProps> = (props): React.ReactElement => {
         .attr('viewBox', `0 0 ${fullWidth} ${fullHeight}`)
         .attr('preserveAspectRatio', 'xMidYMid meet');
 
-      svgRoot.append('title').text('Kebabläden — Köln vs Berlin (2020–2025)');
-      svgRoot
-        .append('desc')
-        .text('Liniendiagramm zur Entwicklung der Kebabläden in Köln und Berlin von 2020 bis 2025.');
+      svgRoot.append('title').text(translate('charts.line.svgTitle'));
+      svgRoot.append('desc').text(translate('charts.line.svgDescription'));
 
       const svg = svgRoot.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
 
@@ -118,7 +154,10 @@ const LineChart: React.FC<LineChartProps> = (props): React.ReactElement => {
       const yAxisGrid = d3.axisLeft(y).ticks(yAxisTicks).tickSize(-width).tickFormat(() => '');
       svg.append('g').attr('class', 'grid').call(yAxisGrid as any);
 
-      svg.append('g').attr('transform', `translate(0,${height})`).call(d3.axisBottom(x).tickFormat((n) => n.toString()));
+      svg
+        .append('g')
+        .attr('transform', `translate(0,${height})`)
+        .call(d3.axisBottom(x).tickFormat((n) => n.toString()));
       svg.append('g').call(d3.axisLeft(y).ticks(yAxisTicks).tickSize(0) as any);
 
       svg
@@ -178,7 +217,14 @@ const LineChart: React.FC<LineChartProps> = (props): React.ReactElement => {
           .attr('r', chartConfig.elements.pointRadius)
           .attr('fill', stroke)
           .on('mouseenter', (event, d) =>
-            tooltip.show(`<strong>${d.Stadt}</strong><br/>${d.Jahr}: ${d.Anzahl}`, event)
+            tooltip.show(
+              translate('tooltips.line', {
+                city: formatCityName(d.Stadt),
+                year: d.Jahr,
+                count: d.Anzahl,
+              }),
+              event
+            )
           )
           .on('mousemove', (event) => tooltip.move(event))
           .on('mouseleave', () => tooltip.hide());
@@ -190,7 +236,7 @@ const LineChart: React.FC<LineChartProps> = (props): React.ReactElement => {
         .attr('y', height + margin.bottom - 5)
         .attr('text-anchor', 'middle')
         .attr('fill', softText)
-        .text('Jahr');
+        .text(translate('charts.line.axis.year'));
 
       svg
         .append('text')
@@ -199,7 +245,7 @@ const LineChart: React.FC<LineChartProps> = (props): React.ReactElement => {
         .attr('y', -margin.left + 15)
         .attr('text-anchor', 'middle')
         .attr('fill', softText)
-        .text('Anzahl Kebabläden');
+        .text(translate('charts.line.axis.count'));
 
       const legendContainer = d3.select(legendRef.current);
       legendContainer.selectAll('*').remove();
@@ -222,7 +268,7 @@ const LineChart: React.FC<LineChartProps> = (props): React.ReactElement => {
           .style('background-color', color[stadt] || accentStrong)
           .style('box-shadow', `0 0 10px ${accentStrong}30`);
 
-        item.append('span').text(stadt);
+        item.append('span').text(formatCityName(stadt));
       });
 
       const handlers = {
@@ -250,7 +296,7 @@ const LineChart: React.FC<LineChartProps> = (props): React.ReactElement => {
         legendContainer.selectAll('*').remove();
       };
     },
-    [data, onExportReady]
+    [data, onExportReady, translate, formatCityName, i18n.language]
   );
 
   const MotionSection = motion.section;
@@ -278,19 +324,22 @@ const LineChart: React.FC<LineChartProps> = (props): React.ReactElement => {
       {showHeader && (
         <div className="space-y-2">
           <h1 className="text-2xl font-semibold text-slate-900 dark:text-white">
-            Kebabläden — Köln vs Berlin (2020–2025)
+            {translate('charts.line.header')}
           </h1>
           <p className="text-sm text-slate-500 dark:text-slate-400">
-            Datenquelle: <code className="rounded-lg bg-slate-100/70 px-2 py-0.5 text-xs text-slate-600 dark:bg-white/10 dark:text-slate-200">data/Uebung02_Daten.json</code>
+            {translate('common.dataSource')}{' '}
+            <code className="rounded-lg bg-slate-100/70 px-2 py-0.5 text-xs text-slate-600 dark:bg-white/10 dark:text-slate-200">
+              data/Uebung02_Daten.json
+            </code>
           </p>
         </div>
       )}
 
       <div className="legend mt-4" ref={legendRef} />
 
-      {error && (
+      {errorKey && (
         <p className="mt-4 rounded-xl bg-red-50/80 px-4 py-3 text-sm text-red-600 dark:bg-red-500/10 dark:text-red-300">
-          {error}
+          {translate(errorKey)}
         </p>
       )}
 

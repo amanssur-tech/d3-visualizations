@@ -1,10 +1,11 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import * as d3 from 'd3';
-import ExportButtons from '../ExportButtons.jsx';
-import { chartConfig } from '../../utils/config.js';
-import { downloadPNG, downloadSVG } from '../../utils/export.js';
-import { createTooltip } from '../../utils/tooltip.js';
+import ExportButtons from '../ExportButtons';
+import { chartConfig } from '../../utils/config';
+import { downloadPNG, downloadSVG } from '../../utils/export';
+import { createTooltip } from '../../utils/tooltip';
+import { useTranslation } from 'react-i18next';
 
 interface KebabData {
   Stadt: string;
@@ -29,12 +30,44 @@ const BarChart = ({
   framed = true,
 }: BarChartProps) => {
   const [data, setData] = useState<KebabData[] | null>(null);
-  const [error, setError] = useState('');
+  const [errorKey, setErrorKey] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [exportHandlers, setExportHandlers] = useState<{ exportSvg: () => void; exportPng: () => void } | null>(null);
   const chartRef = useRef(null);
   const mounted = useRef(false);
   const [firstLoad, setFirstLoad] = useState(true);
+  const { t, i18n } = useTranslation(['charts', 'common', 'tooltips']);
+  const translate = useCallback(
+    (fullKey: string, options?: Record<string, unknown>) => {
+      const knownNamespaces = [
+        'common',
+        'navbar',
+        'footer',
+        'dashboard',
+        'charts',
+        'export',
+        'tooltips',
+      ] as const;
+
+      const [maybeNs, ...rest] = fullKey.split('.');
+      if (maybeNs && rest.length > 0 && (knownNamespaces as readonly string[]).includes(maybeNs)) {
+        const key = rest.join('.');
+        return t(key, { ns: maybeNs, ...(options || {}) } as any);
+      }
+
+      return t(fullKey, options as any);
+    },
+    [t]
+  );
+  const formatCityName = useCallback(
+    (value: string) => {
+      const normalized = value === 'Köln' ? 'Koeln' : value;
+      const fallback = normalized === 'Koeln' ? 'Köln' : normalized === 'Muenchen' ? 'München' : value;
+      const key = `charts.cityLabels.${normalized}`;
+      return translate(key, { defaultValue: fallback });
+    },
+    [translate]
+  );
 
   useEffect(() => {
     setFirstLoad(false);
@@ -45,15 +78,19 @@ const BarChart = ({
     const loadData = async () => {
       try {
         const response = await fetch(DATA_URL);
-        if (!response.ok) throw new Error('Fehler beim Laden der Daten');
+        if (!response.ok) throw new Error('DATA_LOAD_ERROR');
         const payload: KebabData[] = await response.json();
         if (!cancelled) {
           setData(payload);
+          setErrorKey(null);
         }
       } catch (err) {
         if (!cancelled) {
-          const message = err instanceof Error ? err.message : 'Unbekannter Fehler';
-          setError(message);
+          if (err instanceof Error && err.message === 'DATA_LOAD_ERROR') {
+            setErrorKey('common.errors.dataLoad');
+          } else {
+            setErrorKey('common.errors.unknown');
+          }
         }
       } finally {
         if (!cancelled) {
@@ -94,10 +131,8 @@ const BarChart = ({
       .attr('viewBox', `0 0 ${width} ${height}`)
       .attr('preserveAspectRatio', 'xMidYMid meet');
 
-    svgRoot.append('title').text('Kebabläden nach Stadt');
-    svgRoot
-      .append('desc')
-      .text('Balkendiagramm zum Vergleich der Anzahl von Kebabläden in verschiedenen deutschen Städten.');
+    svgRoot.append('title').text(translate('charts.bar.svgTitle'));
+    svgRoot.append('desc').text(translate('charts.bar.svgDescription'));
 
     const defs = svgRoot.append('defs');
     const gradient = defs
@@ -146,7 +181,7 @@ const BarChart = ({
       .call(
         d3
           .axisBottom(x)
-          .tickFormat((d) => (d === 'Koeln' ? 'Köln' : d === 'Muenchen' ? 'München' : d))
+          .tickFormat((d) => formatCityName(d))
       );
 
     svg
@@ -181,7 +216,10 @@ const BarChart = ({
           .duration(200)
           .style('fill', accentStrong);
         tooltip.show(
-          `<strong>${d.Stadt === 'Koeln' ? 'Köln' : d.Stadt === 'Muenchen' ? 'München' : d.Stadt}</strong><br/>${d.Anzahl_Kebabläden} Kebabläden`,
+          translate('tooltips.bar', {
+            city: formatCityName(d.Stadt),
+            count: d.Anzahl_Kebabläden,
+          }),
           event
         );
       })
@@ -222,7 +260,7 @@ const BarChart = ({
       .attr('y', height - 10)
       .attr('text-anchor', 'middle')
       .attr('fill', textColor)
-      .text('Stadt');
+      .text(translate('charts.bar.axis.city'));
 
     svg
       .append('text')
@@ -232,7 +270,7 @@ const BarChart = ({
       .attr('y', 20)
       .attr('text-anchor', 'middle')
       .attr('fill', textColor)
-      .text('Anzahl Kebabläden');
+      .text(translate('charts.bar.axis.count'));
 
     const handlers = {
       exportSvg: () => {
@@ -257,7 +295,7 @@ const BarChart = ({
     return () => {
       root.selectAll('*').remove();
     };
-  }, [data, onExportReady]);
+  }, [data, onExportReady, translate, formatCityName, i18n.language]);
 
   const allowMotion = enableMotion && !firstLoad;
   const initial = allowMotion ? { opacity: 0, y: 18 } : {};
@@ -282,16 +320,19 @@ const BarChart = ({
     >
       {showHeader && (
         <div className="space-y-2">
-          <h1 className="text-2xl font-semibold text-slate-900 dark:text-white">Kebabläden nach Stadt</h1>
+          <h1 className="text-2xl font-semibold text-slate-900 dark:text-white">{translate('charts.bar.header')}</h1>
           <p className="text-sm text-slate-500 dark:text-slate-400">
-            Datenquelle: <code className="rounded-lg bg-slate-100/70 px-2 py-0.5 text-xs text-slate-600 dark:bg-white/10 dark:text-slate-200">data/kebab_stores.json</code>
+            {translate('common.dataSource')}{' '}
+            <code className="rounded-lg bg-slate-100/70 px-2 py-0.5 text-xs text-slate-600 dark:bg-white/10 dark:text-slate-200">
+              data/kebab_stores.json
+            </code>
           </p>
         </div>
       )}
 
-      {error && (
+      {errorKey && (
         <p className="mt-4 rounded-xl bg-red-50/80 px-4 py-3 text-sm text-red-600 dark:bg-red-500/10 dark:text-red-300">
-          {error}
+          {translate(errorKey)}
         </p>
       )}
 

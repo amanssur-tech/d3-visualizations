@@ -50,6 +50,7 @@
     "skipLibCheck": true,
 
     "moduleResolution": "bundler",
+    "resolveJsonModule": true,
     "allowJs": true,
     "checkJs": false
   },

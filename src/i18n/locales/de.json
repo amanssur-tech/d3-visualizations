@@ -1,0 +1,150 @@
+{
+  "common": {
+    "loading": "Laden",
+    "loadingContent": "Inhalte werden geladen…",
+    "initializingDashboard": "Initialisiere Dashboard…",
+    "labels": {
+      "chart": "Diagramm",
+      "route": "Route"
+    },
+    "actions": {
+      "open": "Öffnen"
+    },
+    "dataSource": "Datenquelle:",
+    "languages": {
+      "english": "Englisch",
+      "german": "Deutsch"
+    },
+    "errors": {
+      "dataLoad": "Die Daten konnten nicht geladen werden. Bitte versuche es erneut.",
+      "unknown": "Etwas ist schiefgelaufen. Bitte erneut versuchen."
+    },
+    "theme": {
+      "light": "hellen Modus",
+      "dark": "dunklen Modus"
+    }
+  },
+  "navbar": {
+    "logoAlt": "Amanullah D3 Logo",
+    "signature": "Amanullah",
+    "brand": "D3 Visualizations",
+    "links": {
+      "dashboard": "Dashboard",
+      "exercise1": "Übung 1",
+      "exercise2": "Übung 2",
+      "about": "Über",
+      "github": "GitHub"
+    },
+    "themeToggle": {
+      "toLight": "In den hellen Modus wechseln",
+      "toDark": "In den dunklen Modus wechseln"
+    },
+    "languageToggle": {
+      "aria": "Sprache wechseln",
+      "en": "EN",
+      "de": "DE"
+    }
+  },
+  "footer": {
+    "signature": "Gebaut mit React, D3 und ☕️ von Amanullah Manssur."
+  },
+  "dashboard": {
+    "hero": {
+      "eyebrow": "Kebabläden Monitor",
+      "title": "D3 Visualizations Dashboard",
+      "description": "Eine moderne Data Story über Kebabläden in Deutschland – optimiert für helle und dunkle Umgebungen, voll animiert mit Framer Motion und D3.",
+      "ctaSecondary": "Direkt zu Übung 1"
+    },
+    "stats": {
+      "cities": {
+        "label": "Städte im Blick",
+        "value": "8",
+        "detail": "Wichtige deutsche Metropolen"
+      },
+      "years": {
+        "label": "Jahre Historie",
+        "value": "6",
+        "detail": "2020 → 2025"
+      },
+      "refresh": {
+        "label": "Daten-Update",
+        "value": "Wöchentlich",
+        "detail": "Automatisierte Pipeline"
+      }
+    },
+    "chartCards": {
+      "bar": {
+        "title": "Übung 1 · Städtevergleich",
+        "subtitle": "Abgerundete Balken, Verläufe und exportbereite Insights."
+      },
+      "line": {
+        "title": "Übung 2 · Wachstum über Zeit",
+        "subtitle": "Sanfte Linien vergleichen Köln und Berlin von 2020 bis 2025."
+      }
+    },
+    "actionCards": {
+      "bar": {
+        "title": "Balken-Insights entdecken",
+        "description": "Vergleiche alle Städte und finde die stärksten Kebap-Hotspots."
+      },
+      "line": {
+        "title": "Linien-Trends verfolgen",
+        "description": "Verfolge die Entwicklung in Köln und Berlin über die letzten Jahre."
+      },
+      "comingSoon": {
+        "title": "Demnächst",
+        "description": "Neue Visualisierungen sind in Arbeit – bleib gespannt auf frische Perspektiven."
+      },
+      "cta": "Öffnen →"
+    },
+    "about": {
+      "title": "Über das Projekt",
+      "description": "Diese Oberfläche wurde komplett mit Tailwind, React und D3 überarbeitet. Alle Komponenten sind responsiv, unterstützen Dark Mode und bieten animierte Übergänge für ein ruhiges Dashboard-Erlebnis.",
+      "highlights": {
+        "motion": "Framer Motion Animationen",
+        "glass": "Glassmorphism-Panels",
+        "export": "Exportbereite Diagramme"
+      }
+    }
+  },
+  "charts": {
+    "bar": {
+      "header": "Kebabläden nach Stadt",
+      "svgTitle": "Kebabläden nach Stadt",
+      "svgDescription": "Balkendiagramm zum Vergleich der Anzahl an Kebabläden in deutschen Großstädten.",
+      "axis": {
+        "city": "Stadt",
+        "count": "Anzahl Kebabläden"
+      }
+    },
+    "line": {
+      "header": "Kebabläden — Köln vs Berlin (2020–2025)",
+      "svgTitle": "Kebabläden — Köln vs Berlin (2020–2025)",
+      "svgDescription": "Liniendiagramm zur Entwicklung der Kebabläden in Köln und Berlin von 2020 bis 2025.",
+      "axis": {
+        "year": "Jahr",
+        "count": "Anzahl Kebabläden"
+      }
+    },
+    "cityLabels": {
+      "Berlin": "Berlin",
+      "Koeln": "Köln",
+      "Köln": "Köln",
+      "Muenchen": "München",
+      "Hamburg": "Hamburg",
+      "Frankfurt": "Frankfurt"
+    }
+  },
+  "export": {
+    "saveSvg": "Als SVG speichern",
+    "savePng": "Als PNG speichern",
+    "ariaSvg": "Diagramm als SVG speichern",
+    "ariaPng": "Diagramm als PNG speichern",
+    "exportAll": "Alles exportieren",
+    "preparing": "Bereite Downloads vor…"
+  },
+  "tooltips": {
+    "bar": "<strong>{{city}}</strong><br/>{{count}} Kebabläden",
+    "line": "<strong>{{city}}</strong><br/>{{year}}: {{count}} Kebabläden"
+  }
+}

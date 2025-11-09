@@ -1,17 +1,37 @@
-import type { MouseEvent } from 'react';
+import {
+  useMemo,
+  type MouseEvent,
+  type AnchorHTMLAttributes,
+  type ReactNode,
+  type FC,
+} from 'react';
 import { NavLink } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { useTheme } from '../context/ThemeContext.jsx';
+import Cookies from 'js-cookie';
+import { useTranslation } from 'react-i18next';
+import { useTheme } from '../context/ThemeContext';
+import type { SupportedLanguage } from '../i18n/types';
+import { LANG_COOKIE } from '../i18n/i18n';
 
 const primaryLinks = [
-  { label: 'Dashboard', to: '/' },
-  { label: 'Exercise 1', to: '/exercise1' },
-  { label: 'Exercise 2', to: '/exercise2' },
-];
+  { labelKey: 'navbar.links.dashboard', to: '/' },
+  { labelKey: 'navbar.links.exercise1', to: '/exercise1' },
+  { labelKey: 'navbar.links.exercise2', to: '/exercise2' },
+] as const satisfies ReadonlyArray<{ labelKey: string; to: string }>;
 
-const secondaryLinks = [
-  { label: 'About', href: '#about' },
-  { label: 'GitHub', href: 'https://github.com/amanssur-tech/d3-visualizations', external: true },
+interface SecondaryLink {
+  labelKey: string;
+  href: string;
+  external?: boolean;
+}
+
+const secondaryLinks: readonly SecondaryLink[] = [
+  { labelKey: 'navbar.links.about', href: '#about' },
+  {
+    labelKey: 'navbar.links.github',
+    href: 'https://github.com/amanssur-tech/d3-visualizations',
+    external: true,
+  },
 ];
 
 const anchorClasses =
@@ -25,11 +45,11 @@ const navLinkClasses = ({ isActive }: { isActive: boolean }) =>
       : 'text-slate-600 hover:text-slate-900 hover:bg-white/40 dark:text-slate-300 dark:hover:text-white dark:hover:bg-white/5',
   ].join(' ');
 
-interface GhostButtonProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
-  children: React.ReactNode;
+interface GhostButtonProps extends AnchorHTMLAttributes<HTMLAnchorElement> {
+  children: ReactNode;
 }
 
-const GhostButton: React.FC<GhostButtonProps> = ({ children, ...props }) => (
+const GhostButton: FC<GhostButtonProps> = ({ children, ...props }) => (
   <a
     {...props}
     className="inline-flex items-center rounded-xl border border-white/60 bg-white/60 px-3 py-2 text-sm font-medium text-slate-600 shadow-sm backdrop-blur transition-all duration-300 hover:-translate-y-0.5 hover:border-white hover:text-slate-900 dark:border-white/10 dark:bg-white/5 dark:text-slate-200 dark:hover:text-white"
@@ -52,6 +72,29 @@ const MoonIcon = () => (
 
 const Navbar = () => {
   const { theme, toggleTheme } = useTheme();
+  const { t, i18n } = useTranslation(['navbar', 'common']);
+  const translate = (fullKey: string, options?: Record<string, unknown>) => {
+    const knownNamespaces = [
+      'common',
+      'navbar',
+      'footer',
+      'dashboard',
+      'charts',
+      'export',
+      'tooltips',
+    ] as const;
+
+    const [maybeNs, ...rest] = fullKey.split('.');
+    if (maybeNs && rest.length > 0 && (knownNamespaces as readonly string[]).includes(maybeNs)) {
+      const key = rest.join('.');
+      return t(key, { ns: maybeNs, ...(options || {}) } as any);
+    }
+
+    return t(fullKey, options as any);
+  };
+  const activeLanguage: SupportedLanguage = i18n.language?.toLowerCase().startsWith('de') ? 'de' : 'en';
+  const languages: SupportedLanguage[] = useMemo(() => ['en', 'de'], []);
+
   const handleAnchorNav = (event: MouseEvent<HTMLAnchorElement>, href?: string) => {
     if (!href?.startsWith('#')) return;
     if (typeof document === 'undefined') return;
@@ -75,23 +118,23 @@ const Navbar = () => {
         <div className="flex items-center gap-3">
           <img
             src="/favicons/AM-Logo-D3.svg"
-            alt="Amanullah D3 logo"
+            alt={translate('navbar.logoAlt')}
             className="h-11 w-11 rounded-2xl"
           />
           <div className="leading-tight">
             <p className="text-xs uppercase tracking-[0.4em] text-slate-500 dark:text-slate-400">
-              Amanullah
+              {translate('navbar.signature')}
             </p>
             <NavLink to="/" className="text-lg font-semibold text-slate-900 dark:text-white">
-              D3 Visualizations
+              {translate('navbar.brand')}
             </NavLink>
           </div>
         </div>
 
         <div className="flex flex-wrap items-center gap-2 sm:justify-end">
           {primaryLinks.map((item) => (
-            <NavLink key={item.label} to={item.to} className={navLinkClasses}>
-              {item.label}
+            <NavLink key={item.to} to={item.to} className={navLinkClasses}>
+              {translate(item.labelKey)}
             </NavLink>
           ))}
         </div>
@@ -101,31 +144,64 @@ const Navbar = () => {
             if (link.href?.startsWith('#') && !link.external) {
               return (
                 <a
-                  key={link.label}
+                  key={link.href}
                   href={link.href}
                   className={anchorClasses}
                   onClick={(event) => handleAnchorNav(event, link.href)}
                 >
-                  {link.label}
+                  {translate(link.labelKey)}
                 </a>
               );
             }
             return (
               <GhostButton
-                key={link.label}
+                key={link.href}
                 href={link.href}
                 target={link.external ? '_blank' : undefined}
                 rel={link.external ? 'noreferrer' : undefined}
               >
-                {link.label}
+                {translate(link.labelKey)}
               </GhostButton>
             );
           })}
+          <div
+            className="inline-flex items-center gap-1 rounded-2xl border border-white/60 bg-white/50 p-1 text-xs font-semibold text-slate-600 shadow-inner shadow-white/40 backdrop-blur dark:border-white/10 dark:bg-white/5 dark:text-slate-200"
+            role="group"
+            aria-label={translate('navbar.languageToggle.aria')}
+          >
+            {languages.map((lang) => {
+              const isActive = activeLanguage === lang;
+              return (
+                <button
+                  key={lang}
+                  type="button"
+                  onClick={() => {
+                    if (isActive) return;
+                    i18n.changeLanguage(lang);
+                    Cookies.set(LANG_COOKIE, lang, { expires: 365, sameSite: 'lax' });
+                  }}
+                  className={`inline-flex items-center rounded-xl px-2 py-1 transition ${
+                    isActive
+                      ? 'bg-white text-slate-900 shadow-sm shadow-cyan-500/30 dark:bg-neutral-900 dark:text-white'
+                      : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
+                  }`}
+                  aria-pressed={isActive}
+                >
+                  <span aria-hidden="true">
+                    {translate(lang === 'en' ? 'navbar.languageToggle.en' : 'navbar.languageToggle.de')}
+                  </span>
+                  <span className="sr-only">
+                    {translate(lang === 'en' ? 'common.languages.english' : 'common.languages.german')}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
           <button
             type="button"
             onClick={toggleTheme}
             className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-linear-to-r from-cyan-500 to-emerald-500 text-white shadow-lg shadow-cyan-500/40 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl"
-            aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
+            aria-label={translate(theme === 'dark' ? 'navbar.themeToggle.toLight' : 'navbar.themeToggle.toDark')}
           >
             {theme === 'dark' ? <MoonIcon /> : <SunIcon />}
           </button>
