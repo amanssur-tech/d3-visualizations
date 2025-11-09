@@ -1,0 +1,82 @@
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: 'Inter', 'Geist Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --color-accent: #06b6d4;
+  --color-accent-strong: #059669;
+  --color-surface: #f8fafc;
+  --color-surface-dark: #020617;
+  --color-text: #0f172a;
+  --color-text-soft: #475569;
+  --color-grid: #e2e8f0;
+  --color-koeln: #14b8a6;
+  --color-berlin: #0ea5e9;
+}
+
+@layer base {
+  :root {
+    --color-surface: #f8fafc;
+    --color-text: #0f172a;
+    --color-text-soft: #475569;
+    --color-grid: #e2e8f0;
+    --color-accent: #06b6d4;
+    --color-accent-strong: #059669;
+    --color-koeln: #14b8a6;
+    --color-berlin: #0ea5e9;
+  }
+
+  .dark {
+    --color-surface: #06070a;
+    --color-text: #f8fafc;
+    --color-text-soft: #cbd5f5;
+    --color-grid: #1f2937;
+    --color-accent: #22d3ee;
+    --color-accent-strong: #10b981;
+    --color-koeln: #2dd4bf;
+    --color-berlin: #38bdf8;
+  }
+
+  html {
+    font-family: var(--font-sans);
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply m-0 min-h-screen bg-slate-50 font-sans text-slate-800 antialiased dark:bg-neutral-950 dark:text-slate-100;
+  }
+
+  *, *::before, *::after {
+    @apply box-border;
+  }
+
+  a {
+    @apply no-underline;
+  }
+
+  #root {
+    @apply min-h-screen;
+  }
+}
+
+@layer components {
+  .tooltip {
+    @apply pointer-events-none rounded-2xl border border-white/30 bg-white/80 px-3 py-2 text-xs font-semibold text-slate-700 shadow-2xl ring-1 ring-slate-900/10 backdrop-blur-lg transition dark:border-white/10 dark:bg-neutral-900/80 dark:text-white;
+  }
+
+  .legend {
+    @apply flex flex-wrap items-center gap-3 rounded-2xl border border-white/50 bg-white/60 px-4 py-2 text-xs font-semibold text-slate-600 shadow-sm dark:border-white/10 dark:bg-white/5 dark:text-slate-200;
+  }
+
+  .legend-item {
+    @apply inline-flex items-center gap-2 rounded-xl px-3 py-2 transition hover:bg-white/70 hover:text-slate-900 dark:hover:bg-white/10 dark:hover:text-white;
+  }
+
+  .legend-color {
+    @apply h-3.5 w-3.5 rounded-full shadow;
+  }
+
+  .line.dimmed {
+    @apply opacity-20;
+  }
+}
