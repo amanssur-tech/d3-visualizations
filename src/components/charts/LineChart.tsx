@@ -141,7 +141,7 @@ const LineChart: React.FC<LineChartProps> = (props): React.ReactElement => {
 
       const x = d3.scalePoint<number>().domain(years).range([0, width]).padding(0.5);
       const yMax = d3.max(normalized, (d) => d.Anzahl) ?? 0;
-      const y = d3.scaleLinear().domain([0, yMax]).range([height, 0]).nice();
+      const y = d3.scaleLinear().domain([0, yMax * 1.05]).range([height, 0]).nice();
 
       const line = d3
         .line<LineData>()
@@ -304,18 +304,10 @@ const LineChart: React.FC<LineChartProps> = (props): React.ReactElement => {
   const initial = allowMotion ? { opacity: 0, y: 18 } : false;
   const animate = allowMotion ? { opacity: 1, y: 0 } : {};
   const exit = allowMotion ? { opacity: 0, y: -18 } : {};
-  const containerClasses = [
-    'w-full',
-    framed
-      ? 'rounded-3xl border border-white/60 bg-white/80 p-6 shadow-lg shadow-slate-900/5 backdrop-blur dark:border-white/10 dark:bg-neutral-950/60'
-      : '',
-  ]
-    .filter(Boolean)
-    .join(' ');
 
   return (
     <MotionSection
-      className={containerClasses}
+      className="mx-auto w-full max-w-4xl p-4 sm:p-6 md:p-8 rounded-2xl border border-white/50 bg-white/70 shadow-md dark:border-white/10 dark:bg-neutral-950/60"
       initial={initial}
       animate={animate}
       exit={exit}

@@ -13,7 +13,7 @@ const buttonClasses =
 const ExportButtons: React.FC<ExportButtonsProps> = ({ onExportSvg, onExportPng, disabled }) => {
   const { t } = useTranslation('export');
   return (
-    <div className="mt-6 flex flex-wrap items-center gap-3" aria-live="polite">
+    <div className="mt-6 flex flex-wrap items-center justify-center gap-3" aria-live="polite">
       <button
         type="button"
         className={buttonClasses}

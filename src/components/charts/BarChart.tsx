@@ -129,7 +129,9 @@ const BarChart = ({
     const svgRoot = root
       .append('svg')
       .attr('viewBox', `0 0 ${width} ${height}`)
-      .attr('preserveAspectRatio', 'xMidYMid meet');
+      .attr('preserveAspectRatio', 'xMidYMid meet')
+      .attr('id', 'barchart-svg')
+      .attr('data-layer', 'chart-svg');
 
     svgRoot.append('title').text(translate('charts.bar.svgTitle'));
     svgRoot.append('desc').text(translate('charts.bar.svgDescription'));
@@ -145,7 +147,7 @@ const BarChart = ({
     gradient.append('stop').attr('offset', '0%').attr('stop-color', accent).attr('stop-opacity', 0.9);
     gradient.append('stop').attr('offset', '100%').attr('stop-color', accentStrong).attr('stop-opacity', 0.95);
 
-    const svg = svgRoot.append('g');
+    const svg = svgRoot.append('g').attr('id', 'barchart-svg-group').attr('data-layer', 'chart-svg-group');
 
     const x = d3
       .scaleBand<string>()
@@ -155,7 +157,7 @@ const BarChart = ({
 
     const y = d3
       .scaleLinear()
-      .domain([0, d3.max(data, (d) => d.Anzahl_Kebabläden) ?? 0])
+      .domain([0, (d3.max(data, d => d.Anzahl_Kebabläden) ?? 0) * 1.05])
       .nice()
       .range([height - margin.bottom, margin.top]);
 
@@ -301,25 +303,19 @@ const BarChart = ({
   const initial = allowMotion ? { opacity: 0, y: 18 } : {};
   const animate = allowMotion ? { opacity: 1, y: 0 } : {};
   const exit = allowMotion ? { opacity: 0, y: -18 } : {};
-  const containerClasses = [
-    'w-full',
-    framed
-      ? 'rounded-3xl border border-white/60 bg-white/80 p-6 shadow-lg shadow-slate-900/5 backdrop-blur dark:border-white/10 dark:bg-neutral-950/60'
-      : '',
-  ]
-    .filter(Boolean)
-    .join(' ');
 
   return (
     <motion.section
-      className={containerClasses}
+      id="barchart-section"
+      data-layer="chart-section"
+      className="mx-auto w-full max-w-4xl p-4 sm:p-6 md:p-8 rounded-2xl border border-white/50 bg-white/70 shadow-md dark:border-white/10 dark:bg-neutral-950/60"
       initial={initial}
       animate={animate}
       exit={exit}
       transition={{ duration: 0.4, ease: 'easeOut' }}
     >
       {showHeader && (
-        <div className="space-y-2">
+        <div id="barchart-header" data-layer="chart-header" className="space-y-2">
           <h1 className="text-2xl font-semibold text-slate-900 dark:text-white">{translate('charts.bar.header')}</h1>
           <p className="text-sm text-slate-500 dark:text-slate-400">
             {translate('common.dataSource')}{' '}
@@ -331,12 +327,18 @@ const BarChart = ({
       )}
 
       {errorKey && (
-        <p className="mt-4 rounded-xl bg-red-50/80 px-4 py-3 text-sm text-red-600 dark:bg-red-500/10 dark:text-red-300">
+        <p
+          id="barchart-error"
+          data-layer="chart-error"
+          className="mt-4 rounded-xl bg-red-50/80 px-4 py-3 text-sm text-red-600 dark:bg-red-500/10 dark:text-red-300"
+        >
           {translate(errorKey)}
         </p>
       )}
 
       <div
+        id="barchart-container"
+        data-layer="chart-container"
         ref={chartRef}
         className={`relative mt-6 w-full overflow-hidden rounded-2xl border border-white/50 bg-linear-to-b from-white/80 to-white/40 p-2 shadow-inner dark:border-white/10 dark:from-white/10 dark:to-transparent ${
           loading ? 'animate-pulse opacity-80' : ''
@@ -346,6 +348,7 @@ const BarChart = ({
 
       {showControls && (
         <ExportButtons
+          data-layer="chart-controls"
           onExportSvg={() => exportHandlers?.exportSvg?.()}
           onExportPng={() => exportHandlers?.exportPng?.()}
           disabled={!exportHandlers}
