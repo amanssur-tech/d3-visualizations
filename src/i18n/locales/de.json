@@ -46,7 +46,13 @@
     }
   },
   "footer": {
-    "signature": "Gebaut mit React, D3 und ☕️ von Amanullah Manssur."
+    "signature": "Gebaut mit React, D3 und ☕️ von Amanullah Manssur.",
+    "copyright": "© 2025 Amanullah Manssur",
+    "legal": {
+      "label": "Rechtliches:",
+      "link": "Impressum & Datenschutz",
+      "href": "https://amanssur.com/de/legal"
+    }
   },
   "dashboard": {
     "hero": {
