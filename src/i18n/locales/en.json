@@ -45,6 +45,13 @@
       "de": "DE"
     }
   },
+  "notFound": {
+    "eyebrow": "Error 404",
+    "title": "Page not found",
+    "description": "The page you’re looking for either moved or never existed. Let’s bring you back to familiar territory.",
+    "cta": "Back to dashboard",
+    "secondary": "Go back"
+  },
   "footer": {
     "signature": "Built with React, D3, and ☕️ by Amanullah Manssur.",
     "copyright": "© 2025 Amanullah Manssur",
@@ -52,6 +59,11 @@
       "label": "Legal:",
       "link": "Impressum & Privacy",
       "href": "https://amanssur.com/legal"
+    },
+    "cta": {
+      "text": "Interested in my work?",
+      "link": "Contact me here",
+      "href": "https://amanssur.com/#contact"
     }
   },
   "dashboard": {
