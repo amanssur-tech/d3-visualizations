@@ -63,7 +63,7 @@ export const downloadPNG = (
     ctx.setTransform(scale, 0, 0, scale, 0, 0);
     ctx.fillStyle = '#fff';
     ctx.fillRect(0, 0, width, height);
-    ctx.drawImage(img, 0, 0);
+    ctx.drawImage(img, 0, 0, width, height);
     URL.revokeObjectURL(url); // cleanup the original blob URL
 
     canvas.toBlob((blob) => {

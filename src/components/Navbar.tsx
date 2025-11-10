@@ -1,10 +1,6 @@
-import {
-  useMemo,
-  type MouseEvent,
-  type AnchorHTMLAttributes,
-  type ReactNode,
-  type FC,
-} from 'react';
+// src/components/Navbar.tsx
+
+import { useMemo, type MouseEvent } from 'react';
 import { NavLink } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import Cookies from 'js-cookie';
@@ -35,7 +31,7 @@ const secondaryLinks: readonly SecondaryLink[] = [
 ];
 
 const anchorClasses =
-  'inline-flex items-center rounded-xl px-3 py-2 text-sm font-medium text-slate-600 transition-all duration-300 hover:bg-white/40 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-white/5 dark:hover:text-white';
+  'inline-flex items-center rounded-full px-3 py-1.5 text-sm font-medium text-slate-600 transition-all duration-200 hover:-translate-y-0.5 hover:bg-white/60 hover:text-slate-900 hover:shadow-md dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white dark:shadow-black/30';
 
 const navLinkClasses = ({ isActive }: { isActive: boolean }) =>
   [
@@ -45,28 +41,36 @@ const navLinkClasses = ({ isActive }: { isActive: boolean }) =>
       : 'text-slate-600 hover:text-slate-900 hover:bg-white/40 dark:text-slate-300 dark:hover:text-white dark:hover:bg-white/5',
   ].join(' ');
 
-interface GhostButtonProps extends AnchorHTMLAttributes<HTMLAnchorElement> {
-  children: ReactNode;
-}
-
-const GhostButton: FC<GhostButtonProps> = ({ children, ...props }) => (
-  <a
-    {...props}
-    className="inline-flex items-center rounded-xl border border-white/60 bg-white/60 px-3 py-2 text-sm font-medium text-slate-600 shadow-sm backdrop-blur transition-all duration-300 hover:-translate-y-0.5 hover:border-white hover:text-slate-900 dark:border-white/10 dark:bg-white/5 dark:text-slate-200 dark:hover:text-white"
-  >
-    {children}
-  </a>
-);
-
 const SunIcon = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" className="fill-current">
-    <path d="M12 5.25a.75.75 0 0 0 .75-.75V2.5a.75.75 0 0 0-1.5 0V4.5a.75.75 0 0 0 .75.75ZM7.5 12a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0Zm-1.25 0a.75.75 0 0 0-.75-.75H3a.75.75 0 0 0 0 1.5H5.5a.75.75 0 0 0 .75-.75ZM12 18.75a.75.75 0 0 0-.75.75V21.5a.75.75 0 0 0 1.5 0V19.5a.75.75 0 0 0-.75-.75ZM20.25 11.25H22a.75.75 0 0 1 0 1.5H20.25a.75.75 0 0 1 0-1.5ZM6.022 6.732a.75.75 0 1 0 1.06-1.06L5.8 4.39a.75.75 0 0 0-1.061 1.06l1.283 1.283Zm11.916 10.607a.75.75 0 1 0-1.061 1.06l1.282 1.283a.75.75 0 0 0 1.061-1.06l-1.282-1.283Zm-11.916 1.06a.75.75 0 0 0-1.061 1.06l1.283 1.283a.75.75 0 0 0 1.06-1.061L6.022 18.4Zm11.916-12.667a.75.75 0 1 0-1.061-1.06l-1.282 1.283a.75.75 0 0 0 1.061 1.06l1.282-1.283Z" />
+  <svg
+    width="20"
+    height="20"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.8"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className="text-inherit"
+  >
+    <circle cx="12" cy="12" r="4" />
+    <path d="M12 2v2M12 20v2M4 12H2M22 12h-2M5.636 5.636 4.222 4.222M19.778 19.778l-1.414-1.414M18.364 5.636l1.414-1.414M5.636 18.364 4.222 19.778" />
   </svg>
 );
 
 const MoonIcon = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" className="fill-current">
-    <path d="M21.25 15.164a.75.75 0 0 0-.858-.256 7.25 7.25 0 0 1-9.3-9.3.75.75 0 0 0-1.114-.836A8.75 8.75 0 1 0 21.5 16a.75.75 0 0 0-.25-.836Z" />
+  <svg
+    width="20"
+    height="20"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.8"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className="text-inherit"
+  >
+    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z" />
   </svg>
 );
 
@@ -141,31 +145,22 @@ const Navbar = () => {
 
         <div className="flex items-center gap-2">
           {secondaryLinks.map((link) => {
-            if (link.href?.startsWith('#') && !link.external) {
-              return (
-                <a
-                  key={link.href}
-                  href={link.href}
-                  className={anchorClasses}
-                  onClick={(event) => handleAnchorNav(event, link.href)}
-                >
-                  {translate(link.labelKey)}
-                </a>
-              );
-            }
+            const isAnchor = link.href?.startsWith('#') && !link.external;
             return (
-              <GhostButton
+              <a
                 key={link.href}
                 href={link.href}
+                className={anchorClasses}
+                onClick={isAnchor ? (event) => handleAnchorNav(event, link.href) : undefined}
                 target={link.external ? '_blank' : undefined}
                 rel={link.external ? 'noreferrer' : undefined}
               >
                 {translate(link.labelKey)}
-              </GhostButton>
+              </a>
             );
           })}
           <div
-            className="inline-flex items-center gap-1 rounded-2xl border border-white/60 bg-white/50 p-1 text-xs font-semibold text-slate-600 shadow-inner shadow-white/40 backdrop-blur dark:border-white/10 dark:bg-white/5 dark:text-slate-200"
+            className="inline-flex items-center gap-1 rounded-full border border-slate-200/70 bg-white/70 p-1 text-xs font-semibold text-slate-600 shadow-sm shadow-slate-200/60 dark:border-white/10 dark:bg-white/5 dark:text-slate-200 dark:shadow-black/40"
             role="group"
             aria-label={translate('navbar.languageToggle.aria')}
           >
@@ -180,9 +175,9 @@ const Navbar = () => {
                     i18n.changeLanguage(lang);
                     Cookies.set(LANG_COOKIE, lang, { expires: 365, sameSite: 'lax' });
                   }}
-                  className={`inline-flex items-center rounded-xl px-2 py-1 transition ${
+                  className={`inline-flex items-center rounded-full px-3 py-1 transition-all duration-200 ${
                     isActive
-                      ? 'bg-white text-slate-900 shadow-sm shadow-cyan-500/30 dark:bg-neutral-900 dark:text-white'
+                      ? 'bg-white text-slate-900 shadow-sm shadow-cyan-500/25 ring-1 ring-cyan-200/60 dark:bg-neutral-900 dark:text-white dark:shadow-cyan-500/30 dark:ring-cyan-400/40'
                       : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
                   }`}
                   aria-pressed={isActive}
@@ -200,7 +195,7 @@ const Navbar = () => {
           <button
             type="button"
             onClick={toggleTheme}
-            className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-linear-to-r from-cyan-500 to-emerald-500 text-white shadow-lg shadow-cyan-500/40 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-200/70 text-slate-500 shadow-sm shadow-slate-200/60 transition-all duration-200 hover:-translate-y-0.5 hover:border-slate-300 hover:text-slate-900 hover:shadow-md dark:border-white/15 dark:text-slate-100 dark:hover:border-white/40 dark:hover:text-white dark:shadow-black/40"
             aria-label={translate(theme === 'dark' ? 'navbar.themeToggle.toLight' : 'navbar.themeToggle.toDark')}
           >
             {theme === 'dark' ? <MoonIcon /> : <SunIcon />}
