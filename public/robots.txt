@@ -1,0 +1,13 @@
+# robots.txt for D3 Visualizations
+User-agent: *
+Allow: /
+
+# Disallow internal or development assets
+Disallow: /data/
+
+# Allow meta & favicon resources (manifest, sitemap, icons)
+Allow: /meta/
+Allow: /favicons/
+
+# Sitemap for better crawling
+Sitemap: https://viz.amanssur.com/meta/sitemap.xml
