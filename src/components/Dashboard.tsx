@@ -61,7 +61,6 @@ const actionCards: readonly ActionCard[] = [
 
 const aboutHighlightKeys = [
   'dashboard.about.highlights.motion',
-  'dashboard.about.highlights.glass',
   'dashboard.about.highlights.export',
 ] as const satisfies ReadonlyArray<string>;
 
