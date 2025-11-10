@@ -1,1 +1,6 @@
-
+{
+  "rewrites": [
+    { "source": "/exercise1", "destination": "/" },
+    { "source": "/exercise2", "destination": "/" }
+  ]
+}
