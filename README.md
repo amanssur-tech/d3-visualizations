@@ -10,7 +10,7 @@ Originally inspired by a university project, it has evolved into a professional-
 
 ---
 
-## 📸 Preview
+## 📸 Preview (coming soon)
 
 ![Dashboard Screenshot](https://github.com/amanssur-tech/d3-visualizations/assets/preview.png)
 > Responsive, animated dashboard built with React, D3.js, Tailwind, and Vite.
@@ -105,15 +105,6 @@ Each chart (Bar, Line, etc.) is a standalone React component that:
 - Supports export through shared utility functions
 
 This setup allows adding new visualizations easily — just drop a new chart file in `/src/components/charts` and add a route.
-
----
-
-## 🌈 Future Enhancements
-
-- 🌍 Deploy with a custom domain (e.g. **viz.manssurmedia.com**)
-- 🧮 Add filtering and sorting interactions
-- ⚙️ Integrate mock APIs for live data updates
-- 🎛️ Add a dashboard “About” card showcasing stack and deployment
 
 ---
 
