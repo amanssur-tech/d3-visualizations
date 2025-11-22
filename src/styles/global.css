@@ -1,8 +1,9 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --font-sans: 'Inter', 'Geist Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-sans:
+    'Inter', 'Geist Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --color-accent: #06b6d4;
   --color-accent-strong: #059669;
   --color-surface: #f8fafc;
@@ -46,7 +47,9 @@
     @apply m-0 min-h-screen bg-slate-50 font-sans text-slate-800 antialiased dark:bg-neutral-950 dark:text-slate-100;
   }
 
-  *, *::before, *::after {
+  *,
+  *::before,
+  *::after {
     @apply box-border;
   }
 

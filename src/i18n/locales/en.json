@@ -8,7 +8,9 @@
       "route": "Route"
     },
     "actions": {
-      "open": "Open"
+      "open": "Open",
+      "openCaseStudy": "Open Case Study",
+      "viewLibrary": "View all case studies"
     },
     "dataSource": "Data source:",
     "languages": {
@@ -30,10 +32,22 @@
     "brand": "D3 Visualizations",
     "links": {
       "dashboard": "Dashboard",
-      "exercise1": "Exercise 1",
-      "exercise2": "Exercise 2",
+      "caseStudies": "Case Studies",
+      "library": "Case Studies",
       "about": "About",
       "github": "GitHub"
+    },
+    "dropdown": {
+      "label": "Case Studies",
+      "toggle": "Toggle case studies menu",
+      "eyebrow": "Featured Case Studies",
+      "viewAll": "View case study library",
+      "items": {
+        "1": "Case Study 1: Comparison Bar Chart",
+        "2": "Case Study 2: City Trend Lines",
+        "3": "Case Study 3: Live Randomized Bars",
+        "4": "Case Study 4: Ethics Panel"
+      }
     },
     "themeToggle": {
       "toLight": "Switch to light mode",
@@ -68,66 +82,154 @@
   },
   "dashboard": {
     "hero": {
-      "eyebrow": "Kebab Shop Monitor",
-      "title": "D3 Visualizations Dashboard",
-      "description": "A modern data story about kebab shops in Germany—optimized for light and dark modes with Framer Motion and D3 animations.",
-      "ctaSecondary": "Jump to Exercise 1"
+      "eyebrow": "Portfolio Series",
+      "title": "D3 Case Studies on Honest Visualization",
+      "description": "A curated set of data stories around kebab shops in Germany. Each case study pairs D3 craft with design ethics, ready for client demos.",
+      "primaryCta": "Browse case studies",
+      "secondaryCta": "Open the library"
     },
-    "stats": {
-      "cities": {
-        "label": "Cities tracked",
-        "value": "8",
-        "detail": "Major German metros"
-      },
-      "years": {
-        "label": "Years of history",
-        "value": "6",
-        "detail": "2020 → 2025"
-      },
-      "refresh": {
-        "label": "Data refresh",
-        "value": "Weekly",
-        "detail": "Automated pipeline"
+    "featured": {
+      "title": "Featured Case Studies",
+      "description": "Interactive experiments built for a portfolio-ready showcase."
+    },
+    "methodology": {
+      "title": "Methodology Highlights",
+      "items": {
+        "ethics": {
+          "title": "Ethics in visualization",
+          "description": "Expose bias, avoid chartjunk, and keep scales honest across every view."
+        },
+        "perception": {
+          "title": "Perception limits",
+          "description": "Color, spacing, and motion tuned to how people actually read visual stories."
+        },
+        "design": {
+          "title": "Design principles",
+          "description": "Consistent grids, hierarchy, and annotation to keep every chart calm and legible."
+        }
       }
     },
-    "chartCards": {
-      "bar": {
-        "title": "Exercise 1 · City Comparison",
-        "subtitle": "Rounded bars, gradients, and export-ready insights."
-      },
-      "line": {
-        "title": "Exercise 2 · Growth over Time",
-        "subtitle": "Smooth lines comparing Cologne and Berlin from 2020 to 2025."
+    "tools": {
+      "title": "Tools used",
+      "description": "Built with modern web tooling tailored for data storytelling.",
+      "items": {
+        "d3": "D3.js",
+        "react": "React",
+        "tailwind": "Tailwind CSS",
+        "vite": "Vite"
       }
     },
-    "actionCards": {
-      "bar": {
-        "title": "Explore Bar Insights",
-        "description": "Compare every city and uncover the strongest kebab hotspots."
-      },
-      "line": {
-        "title": "Explore Line Trends",
-        "description": "Track Cologne and Berlin across the last few years."
-      },
-      "comingSoon": {
-        "title": "Coming Soon",
-        "description": "New visualizations are in progress—stay tuned for fresh perspectives."
-      },
-      "cta": "Open →"
+    "contact": {
+      "title": "Want to collaborate on your data story?",
+      "cta": "Contact me",
+      "ctaNote": "Open contact",
+      "url": "https://amanssur.com/#contact"
+    }
+  },
+  "caseStudies": {
+    "library": {
+      "eyebrow": "Case Study Library",
+      "title": "D3 case studies on kebab shop data",
+      "description": "Browse polished studies: city comparisons, time trends, randomized motion, and a design ethics before/after.",
+      "cta": "Open Case Study",
+      "tagsLabel": "Tags",
+      "open": "Open Case Study",
+      "viewAll": "Browse all case studies"
     },
-    "about": {
-      "title": "About the project",
-      "description": "This interface was completely refreshed with Tailwind, React, and D3. Every component is responsive, supports dark mode, and layers in calm transitions for a polished dashboard experience.",
-      "highlights": {
-        "motion": "Framer Motion animations",
-        "glass": "Glassmorphism panels",
-        "export": "Export-ready charts"
+    "tags": {
+      "barChart": "Bar Chart",
+      "lineChart": "Line Chart",
+      "cityComparison": "City Comparison",
+      "timeSeries": "Time Series",
+      "randomized": "Random Data",
+      "live": "Live Updates",
+      "ethics": "Ethics",
+      "design": "Design Principles",
+      "timeOfDay": "Time of Day",
+      "multiPanel": "Multi-panel",
+      "exportable": "Exportable"
+    },
+    "1": {
+      "title": "Case Study 1: Bar Chart of Kebabläden by City",
+      "subtitle": "Rounded gradients and export-ready comparisons.",
+      "description": "Compare kebab shop density across German metro areas with a compact bar chart and export controls.",
+      "summary": "Bar chart ranking cities with gradients, tooltips, and SVG/PNG exports."
+    },
+    "2": {
+      "title": "Case Study 2: Line Chart of Kebabläden by City over Years",
+      "subtitle": "Time-series contrast between Cologne and Berlin.",
+      "description": "Track Cologne and Berlin from 2020–2025 with smooth line transitions, accessible axes, and export buttons.",
+      "summary": "Two-city line chart showing growth trends year over year."
+    },
+    "3": {
+      "title": "Case Study 3: Dynamic Multi-Bar Randomized City Comparison",
+      "subtitle": "Live refresh",
+      "description": "Every three seconds one city's bar randomly increases or decreases. Adjust the magnitude slider to explore how subtle or dramatic the changes become.",
+      "controls": {
+        "magnitude": "Magnitude",
+        "liveValue": "Live value: {{value}}",
+        "current": "Current magnitude",
+        "hint": "Drag the slider to make changes barely noticeable or striking."
+      },
+      "chart": {
+        "label": "Multi-bar chart",
+        "title": "Live kebab shop monitor",
+        "subtitle": "Random city updates every 3 seconds (± magnitude).",
+        "description": "Animated multi-bar chart that updates one city at random with smooth transitions."
+      }
+    },
+    "4": {
+      "title": "Case Study 4: Flawed vs Corrected Time-of-Day Weekly Sales Visualization",
+      "subtitle": "Design ethics",
+      "description": "Both charts show the same kebab-sales dataset. The first collapses seven days into averages and breaks encoding rules; the second keeps all 42 rows visible with a clean mapping.",
+      "times": {
+        "morgens": "Morning",
+        "mittags": "Midday",
+        "abends": "Evening"
+      },
+      "flawed": {
+        "label": "Flawed chart",
+        "title": "Misleading average pie",
+        "caption": "A deliberately bad view that hides day-to-day swings behind averages and a mismatched pie layout.",
+        "badge": "Misleading",
+        "listTitle": "Design flaws",
+        "chartTitle": "Misleading average sales pie",
+        "chartDescription": "Seven-day averages crammed into a pie with mismatched legend colors and no time ordering.",
+        "reasons": {
+          "axis": "Pie hides the y-axis entirely, so scale cannot be read at all.",
+          "colors": "Overlapping warm colors make categories hard to tell apart.",
+          "legend": "Legend colors are mismatched (evening and midday are swapped).",
+          "order": "No consistent order for morning → evening, so the sequence is lost.",
+          "aggregation": "Seven separate days are collapsed into averages so daily peaks and lows disappear.",
+          "mapping": "Combines cities and times into one pie: the visual elements no longer match the data structure."
+        }
+      },
+      "fixed": {
+        "label": "Fixed chart",
+        "title": "Truthful panel lines",
+        "caption": "Same data with honest scaling, distinct colors, and a calm layout. Every single row stays visible in one stacked SVG.",
+        "badge": "Corrected",
+        "listTitle": "Fixes applied",
+        "chartTitle": "Daily kebab sales by city and time of day",
+        "chartDescription": "Single SVG with three horizontal panels (Morning, Midday, Evening). Each panel has two lines (Berlin, Köln) over seven days, shared x-scale, independent y-scales.",
+        "axisLabel": "Sales per day",
+        "axisDays": "Day of the month",
+        "axisCity": "City comparison",
+        "legendTitle": "Cities",
+        "reasons": {
+          "baseline": "Panels have y-axes and grids so scale is visible per time-of-day.",
+          "palette": "Distinct, colorblind-friendly palette with clear contrast.",
+          "legend": "Legend matches the encoding and separates the two cities clearly.",
+          "structure": "Panels stack Morning → Evening vertically to keep time-of-day order obvious.",
+          "fullData": "All 42 rows (2 cities × 7 days × 3 times) stay visible so trends and peaks stand out.",
+          "mapping": "Single chart, shared day axis, independent y-scales per time band; two lines per panel keep city comparisons clear."
+        }
       }
     }
   },
   "charts": {
     "bar": {
-      "header": "Kebab shops by city",
+      "header": "Case Study 1: Bar Chart of Kebabläden by City",
       "svgTitle": "Kebab shops by city",
       "svgDescription": "Bar chart comparing the number of kebab shops across major German cities.",
       "axis": {
@@ -136,7 +238,7 @@
       }
     },
     "line": {
-      "header": "Kebab shops — Cologne vs Berlin (2020–2025)",
+      "header": "Case Study 2: Line Chart of Kebabläden by City over Years",
       "svgTitle": "Kebab shops — Cologne vs Berlin (2020–2025)",
       "svgDescription": "Line chart tracking Cologne and Berlin from 2020 to 2025.",
       "axis": {

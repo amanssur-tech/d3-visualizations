@@ -1,13 +1,6 @@
-import en from './locales/en.json';
+import type en from './locales/en.json';
 
 type Primitive = string | number | boolean | null | undefined;
-
-type Join<K extends Primitive, P extends Primitive> = K extends string | number
-  ? P extends string | number
-    ? `${K}.${P}`
-    : never
-  : never;
-
 
 type NestedKeys<T> = T extends Primitive
   ? never

@@ -1,11 +1,12 @@
 // src/main.tsx
-import ReactDOM from 'react-dom/client';
 import { Suspense } from 'react';
-import { RouterProvider } from 'react-router-dom';
+import ReactDOM from 'react-dom/client';
 import { useTranslation } from 'react-i18next';
-import { router } from './router';
+import { RouterProvider } from 'react-router-dom';
+
 import './i18n/i18n';
 import './styles/global.css';
+import { router } from './router';
 
 const LoadingScreen = () => {
   const { t } = useTranslation('common');
@@ -24,7 +25,9 @@ const Root = () => {
   );
 };
 
-const container = document.getElementById('root') as HTMLElement;
-if (container) {
-  ReactDOM.createRoot(container).render(<Root />);
+const container = document.getElementById('root');
+if (!container) {
+  throw new Error('Root element not found');
 }
+
+ReactDOM.createRoot(container).render(<Root />);

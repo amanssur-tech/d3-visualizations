@@ -1,31 +1,43 @@
-import { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from 'react';
 
-interface ThemeProviderProps {
-  children: React.ReactNode;
+type ThemeMode = 'light' | 'dark';
+
+interface ThemeContextValue {
+  theme: ThemeMode;
+  isManual: boolean;
+  toggleTheme: () => void;
 }
 
-const ThemeContext = createContext({
-  theme: 'light',
-  isManual: false,
-  toggleTheme: () => {},
-});
+interface ThemeProviderProps {
+  children: ReactNode;
+}
 
-const getSystemTheme = () => {
+const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
+
+const getSystemTheme = (): ThemeMode => {
   if (typeof window === 'undefined') return 'light';
   return window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 };
 
-const getStoredTheme = () => {
+const getStoredTheme = (): ThemeMode | null => {
   if (typeof window === 'undefined') return null;
   const stored = window.localStorage.getItem('preferred-theme');
   return stored === 'dark' || stored === 'light' ? stored : null;
 };
 
-export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
+export const ThemeProvider = ({ children }: ThemeProviderProps) => {
   const stored = getStoredTheme();
-  const [systemTheme, setSystemTheme] = useState(getSystemTheme);
+  const [systemTheme, setSystemTheme] = useState<ThemeMode>(getSystemTheme);
   const [manualMode, setManualMode] = useState(Boolean(stored));
-  const [theme, setTheme] = useState(stored || systemTheme);
+  const [theme, setTheme] = useState<ThemeMode>(stored ?? systemTheme);
 
   // Keep track of system preference changes
   useEffect(() => {
@@ -66,21 +78,27 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
     return undefined;
   }, [manualMode, theme]);
 
-  const toggleTheme = () => {
+  const toggleTheme = useCallback(() => {
     setManualMode(true);
     setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
-  };
+  }, []);
 
-  const value = useMemo(
+  const value = useMemo<ThemeContextValue>(
     () => ({
       theme,
       isManual: manualMode,
       toggleTheme,
     }),
-    [manualMode, theme]
+    [manualMode, theme, toggleTheme]
   );
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
 };
 
-export const useTheme = () => useContext(ThemeContext);
+export const useTheme = () => {
+  const context = useContext(ThemeContext);
+  if (!context) {
+    throw new Error('useTheme must be used within a ThemeProvider');
+  }
+  return context;
+};

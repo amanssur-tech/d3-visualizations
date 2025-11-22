@@ -18,9 +18,7 @@ const Tooltip = () => {
       document.body.appendChild(el);
     }
     return () => {
-      if (el && el.parentNode) {
-        el.parentNode.removeChild(el);
-      }
+      el?.parentNode?.removeChild(el);
     };
   }, []);
 

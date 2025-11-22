@@ -6,8 +6,7 @@ Allow: /
 Disallow: /data/
 
 # Allow meta & favicon resources (manifest, sitemap, icons)
-Allow: /meta/
 Allow: /favicons/
 
 # Sitemap for better crawling
-Sitemap: https://viz.amanssur.com/meta/sitemap.xml
+Sitemap: https://viz.amanssur.com/sitemap.xml

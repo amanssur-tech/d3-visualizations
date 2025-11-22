@@ -1,13 +1,22 @@
-import React from 'react';
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { motion } from 'framer-motion';
 import * as d3 from 'd3';
-import ExportButtons from '../ExportButtons';
+import { motion } from 'framer-motion';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+
+import lineDataJson from '../../data/case-study02.json';
 import { useD3 } from '../../hooks/useD3';
 import { chartConfig } from '../../utils/config';
 import { downloadPNG, downloadSVG } from '../../utils/export';
 import { createTooltip } from '../../utils/tooltip';
-import { useTranslation } from 'react-i18next';
+import ExportButtons from '../ExportButtons';
+
+import type { TOptions } from 'i18next';
+
+interface RawLineData {
+  Stadt: string;
+  Jahr: number;
+  'Anzahl Kebabläden': number;
+}
 
 interface LineData {
   Stadt: string;
@@ -20,22 +29,28 @@ interface LineChartProps {
   showControls?: boolean;
   enableMotion?: boolean;
   onExportReady?: (handlers: { exportSvg: () => void; exportPng: () => void }) => void;
-  framed?: boolean;
 }
 
-const DATA_URL = `${import.meta.env.BASE_URL || '/'}data/Uebung02_Daten.json`;
+interface ExportHandlers {
+  exportSvg: () => void;
+  exportPng: () => void;
+}
 
-const LineChart: React.FC<LineChartProps> = (props): React.ReactElement => {
-  const { showHeader = true, showControls = true, enableMotion = true, onExportReady, framed = true } = props;
-  const [data, setData] = useState<LineData[] | null>(null);
+const CaseStudy2LineChart = ({
+  showHeader = true,
+  showControls = true,
+  enableMotion = true,
+  onExportReady,
+}: LineChartProps) => {
+  const [data, setData] = useState<RawLineData[] | null>(null);
   const [errorKey, setErrorKey] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [exportHandlers, setExportHandlers] = useState<{ exportSvg: () => void; exportPng: () => void } | null>(null);
-  const legendRef = useRef(null);
+  const [exportHandlers, setExportHandlers] = useState<ExportHandlers | null>(null);
+  const legendRef = useRef<HTMLDivElement | null>(null);
   const [firstLoad, setFirstLoad] = useState(true);
   const { t, i18n } = useTranslation(['charts', 'common', 'tooltips']);
   const translate = useCallback(
-    (fullKey: string, options?: Record<string, unknown>) => {
+    (fullKey: string, options?: TOptions): string => {
       const knownNamespaces = [
         'common',
         'navbar',
@@ -44,22 +59,28 @@ const LineChart: React.FC<LineChartProps> = (props): React.ReactElement => {
         'charts',
         'export',
         'tooltips',
+        'caseStudies',
       ] as const;
 
+      type TranslateFn = (key: string, options?: TOptions) => string;
+      const tSafe = t as unknown as TranslateFn;
+      type NamespaceKey = (typeof knownNamespaces)[number];
       const [maybeNs, ...rest] = fullKey.split('.');
       if (maybeNs && rest.length > 0 && (knownNamespaces as readonly string[]).includes(maybeNs)) {
         const key = rest.join('.');
-        return t(key, { ns: maybeNs, ...(options || {}) } as any);
+        const ns = maybeNs as NamespaceKey;
+        return tSafe(key, { ns, ...(options ?? {}) });
       }
 
-      return t(fullKey, options as any);
+      return tSafe(fullKey, options);
     },
     [t]
   );
   const formatCityName = useCallback(
     (value: string) => {
       const normalized = value === 'Köln' ? 'Koeln' : value;
-      const fallback = normalized === 'Koeln' ? 'Köln' : normalized === 'Muenchen' ? 'München' : value;
+      const fallback =
+        normalized === 'Koeln' ? 'Köln' : normalized === 'Muenchen' ? 'München' : value;
       const key = `charts.cityLabels.${normalized}`;
       return translate(key, { defaultValue: fallback });
     },
@@ -71,63 +92,47 @@ const LineChart: React.FC<LineChartProps> = (props): React.ReactElement => {
   }, []);
 
   useEffect(() => {
-    let cancelled = false;
-    const loadData = async () => {
-      try {
-        const response = await fetch(DATA_URL);
-        if (!response.ok) throw new Error('DATA_LOAD_ERROR');
-        const payload: LineData[] = await response.json();
-        if (!cancelled) {
-          setData(payload);
-          setErrorKey(null);
-        }
-      } catch (err: unknown) {
-        if (!cancelled) {
-          if (err instanceof Error && err.message === 'DATA_LOAD_ERROR') {
-            setErrorKey('common.errors.dataLoad');
-          } else {
-            setErrorKey('common.errors.unknown');
-          }
-        }
-      } finally {
-        if (!cancelled) {
-          setLoading(false);
-        }
-      }
-    };
-    loadData();
-    return () => {
-      cancelled = true;
-    };
+    setData(lineDataJson as RawLineData[]);
+    setLoading(false);
+    setErrorKey(null);
   }, []);
 
   const chartRef = useD3(
     (container: HTMLElement) => {
       if (!data || data.length === 0) return undefined;
 
-      const tooltip = createTooltip(d3);
+      const tooltip = createTooltip();
       const root = d3.select(container);
       root.selectAll('*').remove();
 
-      const normalized: LineData[] = data.map((d: any) => ({
+      const normalized: LineData[] = data.map((d: RawLineData) => ({
         Stadt: d.Stadt,
         Jahr: +d.Jahr,
         Anzahl: +d['Anzahl Kebabläden'],
       }));
 
-      const nested = d3.group(normalized, (d) => d.Stadt);
-      const years: number[] = Array.from(new Set(normalized.map((d) => d.Jahr))).sort((a, b) => a - b);
+      const nested = normalized.reduce<Map<string, LineData[]>>((acc, entry) => {
+        const bucket = acc.get(entry.Stadt);
+        if (bucket) {
+          bucket.push(entry);
+        } else {
+          acc.set(entry.Stadt, [entry]);
+        }
+        return acc;
+      }, new Map<string, LineData[]>());
+      const years: number[] = Array.from(new Set(normalized.map((d) => d.Jahr))).sort(
+        (a, b) => a - b
+      );
 
       const margin = chartConfig.margins.line;
       const { width: fullWidth, height: fullHeight } = chartConfig.dimensions.line;
       const width = fullWidth - margin.left - margin.right;
       const height = fullHeight - margin.top - margin.bottom;
 
-      const accent = chartConfig.getVar('--color-accent') || '#06b6d4';
-      const accentStrong = chartConfig.getVar('--color-accent-strong') || '#14b8a6';
-      const textColor = chartConfig.getVar('--color-text') || '#0f172a';
-      const softText = chartConfig.getVar('--color-text-soft') || '#94a3b8';
-      const gridColor = chartConfig.getVar('--color-grid') || '#e2e8f0';
+      const accent = chartConfig.getVar('--color-accent') ?? '#06b6d4';
+      const accentStrong = chartConfig.getVar('--color-accent-strong') ?? '#14b8a6';
+      const softText = chartConfig.getVar('--color-text-soft') ?? '#94a3b8';
+      const gridColor = chartConfig.getVar('--color-grid') ?? '#e2e8f0';
 
       const svgRoot = root
         .append('svg')
@@ -141,7 +146,11 @@ const LineChart: React.FC<LineChartProps> = (props): React.ReactElement => {
 
       const x = d3.scalePoint<number>().domain(years).range([0, width]).padding(0.5);
       const yMax = d3.max(normalized, (d) => d.Anzahl) ?? 0;
-      const y = d3.scaleLinear().domain([0, yMax * 1.05]).range([height, 0]).nice();
+      const y = d3
+        .scaleLinear()
+        .domain([0, yMax * 1.05])
+        .range([height, 0])
+        .nice();
 
       const line = d3
         .line<LineData>()
@@ -151,14 +160,18 @@ const LineChart: React.FC<LineChartProps> = (props): React.ReactElement => {
 
       const yAxisTicks = Math.max(2, Math.floor(height / 40));
 
-      const yAxisGrid = d3.axisLeft(y).ticks(yAxisTicks).tickSize(-width).tickFormat(() => '');
-      svg.append('g').attr('class', 'grid').call(yAxisGrid as any);
+      const yAxisGrid = d3
+        .axisLeft(y)
+        .ticks(yAxisTicks)
+        .tickSize(-width)
+        .tickFormat(() => '');
+      svg.append('g').attr('class', 'grid').call(yAxisGrid);
 
       svg
         .append('g')
         .attr('transform', `translate(0,${height})`)
         .call(d3.axisBottom(x).tickFormat((n) => n.toString()));
-      svg.append('g').call(d3.axisLeft(y).ticks(yAxisTicks).tickSize(0) as any);
+      svg.append('g').call(d3.axisLeft(y).ticks(yAxisTicks).tickSize(0));
 
       svg
         .selectAll('.grid line')
@@ -177,13 +190,13 @@ const LineChart: React.FC<LineChartProps> = (props): React.ReactElement => {
       const color: Record<string, string> = Object.fromEntries(
         Object.entries(chartConfig.cityColors).map(([city, varName]) => [
           city,
-          chartConfig.getVar(varName) || '#333',
+          chartConfig.getVar(varName) ?? '#333',
         ])
       );
 
-      for (const [stadt, values] of nested as Map<string, LineData[]>) {
+      for (const [stadt, values] of nested) {
         const sorted = values.slice().sort((a, b) => a.Jahr - b.Jahr);
-        const stroke = color[stadt] || '#333';
+        const stroke = color[stadt] ?? '#333';
 
         const path = svg
           .append('path')
@@ -216,7 +229,7 @@ const LineChart: React.FC<LineChartProps> = (props): React.ReactElement => {
           .attr('cy', (d) => y(d.Anzahl) ?? 0)
           .attr('r', chartConfig.elements.pointRadius)
           .attr('fill', stroke)
-          .on('mouseenter', (event, d) =>
+          .on('mouseenter', (event: MouseEvent, d: LineData) =>
             tooltip.show(
               translate('tooltips.line', {
                 city: formatCityName(d.Stadt),
@@ -226,7 +239,7 @@ const LineChart: React.FC<LineChartProps> = (props): React.ReactElement => {
               event
             )
           )
-          .on('mousemove', (event) => tooltip.move(event))
+          .on('mousemove', (event: MouseEvent) => tooltip.move(event))
           .on('mouseleave', () => tooltip.hide());
       }
 
@@ -247,31 +260,35 @@ const LineChart: React.FC<LineChartProps> = (props): React.ReactElement => {
         .attr('fill', softText)
         .text(translate('charts.line.axis.count'));
 
-      const legendContainer = d3.select(legendRef.current);
-      legendContainer.selectAll('*').remove();
-      const cities = Array.from(nested.keys());
+      const lineSelection = svg.selectAll<SVGPathElement, LineData[]>('.line');
+      const legendElement = legendRef.current;
+      if (legendElement) {
+        const legendContainer = d3.select(legendElement);
+        legendContainer.selectAll('*').remove();
+        const cities = Array.from(nested.keys());
 
-      cities.forEach((stadt) => {
-        const item = legendContainer
-          .append('div')
-          .attr('class', 'legend-item')
-          .on('mouseenter', () => {
-            svg.selectAll('.line').classed('dimmed', (d: any) => d[0].Stadt !== stadt);
-          })
-          .on('mouseleave', () => {
-            svg.selectAll('.line').classed('dimmed', false);
-          });
+        const handleLegendHover = (city?: string) => {
+          lineSelection.classed('dimmed', (datum) => (city ? datum[0]?.Stadt !== city : false));
+        };
 
-        item
-          .append('div')
-          .attr('class', 'legend-color')
-          .style('background-color', color[stadt] || accentStrong)
-          .style('box-shadow', `0 0 10px ${accentStrong}30`);
+        cities.forEach((stadt) => {
+          const item = legendContainer
+            .append('div')
+            .attr('class', 'legend-item')
+            .on('mouseenter', () => handleLegendHover(stadt))
+            .on('mouseleave', () => handleLegendHover());
 
-        item.append('span').text(formatCityName(stadt));
-      });
+          item
+            .append('div')
+            .attr('class', 'legend-color')
+            .style('background-color', color[stadt] ?? accentStrong)
+            .style('box-shadow', `0 0 10px ${accentStrong}30`);
 
-      const handlers = {
+          item.append('span').text(formatCityName(stadt));
+        });
+      }
+
+      const handlers: ExportHandlers = {
         exportSvg: () => {
           const node = svgRoot.node();
           if (node instanceof SVGSVGElement) {
@@ -286,44 +303,39 @@ const LineChart: React.FC<LineChartProps> = (props): React.ReactElement => {
         },
       };
 
-      setExportHandlers(handlers as { exportSvg: () => void; exportPng: () => void });
-      if (typeof onExportReady === 'function') {
-        onExportReady(handlers);
-      }
+      setExportHandlers(handlers);
+      onExportReady?.(handlers);
 
       return () => {
         root.selectAll('*').remove();
-        legendContainer.selectAll('*').remove();
+        if (legendElement) {
+          d3.select(legendElement).selectAll('*').remove();
+        }
       };
     },
     [data, onExportReady, translate, formatCityName, i18n.language]
   );
 
-  const MotionSection = motion.section;
   const allowMotion = enableMotion && !firstLoad;
-  const initial = allowMotion ? { opacity: 0, y: 18 } : false;
-  const animate = allowMotion ? { opacity: 1, y: 0 } : {};
-  const exit = allowMotion ? { opacity: 0, y: -18 } : {};
+  const motionProps = allowMotion
+    ? {
+        initial: { opacity: 0, y: 18 },
+        animate: { opacity: 1, y: 0 },
+        exit: { opacity: 0, y: -18 },
+      }
+    : {};
 
   return (
-    <MotionSection
-      className="mx-auto w-full max-w-4xl p-4 sm:p-6 md:p-8 rounded-2xl border border-white/50 bg-white/70 shadow-md dark:border-white/10 dark:bg-neutral-950/60"
-      initial={initial}
-      animate={animate}
-      exit={exit}
+    <motion.section
+      className="mx-auto w-full max-w-4xl rounded-2xl border border-white/50 bg-white/70 p-4 shadow-md dark:border-white/10 dark:bg-neutral-950/60 sm:p-6 md:p-8"
+      {...motionProps}
       transition={{ duration: 0.4, ease: 'easeOut' }}
     >
       {showHeader && (
         <div className="space-y-2">
           <h1 className="text-2xl font-semibold text-slate-900 dark:text-white">
-            {translate('charts.line.header')}
+            {translate('caseStudies.2.title')}
           </h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400">
-            {translate('common.dataSource')}{' '}
-            <code className="rounded-lg bg-slate-100/70 px-2 py-0.5 text-xs text-slate-600 dark:bg-white/10 dark:text-slate-200">
-              data/Uebung02_Daten.json
-            </code>
-          </p>
         </div>
       )}
 
@@ -350,8 +362,8 @@ const LineChart: React.FC<LineChartProps> = (props): React.ReactElement => {
           disabled={!exportHandlers}
         />
       )}
-    </MotionSection>
+    </motion.section>
   );
 };
 
-export default LineChart;
+export default CaseStudy2LineChart;

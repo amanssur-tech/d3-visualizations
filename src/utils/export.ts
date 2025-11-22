@@ -3,10 +3,7 @@
  * Shared utilities for chart export functionality
  */
 
-export const downloadSVG = (
-  svgElement: SVGSVGElement,
-  filename: string = 'chart.svg'
-): void => {
+export const downloadSVG = (svgElement: SVGSVGElement, filename = 'chart.svg'): void => {
   const serializer = new XMLSerializer();
 
   let source = serializer.serializeToString(svgElement);
@@ -34,7 +31,7 @@ export const downloadPNG = (
   svgElement: SVGSVGElement,
   width: number,
   height: number,
-  filename: string = 'chart.png'
+  filename = 'chart.png'
 ): void => {
   const serializer = new XMLSerializer();
 

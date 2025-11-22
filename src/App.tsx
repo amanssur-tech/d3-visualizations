@@ -1,14 +1,14 @@
-import { Outlet, useNavigation } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { Analytics } from '@vercel/analytics/react';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 import { motion } from 'framer-motion';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import Navbar from './components/Navbar';
+import { Outlet, useNavigation } from 'react-router-dom';
+
 import Footer from './components/Footer';
+import Navbar from './components/Navbar';
 import Tooltip from './components/Tooltip';
 import { ThemeProvider } from './context/ThemeContext';
-import { SpeedInsights } from '@vercel/speed-insights/react';
-import { Analytics } from '@vercel/analytics/react';
-
 
 const Layout = () => {
   const navigation = useNavigation();
@@ -21,7 +21,7 @@ const Layout = () => {
       setHydrated(true);
       return undefined;
     }
-    let raf = window.requestAnimationFrame(() => setHydrated(true));
+    const raf = window.requestAnimationFrame(() => setHydrated(true));
     return () => window.cancelAnimationFrame(raf);
   }, []);
 
@@ -32,13 +32,12 @@ const Layout = () => {
       return undefined;
     }
     if (navigation.state !== 'idle') return undefined;
-    let raf = window.requestAnimationFrame(() => setRouterReady(true));
+    const raf = window.requestAnimationFrame(() => setRouterReady(true));
     return () => window.cancelAnimationFrame(raf);
   }, [navigation.state, routerReady]);
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-slate-50 text-slate-800 transition-colors duration-500 dark:bg-neutral-950 dark:text-slate-100">
-      <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top,rgba(6,182,212,0.18),transparent_45%),radial-gradient(circle_at_bottom,rgba(16,185,129,0.15),transparent_50%)] opacity-80 blur-3xl dark:bg-[radial-gradient(circle_at_top,rgba(45,212,191,0.16),transparent_40%),radial-gradient(circle_at_bottom,rgba(15,118,110,0.24),transparent_55%)]" />
+    <div className="relative min-h-screen bg-slate-50 text-slate-800 transition-colors duration-500 dark:bg-neutral-950 dark:text-slate-100">
       <div className="relative flex min-h-screen flex-col">
         <Navbar />
         <main className="flex-1 px-4 py-10 sm:px-6 lg:px-10">

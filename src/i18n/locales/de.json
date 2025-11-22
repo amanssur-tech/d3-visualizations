@@ -8,7 +8,9 @@
       "route": "Route"
     },
     "actions": {
-      "open": "Öffnen"
+      "open": "Öffnen",
+      "openCaseStudy": "Case Study öffnen",
+      "viewLibrary": "Alle Case Studies ansehen"
     },
     "dataSource": "Datenquelle:",
     "languages": {
@@ -30,10 +32,22 @@
     "brand": "D3 Visualizations",
     "links": {
       "dashboard": "Dashboard",
-      "exercise1": "Übung 1",
-      "exercise2": "Übung 2",
+      "caseStudies": "Case Studies",
+      "library": "Case Studies",
       "about": "Über",
       "github": "GitHub"
+    },
+    "dropdown": {
+      "label": "Case Studies",
+      "toggle": "Case-Study-Menü umschalten",
+      "eyebrow": "Ausgewählte Case Studies",
+      "viewAll": "Case-Study-Bibliothek öffnen",
+      "items": {
+        "1": "Case Study 1: Vergleichs-Barchart",
+        "2": "Case Study 2: Städte-Trendlinien",
+        "3": "Case Study 3: Live Random-Balken",
+        "4": "Case Study 4: Ethik-Panel"
+      }
     },
     "themeToggle": {
       "toLight": "In den hellen Modus wechseln",
@@ -68,66 +82,154 @@
   },
   "dashboard": {
     "hero": {
-      "eyebrow": "Kebabläden Monitor",
-      "title": "D3 Visualizations Dashboard",
-      "description": "Eine moderne Data Story über Kebabläden in Deutschland – optimiert für helle und dunkle Umgebungen, voll animiert mit Framer Motion und D3.",
-      "ctaSecondary": "Direkt zu Übung 1"
+      "eyebrow": "Portfolio-Reihe",
+      "title": "D3 Case Studies zu ehrlicher Visualisierung",
+      "description": "Eine kuratierte Sammlung von Daten-Stories über Kebabläden in Deutschland. Jede Case Study verbindet D3-Handwerk mit Designethik und ist bereit für Kundendemos.",
+      "primaryCta": "Case Studies ansehen",
+      "secondaryCta": "Bibliothek öffnen"
     },
-    "stats": {
-      "cities": {
-        "label": "Städte im Blick",
-        "value": "8",
-        "detail": "Wichtige deutsche Metropolen"
-      },
-      "years": {
-        "label": "Jahre Historie",
-        "value": "6",
-        "detail": "2020 → 2025"
-      },
-      "refresh": {
-        "label": "Daten-Update",
-        "value": "Wöchentlich",
-        "detail": "Automatisierte Pipeline"
+    "featured": {
+      "title": "Ausgewählte Case Studies",
+      "description": "Interaktive Experimente, fertig für ein professionelles Portfolio."
+    },
+    "methodology": {
+      "title": "Methodische Highlights",
+      "items": {
+        "ethics": {
+          "title": "Ethik in Visualisierung",
+          "description": "Bias sichtbar machen, Chartjunk vermeiden und Maßstäbe ehrlich halten."
+        },
+        "perception": {
+          "title": "Grenzen der Wahrnehmung",
+          "description": "Farben, Abstände und Motion sind so abgestimmt, wie Menschen Diagramme wirklich lesen."
+        },
+        "design": {
+          "title": "Designprinzipien",
+          "description": "Konsequente Raster, Hierarchie und Annotation führen ruhig durch jedes Chart."
+        }
       }
     },
-    "chartCards": {
-      "bar": {
-        "title": "Übung 1 · Städtevergleich",
-        "subtitle": "Abgerundete Balken, Verläufe und exportbereite Insights."
-      },
-      "line": {
-        "title": "Übung 2 · Wachstum über Zeit",
-        "subtitle": "Sanfte Linien vergleichen Köln und Berlin von 2020 bis 2025."
+    "tools": {
+      "title": "Eingesetzte Tools",
+      "description": "Gebaut mit moderner Web-Tooling für Daten-Stories.",
+      "items": {
+        "d3": "D3.js",
+        "react": "React",
+        "tailwind": "Tailwind CSS",
+        "vite": "Vite"
       }
     },
-    "actionCards": {
-      "bar": {
-        "title": "Balken-Insights entdecken",
-        "description": "Vergleiche alle Städte und finde die stärksten Kebap-Hotspots."
-      },
-      "line": {
-        "title": "Linien-Trends verfolgen",
-        "description": "Verfolge die Entwicklung in Köln und Berlin über die letzten Jahre."
-      },
-      "comingSoon": {
-        "title": "Demnächst",
-        "description": "Neue Visualisierungen sind in Arbeit – bleib gespannt auf frische Perspektiven."
-      },
-      "cta": "Öffnen →"
+    "contact": {
+      "title": "Lass uns deine Datenstory bauen.",
+      "cta": "Kontakt",
+      "ctaNote": "Kontakt öffnen",
+      "url": "https://amanssur.com/#contact"
+    }
+  },
+  "caseStudies": {
+    "library": {
+      "eyebrow": "Case Study Bibliothek",
+      "title": "D3 Case Studies zu Kebabläden",
+      "description": "Ausgearbeitete Studies: Städtevergleich, Zeitreihe, Zufallsbewegung und ein Design-Ethik Vorher/Nachher.",
+      "cta": "Case Study öffnen",
+      "tagsLabel": "Tags",
+      "open": "Case Study öffnen",
+      "viewAll": "Alle Case Studies ansehen"
     },
-    "about": {
-      "title": "Über das Projekt",
-      "description": "Diese Oberfläche wurde komplett mit Tailwind, React und D3 überarbeitet. Alle Komponenten sind responsiv, unterstützen Dark Mode und bieten animierte Übergänge für ein ruhiges Dashboard-Erlebnis.",
-      "highlights": {
-        "motion": "Framer Motion Animationen",
-        "glass": "Glassmorphism-Panels",
-        "export": "Exportbereite Diagramme"
+    "tags": {
+      "barChart": "Balkendiagramm",
+      "lineChart": "Liniendiagramm",
+      "cityComparison": "Städtevergleich",
+      "timeSeries": "Zeitreihe",
+      "randomized": "Zufallsdaten",
+      "live": "Live-Updates",
+      "ethics": "Ethik",
+      "design": "Designprinzipien",
+      "timeOfDay": "Tageszeit",
+      "multiPanel": "Mehrteilig",
+      "exportable": "Export"
+    },
+    "1": {
+      "title": "Case Study 1: Balkendiagramm der Kebabläden nach Stadt",
+      "subtitle": "Abgerundete Verläufe und exportbereite Vergleiche.",
+      "description": "Vergleiche die Dichte an Kebabläden in deutschen Metropolen mit einem kompakten Balkendiagramm inklusive Export-Buttons.",
+      "summary": "Ranking der Städte mit Verläufen, Tooltips sowie SVG/PNG-Export."
+    },
+    "2": {
+      "title": "Case Study 2: Liniendiagramm der Kebabläden nach Stadt über Jahre",
+      "subtitle": "Zeitreihen-Kontrast zwischen Köln und Berlin.",
+      "description": "Verfolge Köln und Berlin von 2020–2025 mit sanften Linien, gut lesbaren Achsen und Exportmöglichkeiten.",
+      "summary": "Zwei-Städte-Linie mit Wachstumstrend über die Jahre."
+    },
+    "3": {
+      "title": "Case Study 3: Dynamischer Multi-Bar Städtevergleich",
+      "subtitle": "Live-Aktualisierung",
+      "description": "Alle drei Sekunden steigt oder fällt ein zufälliger Stadtbalken. Verschiebe den Magnitude-Regler, um subtile oder deutliche Änderungen zu erzeugen.",
+      "controls": {
+        "magnitude": "Magnitude",
+        "liveValue": "Aktueller Wert: {{value}}",
+        "current": "Aktuelle Magnitude",
+        "hint": "Ziehe den Regler, bis die Änderungen kaum noch sichtbar sind – oder sehr auffallen."
+      },
+      "chart": {
+        "label": "Mehrfach-Balkendiagramm",
+        "title": "Live-Monitor für Kebabläden",
+        "subtitle": "Zufällige Stadtaktualisierung alle 3 Sekunden (± Magnitude).",
+        "description": "Animiertes Balkendiagramm, das zufällig eine Stadt auswählt und deren Wert sanft anpasst."
+      }
+    },
+    "4": {
+      "title": "Case Study 4: Fehlgeleitete vs. korrigierte Tageszeit-Visualisierung",
+      "subtitle": "Designethik",
+      "description": "Beide Diagramme zeigen denselben Kebap-Datensatz. Das erste fasst sieben Tage zu Durchschnitten zusammen und verletzt Kodierungsregeln; das zweite zeigt alle 42 Zeilen mit klarer Abbildung.",
+      "times": {
+        "morgens": "Morgens",
+        "mittags": "Mittags",
+        "abends": "Abends"
+      },
+      "flawed": {
+        "label": "Fehlerhafte Darstellung",
+        "title": "Irreführender Durchschnitts-Pie",
+        "caption": "Eine absichtlich schlechte Ansicht, die Tages-Schwankungen hinter Durchschnitten und einer unpassenden Pie-Darstellung versteckt.",
+        "badge": "Irreführend",
+        "listTitle": "Gestaltungsfehler",
+        "chartTitle": "Irreführende Durchschnittswerte als Pie",
+        "chartDescription": "Siebentägige Durchschnitte in einem Pie ohne Zeitreihenfolge und mit vertauschter Legende.",
+        "reasons": {
+          "axis": "Die Y-Achse fehlt komplett, sodass der Maßstab unsichtbar wird.",
+          "colors": "Überlappende warme Farben erschweren die Unterscheidung der Kategorien.",
+          "legend": "Legendenfarben passen nicht zu den Balken (Abend und Mittag vertauscht).",
+          "order": "Keine eindeutige Reihenfolge Morgen → Abend, die zeitliche Struktur geht verloren.",
+          "aggregation": "Sieben einzelne Tage werden zu Durchschnitten verdichtet, sodass Spitzen und Tiefpunkte verschwinden.",
+          "mapping": "Städte und Tageszeiten landen in einem einzigen Pie – die visuelle Kodierung passt nicht zur Datenstruktur."
+        }
+      },
+      "fixed": {
+        "label": "Korrigierte Darstellung",
+        "title": "Ehrlicher Vergleich",
+        "caption": "Gleiche Daten mit ehrlichem Maßstab, klarer Codierung und ruhigem Layout. Alle Zeilen bleiben in einem gestapelten SVG sichtbar.",
+        "badge": "Korrigiert",
+        "listTitle": "Behobene Punkte",
+        "chartTitle": "Kebap-Verkäufe pro Tag nach Stadt und Tageszeit",
+        "chartDescription": "Ein einziges SVG mit drei horizontalen Segmenten (Morgens, Mittags, Abends). Jedes Segment hat zwei Linien (Berlin, Köln) über sieben Tage, gemeinsame X-Achse, eigene Y-Achsen.",
+        "axisLabel": "Verkäufe pro Tag",
+        "axisDays": "Tag des Monats",
+        "axisCity": "Stadtvergleich",
+        "legendTitle": "Städte",
+        "reasons": {
+          "baseline": "Jedes Segment besitzt eine Y-Achse und Raster, der Maßstab bleibt sichtbar.",
+          "palette": "Klare, kontrastreiche und farbenblinde Palette.",
+          "legend": "Legende stimmt mit der Kodierung überein und folgt der Reihenfolge Morgen → Abend.",
+          "structure": "Zeitsegmente sind vertikal gestapelt (Morgen → Abend), die X-Achse wird geteilt.",
+          "fullData": "Alle 42 Zeilen (2 Städte × 7 Tage × 3 Zeiten) bleiben sichtbar, damit Trends und Spitzen erkennbar sind.",
+          "mapping": "Ein Chart, gemeinsame Tagesachse, eigene Y-Achsen pro Zeitsegment; zwei Linien pro Segment für den Stadtvergleich."
+        }
       }
     }
   },
   "charts": {
     "bar": {
-      "header": "Kebabläden nach Stadt",
+      "header": "Case Study 1: Kebabläden nach Stadt",
       "svgTitle": "Kebabläden nach Stadt",
       "svgDescription": "Balkendiagramm zum Vergleich der Anzahl an Kebabläden in deutschen Großstädten.",
       "axis": {
@@ -136,7 +238,7 @@
       }
     },
     "line": {
-      "header": "Kebabläden — Köln vs Berlin (2020–2025)",
+      "header": "Case Study 2: Kebabläden nach Stadt über Jahre",
       "svgTitle": "Kebabläden — Köln vs Berlin (2020–2025)",
       "svgDescription": "Liniendiagramm zur Entwicklung der Kebabläden in Köln und Berlin von 2020 bis 2025.",
       "axis": {

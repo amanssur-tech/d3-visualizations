@@ -6,6 +6,7 @@ Originally inspired by a university project, it has evolved into a professional-
 ---
 
 ## 🚀 Live Demo
+
 **[https://viz.amanssur.com](https://viz.amanssur.com)**
 
 ---
@@ -13,6 +14,7 @@ Originally inspired by a university project, it has evolved into a professional-
 ## 📸 Preview (coming soon)
 
 ![Dashboard Screenshot](https://github.com/amanssur-tech/d3-visualizations/assets/preview.png)
+
 > Responsive, animated dashboard built with React, D3.js, Tailwind, and Vite.
 
 ---
@@ -85,20 +87,21 @@ For local or alternative hosting:
 
 ## 🧠 Tech Stack
 
-| Category | Tools |
-|-----------|-------|
-| Framework | React + Vite |
-| Charts | D3.js |
-| Styling | Tailwind CSS |
-| Animations | Framer Motion |
-| Language | TypeScript |
-| Hosting | Vercel (https://viz.amanssur.com) |
+| Category   | Tools                             |
+| ---------- | --------------------------------- |
+| Framework  | React + Vite                      |
+| Charts     | D3.js                             |
+| Styling    | Tailwind CSS                      |
+| Animations | Framer Motion                     |
+| Language   | TypeScript                        |
+| Hosting    | Vercel (https://viz.amanssur.com) |
 
 ---
 
 ## 💡 How It Works
 
 Each chart (Bar, Line, etc.) is a standalone React component that:
+
 - Loads JSON data from `/public/data`
 - Uses D3.js for rendering and scaling
 - Animates into view with Framer Motion
@@ -110,10 +113,11 @@ This setup allows adding new visualizations easily — just drop a new chart fil
 
 ## 🌟 Author
 
-Built with ❤️ by **[Amanullah Manssur](https://amanssur.com)**  
+Built with ❤️ by **[Amanullah Manssur](https://amanssur.com)**
 
 ---
 
 ## 🪪 License and Branding Notice
+
 All source code in this repository is released under the [MIT License](./LICENSE).  
 Logos, monograms, and brand assets belonging to Amanullah Manssur or Manssur Media are **not covered** by this license and may not be reused or redistributed without explicit written permission.

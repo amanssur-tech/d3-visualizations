@@ -1,291 +1,245 @@
-import { useCallback, useMemo, useState, type ReactNode } from 'react';
-import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import BarChart from './charts/BarChart';
-import LineChart from './charts/LineChart';
+import { Link } from 'react-router-dom';
 
-const MotionLink = motion(Link);
+import CaseStudyPreview from './case-studies/CaseStudyPreview';
+import { caseStudies } from '../content/caseStudies';
+import { Badge } from '../ui/Badge';
+import { Button } from '../ui/Button';
+import { Surface } from '../ui/Surface';
 
-const statCards = [
-  {
-    labelKey: 'dashboard.stats.cities.label',
-    valueKey: 'dashboard.stats.cities.value',
-    detailKey: 'dashboard.stats.cities.detail',
-  },
-  {
-    labelKey: 'dashboard.stats.years.label',
-    valueKey: 'dashboard.stats.years.value',
-    detailKey: 'dashboard.stats.years.detail',
-  },
-  {
-    labelKey: 'dashboard.stats.refresh.label',
-    valueKey: 'dashboard.stats.refresh.value',
-    detailKey: 'dashboard.stats.refresh.detail',
-  },
-] as const satisfies ReadonlyArray<{
-  labelKey: string;
-  valueKey: string;
-  detailKey: string;
-}>;
+const knownNamespaces = [
+  'common',
+  'navbar',
+  'footer',
+  'dashboard',
+  'charts',
+  'export',
+  'tooltips',
+  'caseStudies',
+] as const;
 
-type ActionCard = {
-  id: number;
-  titleKey: string;
-  descriptionKey: string;
-  to: string;
-  disabled?: boolean;
-};
+const methodologyKeys = ['ethics', 'perception', 'design'] as const;
 
-const actionCards: readonly ActionCard[] = [
-  {
-    id: 1,
-    titleKey: 'dashboard.actionCards.bar.title',
-    descriptionKey: 'dashboard.actionCards.bar.description',
-    to: '/exercise1',
-  },
-  {
-    id: 2,
-    titleKey: 'dashboard.actionCards.line.title',
-    descriptionKey: 'dashboard.actionCards.line.description',
-    to: '/exercise2',
-  },
-  {
-    id: 3,
-    titleKey: 'dashboard.actionCards.comingSoon.title',
-    descriptionKey: 'dashboard.actionCards.comingSoon.description',
-    to: '/',
-    disabled: true,
-  },
-];
-
-const aboutHighlightKeys = [
-  'dashboard.about.highlights.motion',
-  'dashboard.about.highlights.export',
-] as const satisfies ReadonlyArray<string>;
+const toolBadges = [
+  { key: 'd3', color: 'bg-orange-500' },
+  { key: 'react', color: 'bg-sky-500' },
+  { key: 'tailwind', color: 'bg-teal-500' },
+  { key: 'vite', color: 'bg-purple-500' },
+] as const;
 
 const Dashboard = () => {
-  const [barHandlers, setBarHandlers] = useState<{ exportSvg: () => void; exportPng: () => void } | null>(null);
-  const [lineHandlers, setLineHandlers] = useState<{ exportSvg: () => void; exportPng: () => void } | null>(null);
-  const [downloading, setDownloading] = useState(false);
-  const { t } = useTranslation(['dashboard', 'export', 'common']);
-  const translate = (fullKey: string, options?: Record<string, unknown>) => {
-    const knownNamespaces = [
-      'common',
-      'navbar',
-      'footer',
-      'dashboard',
-      'charts',
-      'export',
-      'tooltips',
-    ] as const;
+  const { t } = useTranslation(['dashboard', 'caseStudies', 'common']);
 
+  const featured = useMemo(() => caseStudies, []);
+
+  const translate = (fullKey: string, options?: Record<string, unknown>): string => {
     const [maybeNs, ...rest] = fullKey.split('.');
     if (maybeNs && rest.length > 0 && (knownNamespaces as readonly string[]).includes(maybeNs)) {
       const key = rest.join('.');
-      return t(key, { ns: maybeNs, ...(options || {}) } as any);
+      return t(key, { ns: maybeNs, ...(options ?? {}) });
     }
-
-    return t(fullKey, options as any);
-  };
-  const handleBarReady = useCallback((handlers: { exportSvg: () => void; exportPng: () => void }) => setBarHandlers(handlers), []);
-  const handleLineReady = useCallback((handlers: { exportSvg: () => void; exportPng: () => void }) => setLineHandlers(handlers), []);
-
-  const exportsReady = useMemo(() => barHandlers && lineHandlers, [barHandlers, lineHandlers]);
-  const chartCards = [
-    {
-      id: 'bar',
-      titleKey: 'dashboard.chartCards.bar.title',
-      subtitleKey: 'dashboard.chartCards.bar.subtitle',
-      component: (
-        <BarChart
-          showHeader={false}
-          framed={false}
-          onExportReady={handleBarReady}
-        />
-      ),
-      link: '/exercise1',
-    },
-    {
-      id: 'line',
-      titleKey: 'dashboard.chartCards.line.title',
-      subtitleKey: 'dashboard.chartCards.line.subtitle',
-      component: (
-        <LineChart
-          showHeader={false}
-          framed={false}
-          onExportReady={handleLineReady}
-        />
-      ),
-      link: '/exercise2',
-    },
-  ] as const satisfies ReadonlyArray<{
-    id: string;
-    titleKey: string;
-    subtitleKey: string;
-    component: ReactNode;
-    link: string;
-  }>;
-
-  const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-
-  const handleDownloadAll = async () => {
-    if (!exportsReady || downloading) return;
-    setDownloading(true);
-    const queue = [barHandlers, lineHandlers];
-    for (const handlers of queue) {
-      if (!handlers) continue;
-      await Promise.resolve(handlers.exportSvg());
-      await delay(200);
-      await Promise.resolve(handlers.exportPng());
-      await delay(200);
-    }
-    setDownloading(false);
+    return t(fullKey, options);
   };
 
   return (
     <motion.div
       className="mx-auto flex max-w-6xl flex-col gap-10"
-      initial={{ opacity: 0, y: 24 }}
+      initial={{ opacity: 0, y: 22 }}
       animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -16 }}
       transition={{ duration: 0.5, ease: 'easeOut' }}
     >
-      <motion.section
-        className="rounded-3xl border border-white/60 bg-white/70 px-6 py-8 shadow-lg shadow-slate-900/5 backdrop-blur dark:border-white/10 dark:bg-neutral-950/60 sm:px-8 lg:px-12"
-        initial={{ opacity: 0, y: 20 }}
+      <Surface
+        as={motion.section}
+        variant="panel"
+        padding="xl"
+        elevated
+        className="overflow-hidden sm:px-10"
+        initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: 'easeOut' }}
       >
-        <p className="text-sm font-semibold uppercase tracking-[0.4em] text-slate-500 dark:text-slate-400">
-          {translate('dashboard.hero.eyebrow')}
-        </p>
-        <h1 className="mt-4 text-3xl font-semibold text-slate-900 dark:text-white sm:text-4xl">
-          {translate('dashboard.hero.title')}
-        </h1>
-        <p className="mt-3 max-w-3xl text-lg text-slate-600 dark:text-slate-300">
-          {translate('dashboard.hero.description')}
-        </p>
-        <div className="mt-6 flex flex-wrap gap-3">
-          <button
-            type="button"
-            onClick={handleDownloadAll}
-            className="rounded-2xl bg-linear-to-r from-cyan-500 to-emerald-500 px-5 py-3 text-sm font-semibold text-white shadow-xl shadow-cyan-500/30 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-2xl disabled:cursor-not-allowed disabled:opacity-50"
-            disabled={!exportsReady || downloading}
-          >
-            {translate(downloading ? 'export.preparing' : 'export.exportAll')}
-          </button>
-          <Link
-            to="/exercise1"
-            className="rounded-2xl border border-slate-200/80 bg-white/60 px-5 py-3 text-sm font-semibold text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:border-white hover:text-slate-900 dark:border-white/10 dark:bg-white/5 dark:text-slate-200"
-          >
-            {translate('dashboard.hero.ctaSecondary')}
-          </Link>
-        </div>
-        <div className="mt-8 grid gap-4 sm:grid-cols-3">
-          {statCards.map((stat) => (
-            <div
-              key={stat.labelKey}
-              className="rounded-2xl border border-white/80 bg-white/80 px-4 py-3 text-sm text-slate-500 shadow-sm dark:border-white/10 dark:bg-white/5"
+        <div className="relative space-y-4">
+          <p className="text-xs font-semibold uppercase tracking-[0.4em] text-slate-500 dark:text-slate-400">
+            {translate('dashboard.hero.eyebrow')}
+          </p>
+          <h1 className="text-3xl font-semibold text-slate-900 dark:text-white sm:text-4xl">
+            {translate('dashboard.hero.title')}
+          </h1>
+          <p className="max-w-3xl text-lg text-slate-600 dark:text-slate-300">
+            {translate('dashboard.hero.description')}
+          </p>
+          <div className="flex flex-wrap gap-3">
+            <Button as={Link} to="/case-studies">
+              {translate('dashboard.hero.primaryCta')}
+            </Button>
+            <Button
+              as={Link}
+              to={featured[0]?.path ?? '/case-studies'}
+              variant="secondary"
             >
-              <p className="text-xs uppercase tracking-[0.3em]">{translate(stat.labelKey)}</p>
-              <p className="mt-2 text-2xl font-semibold text-slate-900 dark:text-white">{translate(stat.valueKey)}</p>
-              <p className="text-sm text-slate-500 dark:text-slate-400">{translate(stat.detailKey)}</p>
-            </div>
-          ))}
+              {translate('dashboard.hero.secondaryCta')}
+            </Button>
+          </div>
         </div>
-      </motion.section>
+      </Surface>
 
-      <section className="grid gap-6 lg:grid-cols-2">
-        {chartCards.map((card, index) => (
-          <motion.div
-            key={card.id}
-            whileHover={{ scale: 1.02 }}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: index * 0.1 }}
-            className="rounded-2xl bg-white/70 p-6 shadow-md shadow-slate-900/5 backdrop-blur dark:bg-neutral-900/60"
+      <section className="space-y-3">
+        <div className="flex items-start justify-between">
+          <div>
+            <h2 className="text-2xl font-semibold text-slate-900 dark:text-white">
+              {translate('dashboard.featured.title')}
+            </h2>
+          </div>
+          <Button
+            as={Link}
+            to="/case-studies"
+            variant="secondary"
+            size="sm"
+            className="hidden text-xs sm:inline-flex"
           >
-            <div className="flex flex-wrap items-start justify-between gap-4">
-              <div>
-                <p className="text-xs uppercase tracking-[0.35em] text-slate-500 dark:text-slate-400">
-                  {translate('common.labels.chart')}
-                </p>
-                <h2 className="mt-2 text-2xl font-semibold text-slate-900 dark:text-white">
-                  {translate(card.titleKey)}
-                </h2>
-                <p className="text-sm text-slate-500 dark:text-slate-300">{translate(card.subtitleKey)}</p>
-              </div>
+            {translate('common.actions.viewLibrary')}
+          </Button>
+        </div>
+        <div className="group relative -mx-4 overflow-x-auto px-4">
+          <div className="flex min-w-full gap-4 pb-2 md:gap-6">
+            {featured.map((study, index) => (
               <Link
-                to={card.link}
-                className="rounded-xl border border-white/70 px-3 py-1 text-xs font-semibold text-slate-600 transition hover:border-white hover:bg-white/80 hover:text-slate-900 dark:border-white/10 dark:text-slate-300"
+                key={study.id}
+                to={study.path}
+                className="block flex-none focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-cyan-500"
               >
-                {translate('common.actions.open')}
+                <Surface
+                  as={motion.div}
+                  variant="panel"
+                  padding="md"
+                  className="w-[310px] flex-none transition hover:-translate-y-1"
+                  initial={{ opacity: 0, y: 14 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: index * 0.05 }}
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="space-y-1">
+                      <p className="text-[11px] uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400">
+                        {translate(study.subtitleKey)}
+                      </p>
+                      <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
+                        {translate(study.titleKey)}
+                      </h3>
+                    </div>
+                    <Badge variant="soft" size="xs">
+                      {study.id}
+                    </Badge>
+                  </div>
+                  <p className="mt-2 line-clamp-3 text-sm text-slate-600 dark:text-slate-300">
+                    {translate(study.descriptionKey)}
+                  </p>
+                  <div className="mt-4">
+                    <CaseStudyPreview id={study.id} />
+                  </div>
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    {study.tags.map((tag) => (
+                      <Badge
+                        key={`${study.slug}-${tag}`}
+                        size="xs"
+                      >
+                        {translate(`caseStudies:tags.${tag}`)}
+                      </Badge>
+                    ))}
+                  </div>
+                </Surface>
               </Link>
-            </div>
-            <div className="mt-6">
-              {card.component}
-            </div>
-          </motion.div>
-        ))}
+            ))}
+          </div>
+        </div>
       </section>
 
-      <section className="grid gap-6 md:grid-cols-3">
-        {actionCards.map((card, index) => (
-          <motion.div
-            key={card.id}
-            whileHover={{ scale: card.disabled ? 1 : 1.02 }}
-            initial={{ opacity: 0, y: 15 }}
+      <section id="methodology" className="grid gap-4 md:grid-cols-3">
+        {methodologyKeys.map((key, index) => (
+          <Surface
+            as={motion.div}
+            key={key}
+            whileHover={{ y: -4 }}
+            initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 + index * 0.05 }}
-            className={`rounded-2xl border border-white/60 p-5 text-sm shadow-sm backdrop-blur dark:border-white/10 ${
-              card.disabled
-                ? 'bg-white/30 text-slate-400 dark:bg-white/5'
-                : 'bg-white/70 text-slate-600 dark:bg-neutral-900/70'
-            }`}
+            transition={{ duration: 0.45, delay: 0.05 + index * 0.05 }}
+            variant="card"
+            padding="md"
+            className="text-sm"
           >
             <p className="text-xs uppercase tracking-[0.35em] text-slate-500 dark:text-slate-400">
-              {translate('common.labels.route')}
+              {translate(`dashboard.methodology.items.${key}.title`)}
             </p>
-            <h3 className="mt-2 text-lg font-semibold text-slate-900 dark:text-white">
-              {translate(card.titleKey)}
-            </h3>
-            <p className="mt-2 text-sm">{translate(card.descriptionKey)}</p>
-            {!card.disabled && (
-              <MotionLink
-                to={card.to}
-                className="mt-4 inline-flex items-center text-sm font-semibold text-cyan-600 transition hover:text-emerald-500 dark:text-cyan-300"
-                whileHover={{ x: 4 }}
-              >
-                {translate('dashboard.actionCards.cta')}
-              </MotionLink>
-            )}
-          </motion.div>
+            <p className="mt-2 text-slate-600 dark:text-slate-300">
+              {translate(`dashboard.methodology.items.${key}.description`)}
+            </p>
+          </Surface>
         ))}
       </section>
 
-      <motion.section
-        id="about"
-        className="rounded-3xl border border-white/60 bg-white/70 px-6 py-8 shadow-lg backdrop-blur dark:border-white/10 dark:bg-neutral-950/60 sm:px-10"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.2 }}
-      >
-        <h2 className="text-2xl font-semibold text-slate-900 dark:text-white">{translate('dashboard.about.title')}</h2>
-        <p className="mt-3 max-w-3xl text-base text-slate-600 dark:text-slate-300">
-          {translate('dashboard.about.description')}
-        </p>
-        <div className="mt-6 grid gap-4 md:grid-cols-3">
-          {aboutHighlightKeys.map((key) => (
-            <div
-              key={key}
-              className="rounded-2xl border border-white/70 bg-white/80 px-4 py-3 text-sm font-semibold text-slate-600 shadow-sm dark:border-white/10 dark:bg-white/5 dark:text-slate-200"
+      <Surface as="section" variant="panel" padding="lg" className="grid gap-4">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <p className="text-xs uppercase tracking-[0.35em] text-slate-500 dark:text-slate-400">
+              {translate('dashboard.tools.description')}
+            </p>
+            <h2 className="text-2xl font-semibold text-slate-900 dark:text-white">
+              {translate('dashboard.tools.title')}
+            </h2>
+          </div>
+          <Button
+            as={Link}
+            to="/case-studies"
+            variant="secondary"
+            size="sm"
+            className="text-xs"
+          >
+            {translate('caseStudies:library.viewAll')}
+          </Button>
+        </div>
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {toolBadges.map((tool) => (
+            <Surface
+              variant="muted"
+              padding="xs"
+              key={tool.key}
+              className="flex items-center justify-between"
             >
-              {translate(key)}
-            </div>
+              <div className={`h-10 w-10 rounded-xl ${tool.color} shadow-lg`} />
+              <span className="text-sm font-semibold text-slate-800 dark:text-slate-100">
+                {translate(`dashboard.tools.items.${tool.key}`)}
+              </span>
+            </Surface>
           ))}
         </div>
-      </motion.section>
+      </Surface>
+
+      <Surface
+        as={motion.section}
+        variant="panel"
+        padding="lg"
+        elevated
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: 'easeOut' }}
+      >
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <p className="text-xs uppercase tracking-[0.35em] text-slate-500 dark:text-slate-400">
+              {translate('dashboard.contact.title')}
+            </p>
+          </div>
+          <Button
+            href={translate('dashboard.contact.url')}
+            target="_blank"
+            rel="noreferrer"
+            as="a"
+          >
+            {translate('dashboard.contact.cta')}
+          </Button>
+        </div>
+      </Surface>
     </motion.div>
   );
 };

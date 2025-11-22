@@ -8,29 +8,29 @@
   "theme_color": "#0f172a",
   "icons": [
     {
-      "src": "/favicons/AM-Logo-D3-180.png",
+      "src": "/favicons/AM-Logo-180.png",
       "sizes": "180x180",
       "type": "image/png"
     },
     {
-      "src": "/favicons/AM-Logo-D3-192.png",
+      "src": "/favicons/AM-Logo-192.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "/favicons/AM-Logo-D3-512.png",
+      "src": "/favicons/AM-Logo-512.png",
       "sizes": "512x512",
       "type": "image/png"
     },
     {
-      "src": "/favicons/AM-Logo-D3.svg",
+      "src": "/favicons/AM-Logo.svg",
       "sizes": "any",
       "type": "image/svg+xml"
     },
     {
-      "src": "/favicons/AM-Logo-D3.ico",
+      "src": "/favicons/AM-Logo.ico",
       "sizes": "48x48",
       "type": "image/x-icon"
     }
   ]
-} 
+}

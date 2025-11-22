@@ -23,9 +23,10 @@ export function useD3(
 
     // Add a small delay to avoid race conditions with React 19 and Framer Motion
     const id = setTimeout(() => {
-      if (!mounted || !ref.current) return;
+      const container = ref.current;
+      if (!mounted || !container) return;
       console.log('[useD3] render callback firing');
-      cleanupRef.current = renderChart(ref.current as HTMLElement) || null;
+      cleanupRef.current = renderChart(container) ?? null;
     }, 10);
 
     return () => {
@@ -35,9 +36,6 @@ export function useD3(
         console.log('[useD3] cleanup');
         cleanupRef.current();
         cleanupRef.current = null;
-      } else if (ref.current) {
-        // remove leftover SVG content on unmount
-        (ref.current as HTMLDivElement).innerHTML = '';
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
