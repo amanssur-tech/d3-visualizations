@@ -1,12 +1,116 @@
-# robots.txt for D3 Visualizations
+# robots.txt for https://viz.amanssur.com
+# Visualization case studies • Updated: 2025-11-23
+
+###############################
+# 1. Allow all major search engines
+###############################
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: Applebot
+Allow: /
+
+User-agent: DuckDuckBot
+Allow: /
+
+User-agent: Yandex
+Allow: /
+
+User-agent: Baidu
+Disallow: /
+
+###############################
+# 2. Allow generative AI crawlers
+###############################
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: Amazonbot
+Allow: /
+
+###############################
+# 3. Block harmful or low-value scrapers
+###############################
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: DataForSeoBot
+Disallow: /
+
+User-agent: dotbot
+Disallow: /
+
+User-agent: Scrapy
+Disallow: /
+
+###############################
+# 3b. Allow major social, messaging, and preview bots
+###############################
+User-agent: TikTokBot
+Allow: /
+
+User-agent: facebookexternalhit
+Allow: /
+
+User-agent: Facebot
+Allow: /
+
+User-agent: Meta-ExternalAgent
+Allow: /
+
+User-agent: Redditbot
+Allow: /
+
+User-agent: Twitterbot
+Allow: /
+
+User-agent: Grok
+Allow: /
+
+User-agent: LinkedInBot
+Allow: /
+
+User-agent: Slackbot
+Allow: /
+
+User-agent: Discordbot
+Allow: /
+
+User-agent: Pinterestbot
+Allow: /
+
+###############################
+# 4. Default rules for all other bots
+###############################
 User-agent: *
 Allow: /
 
-# Disallow internal or development assets
-Disallow: /data/
-
-# Allow meta & favicon resources (manifest, sitemap, icons)
-Allow: /favicons/
-
-# Sitemap for better crawling
+###############################
+# 5. Sitemap & Indexnow Key
+###############################
 Sitemap: https://viz.amanssur.com/sitemap.xml
+Indexnow-Key: e02221196fe3b319a6bc979ad27ca448

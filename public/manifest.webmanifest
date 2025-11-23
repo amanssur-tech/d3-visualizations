@@ -2,10 +2,16 @@
   "name": "D3 Visualizations",
   "short_name": "D3 Viz",
   "description": "Modern React + D3 data visualization dashboard built with Vite, Tailwind, and Framer Motion.",
+  "lang": "en",
+  "dir": "ltr",
+  "id": "/",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#0f172a",
   "theme_color": "#0f172a",
+  "categories": ["education", "productivity", "portfolio"],
+  "orientation": "landscape-primary",
   "icons": [
     {
       "src": "/favicons/AM-Logo-180.png",
@@ -20,7 +26,8 @@
     {
       "src": "/favicons/AM-Logo-512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
       "src": "/favicons/AM-Logo.svg",
@@ -31,6 +38,30 @@
       "src": "/favicons/AM-Logo.ico",
       "sizes": "48x48",
       "type": "image/x-icon"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Open Dashboard",
+      "short_name": "Dashboard",
+      "url": "/",
+      "icons": [
+        {
+          "src": "/favicons/AM-Logo-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Case Studies",
+      "short_name": "Cases",
+      "url": "/case-studies",
+      "icons": [
+        {
+          "src": "/favicons/AM-Logo-192.png",
+          "sizes": "192x192"
+        }
+      ]
     }
   ]
 }
