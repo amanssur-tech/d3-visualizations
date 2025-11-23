@@ -21,7 +21,7 @@ Originally inspired by a university project, it has evolved into a professional-
 
 ## ✨ Highlights
 
-- ⚛️ **Modern React architecture** — modular components, reusable charts, and clean routing (`/`, `/exercise1`, `/exercise2`).
+- ⚛️ **Modern React architecture** — modular components, reusable charts, and clean routing (dashboard, case-study index, and deep links for each visualization).
 - 📊 **D3.js inside React** — a custom `useD3` hook bridges the gap between React’s virtual DOM and D3’s SVG rendering.
 - 🎨 **Tailwind CSS styling** — consistent design tokens, light/dark mode, and responsive layouts.
 - 🌀 **Framer Motion** — subtle page and chart transitions for a smooth, app-like experience.
@@ -35,18 +35,27 @@ Originally inspired by a university project, it has evolved into a professional-
 ```
 d3-visualizations/
 ├── public/
-│   └── data/               # JSON datasets for visualizations
+│   ├── favicons/            # Brand icons and PWA assets
+│   ├── manifest.webmanifest # PWA metadata
+│   ├── robots.txt           # Crawling rules + IndexNow key
+│   └── sitemap.xml          # Sitemap for all routes
 ├── src/
-│   ├── components/         # React components (UI + charts)
-│   │   ├── charts/         # BarChart + LineChart
-│   ├── context/            # ThemeContext for dark/light mode
-│   ├── hooks/              # useD3 hook
-│   ├── styles/             # Tailwind global styles
-│   ├── utils/              # config, export, tooltip helpers
+│   ├── charts/              # D3 renderers (bar, line, donut, time-of-day, etc.)
+│   ├── components/          # React components (UI + dashboard views)
+│   ├── content/             # Case study metadata
+│   ├── context/             # ThemeContext for dark/light mode
+│   ├── data/                # JSON datasets bundled with the app
+│   ├── hooks/               # useD3 and other UI/data hooks
+│   ├── i18n/                # Bilingual EN/DE translations and helpers
+│   ├── pages/               # Dashboard + case-study pages
+│   ├── styles/              # Tailwind global styles
+│   ├── ui/                  # Reusable UI primitives (buttons, surfaces, pills)
+│   ├── utils/               # Config, export, tooltip helpers
 │   ├── App.tsx
 │   ├── main.tsx
 │   └── router.tsx
 ├── index.html
+├── vercel.json              # SPA deep-link rewrites for React Router
 ├── package.json
 ├── tsconfig.json
 └── vite.config.js
@@ -81,7 +90,7 @@ For local or alternative hosting:
 
 1. Run `npm run build` to generate optimized assets in `/dist`.
 2. Deploy to your preferred platform (Vercel, Netlify, or GitHub Pages).
-3. Ensure SPA fallback is enabled so routes (`/`, `/exercise1`, `/exercise2`) work properly.
+3. Ensure SPA fallback is enabled so routes (`/`, `/case-studies`, and each `/case-studies/...` deep link) work properly.
 
 ---
 
@@ -102,12 +111,12 @@ For local or alternative hosting:
 
 Each chart (Bar, Line, etc.) is a standalone React component that:
 
-- Loads JSON data from `/public/data`
+- Loads JSON data from the bundled `src/data` directory
 - Uses D3.js for rendering and scaling
 - Animates into view with Framer Motion
 - Supports export through shared utility functions
 
-This setup allows adding new visualizations easily — just drop a new chart file in `/src/components/charts` and add a route.
+This setup allows adding new visualizations easily — drop a new D3 renderer in `src/charts`, a page in `src/pages/case-studies`, and wire it up in `router.tsx`.
 
 ---
 
