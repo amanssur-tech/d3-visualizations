@@ -7,7 +7,6 @@ import { motion } from 'framer-motion';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { renderLineChart } from '../../charts/LineChartRenderer';
-import ExportButtons from '../../components/ExportButtons';
 import lineDataJson from '../../data/case-study02.json';
 import { useD3 } from '../../hooks/useD3';
 import { useTranslator } from '../../hooks/useTranslator';
@@ -21,24 +20,13 @@ interface RawLineData {
 
 interface LineChartProps {
   showHeader?: boolean;
-  showControls?: boolean;
   enableMotion?: boolean;
-  onExportReady?: (handlers: { exportSvg: () => void; exportPng: () => void }) => void;
 }
 
-const CaseStudy2LineChart = ({
-  showHeader = true,
-  showControls = true,
-  enableMotion = true,
-  onExportReady,
-}: LineChartProps) => {
+const CaseStudy2LineChart = ({ showHeader = true, enableMotion = true }: LineChartProps) => {
   const [data, setData] = useState<RawLineData[] | null>(null);
   const [errorKey, setErrorKey] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [exportHandlers, setExportHandlers] = useState<{
-    exportSvg: () => void;
-    exportPng: () => void;
-  } | null>(null);
   const legendRef = useRef<HTMLDivElement | null>(null);
   const [firstLoad, setFirstLoad] = useState(true);
   const { translate } = useTranslator(['charts', 'common', 'tooltips']);
@@ -66,13 +54,9 @@ const CaseStudy2LineChart = ({
         data,
         translate,
         formatCityName,
-        onExportReady: (handlers) => {
-          setExportHandlers(handlers);
-          onExportReady?.(handlers);
-        },
       });
     },
-    [data, formatCityName, onExportReady, translate]
+    [data, formatCityName, translate]
   );
 
   const chartRef = useD3(renderChart);
@@ -88,6 +72,7 @@ const CaseStudy2LineChart = ({
 
   /* ----------------------------- UI wrapper + controls ----------------------------- */
   return (
+    // Tweak: panel styling + padding for Case Study 2 wrapper.
     <motion.section
       className="mx-auto w-full max-w-4xl rounded-2xl border border-white/50 bg-white/70 p-4 shadow-md dark:border-white/10 dark:bg-neutral-950/60 sm:p-6 md:p-8"
       {...motionProps}
@@ -96,6 +81,7 @@ const CaseStudy2LineChart = ({
       {/* Optional header copy */}
       {showHeader && (
         <div className="space-y-2">
+          {/* Tweak: header copy for the line chart page. */}
           <h1 className="text-2xl font-semibold text-slate-900 dark:text-white">
             {translate('caseStudies.2.title')}
           </h1>
@@ -115,20 +101,12 @@ const CaseStudy2LineChart = ({
       {/* Chart mount target */}
       <div
         ref={chartRef}
+        // Tweak: adjust gradient + shimmer effect for the SVG host container.
         className={`relative mt-6 w-full overflow-hidden rounded-2xl border border-white/50 bg-linear-to-b from-white/80 to-white/40 p-2 shadow-inner dark:border-white/10 dark:from-white/10 dark:to-transparent ${
           loading ? 'animate-pulse opacity-80' : ''
         }`}
         aria-live="polite"
       />
-
-      {/* Export controls */}
-      {showControls && (
-        <ExportButtons
-          onExportSvg={() => exportHandlers?.exportSvg()}
-          onExportPng={() => exportHandlers?.exportPng()}
-          disabled={!exportHandlers}
-        />
-      )}
     </motion.section>
   );
 };

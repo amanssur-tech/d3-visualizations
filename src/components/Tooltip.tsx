@@ -12,6 +12,7 @@ const Tooltip = () => {
     if (!el) {
       el = document.createElement('div');
       el.id = 'global-tooltip-root';
+      // Tweak: default tooltip look/feel (border, blur, typography) for all charts.
       el.className =
         'tooltip pointer-events-none rounded-2xl border border-white/80 bg-white/90 px-3 py-2 text-xs font-medium text-slate-700 shadow-2xl ring-1 ring-slate-900/10 backdrop-blur dark:border-white/10 dark:bg-neutral-900/80 dark:text-slate-100';
       el.setAttribute('role', 'tooltip');

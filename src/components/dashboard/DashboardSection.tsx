@@ -29,16 +29,20 @@ const DashboardSection = ({
   const shouldRenderHeader = Boolean(eyebrow ?? title ?? action);
 
   return (
+    // Tweak: shared panel chrome + padding for dashboard sections; pass className to override layout.
     <Surface as="section" variant="panel" padding="lg" className={className ?? ''}>
       {shouldRenderHeader && (
+        // Tweak: header row spacing + alignment for section title/actions.
         <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
           <div>
             {eyebrow && (
+              // Tweak: eyebrow typography (caps, tracking) for section label.
               <p className="text-xs uppercase tracking-[0.35em] text-slate-500 dark:text-slate-400">
                 {eyebrow}
               </p>
             )}
             {title && (
+              // Tweak: section title weight/size; edit text passed via props in Dashboard.tsx.
               <h2 className="text-2xl font-semibold text-slate-900 dark:text-white">{title}</h2>
             )}
           </div>
@@ -46,6 +50,7 @@ const DashboardSection = ({
         </div>
       )}
 
+      {/* Tweak: section body content renders here—wrap with grids/flex in parent if needed. */}
       <div>{children}</div>
     </Surface>
   );

@@ -8,7 +8,6 @@ import { motion } from 'framer-motion';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { renderBarChart } from '../../charts/BarChartRenderer';
-import ExportButtons from '../../components/ExportButtons';
 import kebabData from '../../data/case-study01.json';
 import { useTranslator } from '../../hooks/useTranslator';
 import { formatCityNameFactory } from '../../utils/formatCityName';
@@ -20,26 +19,13 @@ interface KebabData {
 
 interface BarChartProps {
   showHeader?: boolean;
-  showControls?: boolean;
   enableMotion?: boolean;
-  onExportReady?: (handlers: { exportSvg: () => void; exportPng: () => void }) => void;
 }
 
-interface ExportHandlers {
-  exportSvg: () => void;
-  exportPng: () => void;
-}
-
-const CaseStudy1BarChart = ({
-  showHeader = true,
-  showControls = true,
-  enableMotion = true,
-  onExportReady,
-}: BarChartProps) => {
+const CaseStudy1BarChart = ({ showHeader = true, enableMotion = true }: BarChartProps) => {
   const [data, setData] = useState<KebabData[] | null>(null);
   const [errorKey, setErrorKey] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [exportHandlers, setExportHandlers] = useState<ExportHandlers | null>(null);
   const chartRef = useRef<HTMLDivElement | null>(null);
   const mounted = useRef(false);
   const [firstLoad, setFirstLoad] = useState(true);
@@ -75,14 +61,10 @@ const CaseStudy1BarChart = ({
       data,
       translate,
       formatCityName,
-      onExportReady: (handlers) => {
-        setExportHandlers(handlers);
-        onExportReady?.(handlers);
-      },
     });
 
     return cleanup;
-  }, [data, onExportReady, translate, formatCityName, i18n.language]);
+  }, [data, translate, formatCityName, i18n.language]);
 
   const allowMotion = enableMotion && !firstLoad;
   const initial = allowMotion ? { opacity: 0, y: 18 } : {};
@@ -91,6 +73,7 @@ const CaseStudy1BarChart = ({
 
   /* ----------------------------- UI wrapper + controls ----------------------------- */
   return (
+    // Tweak: chart panel radius, blur, and padding via this wrapper class string.
     <motion.section
       id="barchart-section"
       data-layer="chart-section"
@@ -103,6 +86,7 @@ const CaseStudy1BarChart = ({
       {/* Optional header copy */}
       {showHeader && (
         <div id="barchart-header" data-layer="chart-header" className="space-y-2">
+          {/* Tweak: headline copy for Case Study 1 lives here. */}
           <h1 className="text-2xl font-semibold text-slate-900 dark:text-white">
             {translate('caseStudies.1.title')}
           </h1>
@@ -114,6 +98,7 @@ const CaseStudy1BarChart = ({
         <p
           id="barchart-error"
           data-layer="chart-error"
+          // Tweak: error alert colors + typography for data load issues.
           className="mt-4 rounded-xl bg-red-50/80 px-4 py-3 text-sm text-red-600 dark:bg-red-500/10 dark:text-red-300"
         >
           {translate(errorKey)}
@@ -125,21 +110,12 @@ const CaseStudy1BarChart = ({
         id="barchart-container"
         data-layer="chart-container"
         ref={chartRef}
+        // Tweak: chart canvas background gradient + loading shimmer toggled here.
         className={`relative mt-6 w-full overflow-hidden rounded-2xl border border-white/50 bg-linear-to-b from-white/80 to-white/40 p-2 shadow-inner dark:border-white/10 dark:from-white/10 dark:to-transparent ${
           loading ? 'animate-pulse opacity-80' : ''
         }`}
         aria-live="polite"
       />
-
-      {/* Export controls stay optional */}
-      {showControls && (
-        <ExportButtons
-          data-layer="chart-controls"
-          onExportSvg={() => exportHandlers?.exportSvg()}
-          onExportPng={() => exportHandlers?.exportPng()}
-          disabled={!exportHandlers}
-        />
-      )}
     </motion.section>
   );
 };

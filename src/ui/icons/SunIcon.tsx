@@ -1,5 +1,6 @@
 // src/ui/icons/SunIcon.tsx
 
+// Tweak: adjust stroke width/paths here to change the theme toggle sun icon.
 const SunIcon = () => (
   <svg
     width="20"

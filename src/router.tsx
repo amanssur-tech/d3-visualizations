@@ -22,6 +22,7 @@ export const router = createBrowserRouter([
     path: '/',
     element: <App />,
     children: [
+      // Tweak: add or remove dashboard/case-study routes here to surface new pages.
       {
         index: true,
         element: <Dashboard />,

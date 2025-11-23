@@ -69,6 +69,7 @@ export const ThemeProvider = ({ children }: ThemeProviderProps) => {
   /* Apply theme classes/data attributes to the document root */
   useEffect(() => {
     if (typeof document === 'undefined') return undefined;
+    // Tweak: customize body theme data/class handling here if you change theming tokens.
     const root = document.documentElement;
     root.classList.toggle('dark', theme === 'dark');
     root.dataset.theme = theme;
@@ -79,6 +80,7 @@ export const ThemeProvider = ({ children }: ThemeProviderProps) => {
   /* Persist manual preferences */
   useEffect(() => {
     if (typeof window === 'undefined' || !manualMode) return undefined;
+    // Tweak: rename this key if multiple apps share storage namespace.
     window.localStorage.setItem('preferred-theme', theme);
     return undefined;
   }, [manualMode, theme]);

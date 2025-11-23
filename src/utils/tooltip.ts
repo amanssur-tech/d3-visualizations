@@ -21,10 +21,12 @@ export const createTooltip = () => {
   const show = (html: string, event: MouseEvent) => {
     tip
       .html(html)
+      // Tweak: adjust offset values for tooltip pointer distance.
       .style('left', `${event.pageX + 12}px`)
       .style('top', `${event.pageY + 12}px`)
       .attr('aria-hidden', 'false')
       .transition()
+      // Tweak: fade duration if tooltip should linger longer.
       .duration(120)
       .style('opacity', 1);
   };

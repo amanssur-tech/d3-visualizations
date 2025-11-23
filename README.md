@@ -1,7 +1,7 @@
 # 🧭 D3 Visualizations — React + D3 + Tailwind
 
 A sleek, modern data visualization dashboard built with **React**, **Vite**, **D3.js**, and **Tailwind CSS**.  
-Originally inspired by a university project, it has evolved into a professional-grade template for interactive data dashboards with smooth animations, dark mode, and export capabilities.
+Originally inspired by an academic project, it has evolved into a professional-grade template for interactive data dashboards with smooth animations, dark mode, and export capabilities.
 
 ---
 

@@ -13,8 +13,10 @@ import { useTranslator } from '../hooks/useTranslator';
 import { Button } from '../ui/Button';
 import { Surface } from '../ui/Surface';
 
+// Tweak: add/remove methodology cards by editing this key list.
 const methodologyKeys = ['ethics', 'perception', 'design'] as const;
 
+// Tweak: tool highlight tiles—each entry pairs with translation keys + color classes.
 const toolBadges = [
   { key: 'd3', color: 'bg-orange-500' },
   { key: 'react', color: 'bg-sky-500' },
@@ -28,6 +30,7 @@ const Dashboard = () => {
 
   /* ----------------------------- Page sections ----------------------------- */
   return (
+    // Tweak: landing page vertical spacing + fade-in animation for the dashboard shell.
     <motion.div
       className="mx-auto flex max-w-6xl flex-col gap-10"
       initial={{ opacity: 0, y: 22 }}
@@ -46,6 +49,7 @@ const Dashboard = () => {
         transition={{ duration: 0.6, ease: 'easeOut' }}
       >
         <div className="relative space-y-4">
+          {/* Tweak: hero eyebrow + headline/description copy. */}
           <p className="text-xs font-semibold uppercase tracking-[0.4em] text-slate-500 dark:text-slate-400">
             {translate('dashboard.hero.eyebrow')}
           </p>
@@ -56,6 +60,7 @@ const Dashboard = () => {
             {translate('dashboard.hero.description')}
           </p>
           <div className="flex flex-wrap gap-3">
+            {/* Tweak: hero CTA labels + destinations. */}
             <Button as={Link} to="/case-studies">
               {translate('dashboard.hero.primaryCta')}
             </Button>
@@ -86,6 +91,7 @@ const Dashboard = () => {
       </section>
 
       {/* Methodology highlights */}
+      {/* Tweak: change `md:grid-cols-3` or gap sizes to reflow methodology highlights. */}
       <section id="methodology" className="grid gap-4 md:grid-cols-3">
         {methodologyKeys.map((key, index) => (
           <Surface
@@ -119,6 +125,7 @@ const Dashboard = () => {
           </Button>
         }
       >
+        {/* Tweak: tool badge grid density and className to show more/less columns. */}
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {toolBadges.map((tool) => (
             <Surface
@@ -127,6 +134,7 @@ const Dashboard = () => {
               key={tool.key}
               className="flex items-center justify-between"
             >
+              {/* Tweak: change `tool.color` classes for different badge swatches. */}
               <div className={`h-10 w-10 rounded-xl ${tool.color} shadow-lg`} />
               <span className="text-sm font-semibold text-slate-800 dark:text-slate-100">
                 {translate(`dashboard.tools.items.${tool.key}`)}
@@ -140,6 +148,7 @@ const Dashboard = () => {
       <DashboardSection
         eyebrow={translate('dashboard.contact.title')}
         action={
+          // Tweak: contact CTA destination + label for dashboard finale.
           <Button href={translate('dashboard.contact.url')} target="_blank" rel="noreferrer" as="a">
             {translate('dashboard.contact.cta')}
           </Button>

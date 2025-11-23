@@ -187,21 +187,28 @@
         "mittags": "Mittags",
         "abends": "Abends"
       },
+      "cities": {
+        "Berlin": "Berlin",
+        "Köln": "Köln"
+      },
       "flawed": {
         "label": "Fehlerhafte Darstellung",
-        "title": "Irreführender Durchschnitts-Pie",
-        "caption": "Eine absichtlich schlechte Ansicht, die Tages-Schwankungen hinter Durchschnitten und einer unpassenden Pie-Darstellung versteckt.",
+        "title": "Irreführender Wochen-Donut",
+        "caption": "Wirkt wie eine Wochenverteilung der Kebap-Verkäufe nach Stadt und Tageszeit, versteckt aber sieben Tage in sechs Scheiben und verschleiert die Stadt-Farben.",
         "badge": "Irreführend",
         "listTitle": "Gestaltungsfehler",
-        "chartTitle": "Irreführende Durchschnittswerte als Pie",
-        "chartDescription": "Siebentägige Durchschnitte in einem Pie ohne Zeitreihenfolge und mit vertauschter Legende.",
+        "chartTitle": "Wöchentliche Kebap-Verteilung (Zeit × Stadt, fehlerhaft)",
+        "chartDescription": "Sieben konzentrische Ringe (einer pro Tag) pressen Stadt-×-Tageszeit-Summen in dekorative Scheiben. Die warmen Farben kodieren trotzdem nur die Tageszeit, während die Legende so tut, als stünden sie für Städte.",
+        "legendSalesPerDay": "Verkäufe pro Tag",
+        "legendRingPerDay": "Jeder Ring = 1 Tag",
+        "legendAverage": "Durchschnitt",
         "reasons": {
-          "axis": "Die Y-Achse fehlt komplett, sodass der Maßstab unsichtbar wird.",
-          "colors": "Überlappende warme Farben erschweren die Unterscheidung der Kategorien.",
-          "legend": "Legendenfarben passen nicht zu den Balken (Abend und Mittag vertauscht).",
-          "order": "Keine eindeutige Reihenfolge Morgen → Abend, die zeitliche Struktur geht verloren.",
-          "aggregation": "Sieben einzelne Tage werden zu Durchschnitten verdichtet, sodass Spitzen und Tiefpunkte verschwinden.",
-          "mapping": "Städte und Tageszeiten landen in einem einzigen Pie – die visuelle Kodierung passt nicht zur Datenstruktur."
+          "axis": "Sieben Ringe deuten eine dritte Dimension an, aber kein Maßstab erklärt, welcher Ring zu welchem Tag gehört.",
+          "colors": "Alle Scheiben teilen sich warme Farbtöne je Tageszeit – die beiden Städte lassen sich optisch nicht trennen.",
+          "legend": "Die Legende behauptet, die Farben stünden für Städte (plus Durchschnitt), obwohl sie tatsächlich die Tageszeit kodieren.",
+          "order": "Innen → außen entspricht den Tagen, allerdings fehlen jegliche Beschriftungen, sodass die Wochenfolge verborgen bleibt.",
+          "aggregation": "Jede Scheibe enthält zwar einen Tageswert, doch sechs Kennzahlen teilen sich denselben Winkel – Stadt- und Tagesinformationen verwischen.",
+          "mapping": "Winkel repräsentieren Stadt × Tageszeit, Ringe verstecken die Tage, die Legende erzählt etwas anderes – die visuellen Kanäle widersprechen der Datenstruktur."
         }
       },
       "fixed": {
@@ -213,16 +220,19 @@
         "chartTitle": "Kebap-Verkäufe pro Tag nach Stadt und Tageszeit",
         "chartDescription": "Ein einziges SVG mit drei horizontalen Segmenten (Morgens, Mittags, Abends). Jedes Segment hat zwei Linien (Berlin, Köln) über sieben Tage, gemeinsame X-Achse, eigene Y-Achsen.",
         "axisLabel": "Verkäufe pro Tag",
-        "axisDays": "Tag des Monats",
+        "axisDays": "Tag",
         "axisCity": "Stadtvergleich",
+        "axisTimeOfDay": "Tageszeitvergleich",
         "legendTitle": "Städte",
+        "legendTimes": "Tageszeiten",
+        "viewToggleAria": "Diagrammansicht wechseln",
         "reasons": {
-          "baseline": "Jedes Segment besitzt eine Y-Achse und Raster, der Maßstab bleibt sichtbar.",
-          "palette": "Klare, kontrastreiche und farbenblinde Palette.",
-          "legend": "Legende stimmt mit der Kodierung überein und folgt der Reihenfolge Morgen → Abend.",
-          "structure": "Zeitsegmente sind vertikal gestapelt (Morgen → Abend), die X-Achse wird geteilt.",
-          "fullData": "Alle 42 Zeilen (2 Städte × 7 Tage × 3 Zeiten) bleiben sichtbar, damit Trends und Spitzen erkennbar sind.",
-          "mapping": "Ein Chart, gemeinsame Tagesachse, eigene Y-Achsen pro Zeitsegment; zwei Linien pro Segment für den Stadtvergleich."
+          "baseline": "Jedes Panel behält eine eigene Y-Achse samt Raster, so bleiben auch Spitzen klar lesbar.",
+          "palette": "Die Linien nutzen eine kontrastreiche Viridis-Palette – je nach Ansicht für Städte oder Tageszeiten.",
+          "legend": "Die Legende folgt dem Toggle und spiegelt immer die aktuelle Kodierung (Städte vs. Tageszeiten).",
+          "structure": "Das Toggle wechselt zwischen Zeit-Stacks und Stadt-Panels, ohne Daten oder Skalen zu verändern.",
+          "fullData": "Alle 42 Tageswerte (2 Städte × 3 Zeiten × 7 Tage) bleiben sichtbar – nur die Gruppierung ändert sich.",
+          "mapping": "Gemeinsame Tagesachse, eigene Y-Skalen, Punkte pro Tag und keine versteckten Aggregationen."
         }
       }
     }

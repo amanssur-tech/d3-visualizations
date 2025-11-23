@@ -25,8 +25,18 @@ interface CaseStudy3Row {
   Anzahl_Kebablaeden: number;
 }
 
-const UPDATE_INTERVAL = 3000;
-const HIGHLIGHT_DURATION = 800;
+// Central config for the randomized bars experiment (default magnitude, slider bounds, timings).
+// Tweak these values to slow the updates, expand the slider, or soften the highlight window.
+export const randomizedBarsConfig = {
+  defaultMagnitude: 5,
+  slider: {
+    min: 0,
+    max: 25,
+    step: 0.1,
+  },
+  updateIntervalMs: 3000,
+  highlightDurationMs: 800,
+};
 
 export function useRandomizedBars() {
   const { translate } = useTranslator(['common', 'caseStudies']);
@@ -35,8 +45,8 @@ export function useRandomizedBars() {
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const [magnitude, setMagnitude] = useState(5);
-  const magnitudeRef = useRef(magnitude);
+  const [magnitude, setMagnitude] = useState(randomizedBarsConfig.defaultMagnitude);
+  const magnitudeRef = useRef(randomizedBarsConfig.defaultMagnitude);
 
   const [highlightedCity, setHighlightedCity] = useState<string | null>(null);
 
@@ -96,7 +106,7 @@ export function useRandomizedBars() {
         setHighlightedCity(current.city);
         return next;
       });
-    }, UPDATE_INTERVAL);
+    }, randomizedBarsConfig.updateIntervalMs);
 
     updateIntervalRef.current = id;
 
@@ -115,7 +125,10 @@ export function useRandomizedBars() {
       clearTimeout(highlightTimeoutRef.current);
     }
 
-    const timeout = window.setTimeout(() => setHighlightedCity(null), HIGHLIGHT_DURATION);
+    const timeout = window.setTimeout(
+      () => setHighlightedCity(null),
+      randomizedBarsConfig.highlightDurationMs
+    );
 
     highlightTimeoutRef.current = timeout;
 

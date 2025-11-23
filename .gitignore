@@ -13,6 +13,14 @@ coverage/
 .cache/
 .parcel-cache/
 
+# Playwright artifacts
+playwright-report/
+test-results/
+.playwright/
+
+# Hosting / local platform config
+.vercel/
+
 # Logs
 logs/
 *.log

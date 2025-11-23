@@ -4,6 +4,7 @@
  * Extracted from Navbar.tsx for reuse and cleanliness.
  */
 
+// Tweak: edit viewBox/paths to swap out the moon icon used for theme toggling.
 const MoonIcon = () => (
   <svg
     width="20"

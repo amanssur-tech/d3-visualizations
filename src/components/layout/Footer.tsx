@@ -11,17 +11,21 @@ const Footer = () => {
   /* ----------------------------- Footer layout ----------------------------- */
   return (
     <motion.footer
+      // Tweak: surface-level footer theming (border transparency, blur, spacing).
       className="border-t border-white/60 bg-white/60 px-4 py-6 text-center text-sm text-slate-500 backdrop-blur dark:border-white/5 dark:bg-neutral-950/70 dark:text-slate-400"
+      // Tweak: adjust fade/slide timing to delay or accelerate footer entrance.
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, ease: 'easeOut', delay: 0.25 }}
     >
+      {/* Tweak: footer signature copy + translation key. */}
       <p>{t('signature')}</p>
       {/* Legal + contact links live here for easy edits */}
       <div className="mt-2 flex flex-col items-center gap-1 text-xs text-slate-400 dark:text-slate-500">
         <span>{t('copyright')}</span>
         <p>
           <span className="mr-1 text-slate-500 dark:text-slate-400">{t('legal.label')}</span>
+          {/* Tweak: legal link URL + underline styling for dotted line effect. */}
           <a
             href={typeof legalHref === 'string' ? legalHref : 'https://amanssur.com/legal'}
             target="_blank"
@@ -32,7 +36,7 @@ const Footer = () => {
           </a>
         </p>
         <p className="mt-2 text-slate-500 dark:text-slate-400">
-          {t('cta.text')}{' '}
+          {t('cta.text')} {/* Tweak: CTA destination + hover state for contact link. */}
           <a
             href={typeof contactHref === 'string' ? contactHref : 'https://amanssur.com/#contact'}
             target="_blank"

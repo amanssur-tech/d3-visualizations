@@ -12,6 +12,7 @@ export const NavControlButton = forwardRef<HTMLButtonElement, NavControlButtonPr
     <button
       ref={ref}
       type={type}
+      // Tweak: navItem* tokens define dropdown trigger padding + colors.
       className={cn(navItemBase, active ? navItemActive : navItemInactive, className)}
       {...props}
     />

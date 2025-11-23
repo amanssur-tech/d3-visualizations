@@ -11,6 +11,7 @@ interface ChevronIconProps {
   className?: string;
 }
 
+// Tweak: adjust default size/rotation classes here for dropdown chevron behavior.
 const ChevronIcon = ({
   rotated = false,
   size = 14,

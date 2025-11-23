@@ -1,4 +1,4 @@
-// Semantic tokens grouped by component roles for easier maintenance.
+// Tweak: edit these semantic tokens to globally restyle shared UI elements (buttons, surfaces, nav).
 export const uiTokens = {
   // Button tokens cover shared sizing plus variant styling.
   button: {

@@ -9,14 +9,18 @@
  * - axes
  * - bars + labels
  * - tooltips
- * - export handlers
  */
 
 import * as d3 from 'd3';
 
-import { createChartExportHandlers } from '../utils/chartExport';
+import { chartTheme } from '../theme/chartTheme';
 import { chartConfig } from '../utils/config';
 import { createTooltip } from '../utils/tooltip';
+
+import {
+  generateCaseStudy3GradientFromIndex,
+  getCaseStudy3CityGradient,
+} from './caseStudy3Palette';
 
 import type { TranslateFn } from '../i18n/translate';
 
@@ -25,39 +29,36 @@ interface KebabData {
   Anzahl_Kebabläden: number;
 }
 
+interface CityColorEntry {
+  city: string;
+  gradientTop: string;
+  gradientBottom: string;
+}
+
 interface RenderOptions {
   container: HTMLDivElement;
   data: KebabData[];
   translate: TranslateFn;
   formatCityName: (name: string) => string;
-  onExportReady?: (handlers: { exportSvg: () => void; exportPng: () => void }) => void;
 }
 
-export function renderBarChart({
-  container,
-  data,
-  translate,
-  formatCityName,
-  onExportReady,
-}: RenderOptions) {
+export function renderBarChart({ container, data, translate, formatCityName }: RenderOptions) {
   // Clear old chart
   const root = d3.select(container);
   root.selectAll('*').remove();
 
   const tooltip = createTooltip();
 
+  // Tweak: base chart dimensions + margins pulled from shared config.
   const chartWidth = chartConfig.dimensions.bar.width;
   const chartHeight = chartConfig.dimensions.bar.height;
   const margin = chartConfig.margins.bar;
   const barRadius = 14;
 
-  const accent = chartConfig.getVar('--color-accent') ?? '#06b6d4';
-  const accentStrong = chartConfig.getVar('--color-accent-strong') ?? '#14b8a6';
-  const textColor = chartConfig.getVar('--color-text') ?? '#0f172a';
-  const textSoft = chartConfig.getVar('--color-text-soft') ?? '#64748b';
-  const gridColor = chartConfig.getVar('--color-grid') ?? '#e2e8f0';
-
-  const gradientId = `barGradient-${Math.random().toString(16).slice(2)}`;
+  // Tweak: palette + typography colors resolved from CSS variables.
+  const textColor = chartTheme.textPrimary;
+  const textSoft = chartTheme.textMuted;
+  const gridColor = chartTheme.grid;
 
   /* Root SVG */
   const svgRoot = root
@@ -70,20 +71,52 @@ export function renderBarChart({
   svgRoot.append('desc').text(translate('charts.bar.svgDescription'));
 
   const defs = svgRoot.append('defs');
-  const gradient = defs
-    .append('linearGradient')
-    .attr('id', gradientId)
-    .attr('x1', '0%')
-    .attr('x2', '0%')
-    .attr('y1', '0%')
-    .attr('y2', '100%');
+  const safeId = (city: string) =>
+    city
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '');
 
-  gradient.append('stop').attr('offset', '0%').attr('stop-color', accent).attr('stop-opacity', 0.9);
-  gradient
-    .append('stop')
-    .attr('offset', '100%')
-    .attr('stop-color', accentStrong)
-    .attr('stop-opacity', 0.95);
+  const cityColorEntries: CityColorEntry[] = data.map((d, index) => {
+    const gradient =
+      getCaseStudy3CityGradient(d.Stadt) ?? generateCaseStudy3GradientFromIndex(index);
+    return {
+      city: d.Stadt,
+      gradientTop: gradient.gradientTop,
+      gradientBottom: gradient.gradientBottom,
+    };
+  });
+
+  defs
+    .selectAll<SVGLinearGradientElement, CityColorEntry>('linearGradient.bar-gradient')
+    .data(cityColorEntries, (d) => d.city)
+    .join((enter) =>
+      enter
+        .append('linearGradient')
+        .attr('class', 'bar-gradient')
+        .attr('x1', '0%')
+        .attr('x2', '0%')
+        .attr('y1', '0%')
+        .attr('y2', '100%')
+    )
+    .attr('id', (d) => `cs1-${safeId(d.city)}`)
+    .each(function (entry) {
+      const gradient = d3.select(this);
+      gradient
+        .selectAll('stop')
+        .data([
+          { offset: '0%', color: entry.gradientTop, opacity: 0.95 },
+          { offset: '100%', color: entry.gradientBottom, opacity: 0.95 },
+        ])
+        .join('stop')
+        .attr('offset', (d) => d.offset)
+        .attr('stop-color', (d) => d.color)
+        .attr('stop-opacity', (d) => d.opacity);
+    });
+
+  const getGradientId = (city: string) => `cs1-${safeId(city)}`;
 
   const svg = svgRoot.append('g');
 
@@ -92,6 +125,7 @@ export function renderBarChart({
     .scaleBand<string>()
     .domain(data.map((d) => d.Stadt))
     .range([margin.left, chartWidth - margin.right])
+    // Tweak: adjust shared `chartConfig.elements.barPadding` for horizontal spacing.
     .padding(chartConfig.elements.barPadding);
 
   const maxCount = d3.max(data, (d) => d.Anzahl_Kebabläden) ?? 0;
@@ -105,6 +139,7 @@ export function renderBarChart({
   const yGrid = d3
     .axisLeft(y)
     .tickSize(-chartWidth + margin.left + margin.right)
+    // Tweak: change tick count or formatting for denser grids.
     .ticks(8)
     .tickFormat(() => '');
 
@@ -127,7 +162,12 @@ export function renderBarChart({
     .attr('transform', `translate(${margin.left},0)`)
     .call(d3.axisLeft(y).ticks(8).tickFormat(d3.format(',d')));
 
-  svg.selectAll('.axis text').attr('fill', textSoft).attr('font-size', 12).attr('font-weight', 500);
+  svg
+    .selectAll('.axis text')
+    // Tweak: alter font size/weight here for axis labels.
+    .attr('fill', textSoft)
+    .attr('font-size', 12)
+    .attr('font-weight', 500);
   svg
     .selectAll('.axis path, .axis line')
     .attr('stroke', textSoft)
@@ -140,7 +180,7 @@ export function renderBarChart({
     .selectAll('rect')
     .data(data)
     .join('rect')
-    .attr('fill', `url(#${gradientId})`)
+    .attr('fill', (d) => `url(#${getGradientId(d.Stadt)})`)
     .attr('x', (d) => x(d.Stadt) ?? margin.left)
     .attr('width', x.bandwidth())
     .attr('y', y(0))
@@ -148,7 +188,7 @@ export function renderBarChart({
     .attr('rx', barRadius)
     .attr('ry', barRadius)
     .on('mouseenter', function (event: MouseEvent, d: KebabData) {
-      d3.select(this).transition().duration(200).style('fill', accentStrong);
+      d3.select(this).transition().duration(200).attr('opacity', 0.85);
       tooltip.show(
         translate('tooltips.bar', {
           city: formatCityName(d.Stadt),
@@ -159,10 +199,11 @@ export function renderBarChart({
     })
     .on('mousemove', (event: MouseEvent) => tooltip.move(event))
     .on('mouseleave', function () {
-      d3.select(this).transition().duration(chartConfig.animation.hover).style('fill', null);
+      d3.select(this).transition().duration(chartConfig.animation.hover).attr('opacity', 1);
       tooltip.hide();
     })
     .transition()
+    // Tweak: global bar entrance timing controlled via `chartConfig.animation.barGrow`.
     .duration(chartConfig.animation.barGrow)
     .attr('y', (d) => y(d.Anzahl_Kebabläden))
     .attr('height', (d) => y(0) - y(d.Anzahl_Kebabläden));
@@ -174,11 +215,12 @@ export function renderBarChart({
     .data(data)
     .join('text')
     .attr('text-anchor', 'middle')
-    .attr('fill', accentStrong)
+    .attr('fill', textColor)
     .attr('x', (d) => (x(d.Stadt) ?? margin.left) + x.bandwidth() / 2)
     .attr('y', chartHeight - margin.bottom)
     .text((d) => d.Anzahl_Kebabläden ?? '')
     .transition()
+    // Tweak: sync label float-up speed with `chartConfig.animation.barGrow`.
     .duration(chartConfig.animation.barGrow)
     .attr('y', (d) => y(d.Anzahl_Kebabläden) - 8);
 
@@ -199,13 +241,6 @@ export function renderBarChart({
     .attr('text-anchor', 'middle')
     .attr('fill', textColor)
     .text(translate('charts.bar.axis.count'));
-
-  /* Export handlers */
-  const node = svgRoot.node();
-  if (node instanceof SVGSVGElement) {
-    const handlers = createChartExportHandlers(node, chartWidth, chartHeight, 'kebablaeden_chart');
-    onExportReady?.(handlers);
-  }
 
   return () => {
     root.selectAll('*').remove();

@@ -13,8 +13,10 @@ export type BadgeProps<T extends ElementType = 'span'> = {
   className?: string;
 } & Omit<ComponentPropsWithoutRef<T>, 'as' | 'className'>;
 
+// Tweak: base flex + font treatment shared by every badge.
 const baseClasses = 'inline-flex items-center font-semibold';
 
+// Tweak: update these Tailwind tokens to restyle badge backgrounds/shadows.
 const variantClasses: Record<BadgeVariant, string> = {
   neutral: cn(
     uiTokens.badge.neutral.frame,
@@ -25,6 +27,7 @@ const variantClasses: Record<BadgeVariant, string> = {
   soft: cn(uiTokens.badge.soft.bg, uiTokens.badge.soft.text, uiTokens.badge.soft.shadow),
 };
 
+// Tweak: adjust padding/height for each badge size.
 const sizeClasses: Record<BadgeSize, string> = {
   sm: uiTokens.badge.size.sm,
   xs: uiTokens.badge.size.xs,

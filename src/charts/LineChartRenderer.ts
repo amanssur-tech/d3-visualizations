@@ -14,7 +14,7 @@
 
 import * as d3 from 'd3';
 
-import { createChartExportHandlers, type ChartExportHandlers } from '../utils/chartExport';
+import { chartTheme, cssVar } from '../theme/chartTheme';
 import { chartConfig } from '../utils/config';
 import { createTooltip } from '../utils/tooltip';
 
@@ -38,7 +38,6 @@ export interface LineChartRenderOptions {
   data: RawLineData[];
   translate: TranslateFn;
   formatCityName: (name: string) => string;
-  onExportReady?: (handlers: ChartExportHandlers) => void;
 }
 
 /**
@@ -51,7 +50,6 @@ export function renderLineChart({
   data,
   translate,
   formatCityName,
-  onExportReady,
 }: LineChartRenderOptions) {
   const root = d3.select(container);
   root.selectAll('*').remove();
@@ -77,15 +75,16 @@ export function renderLineChart({
   }, new Map());
 
   /* ----------------------------------- Layout config ----------------------------------- */
+  // Tweak: global canvas + margin settings for Case Study 2 line chart.
   const margin = chartConfig.margins.line;
   const { width: svgWidth, height: svgHeight } = chartConfig.dimensions.line;
   const innerWidth = svgWidth - margin.left - margin.right;
   const innerHeight = svgHeight - margin.top - margin.bottom;
 
-  const accent = chartConfig.getVar('--color-accent') ?? '#06b6d4';
-  const accentStrong = chartConfig.getVar('--color-accent-strong') ?? '#14b8a6';
-  const textSoft = chartConfig.getVar('--color-text-soft') ?? '#94a3b8';
-  const gridColor = chartConfig.getVar('--color-grid') ?? '#e2e8f0';
+  // Tweak: palette + dot sizing pulled from shared config; override CSS vars to recolor.
+  const accentStrong = chartTheme.accentStrong;
+  const textSoft = chartTheme.textMuted;
+  const gridColor = chartTheme.grid;
   const pointRadius = chartConfig.elements.pointRadius;
 
   /* ------------------------------------- SVG root -------------------------------------- */
@@ -100,6 +99,7 @@ export function renderLineChart({
   const svg = svgRoot.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
 
   /* ------------------------------------- Scales ---------------------------------------- */
+  // Tweak: change `.padding(0.5)` or switch to scaleLinear for different spacing along x.
   const x = d3.scalePoint<number>().domain(years).range([0, innerWidth]).padding(0.5);
 
   const maxValue = d3.max(normalized, (d) => d.Anzahl) ?? 0;
@@ -141,15 +141,17 @@ export function renderLineChart({
 
   svg.append('g').attr('class', 'axis axis-y').call(d3.axisLeft(y).ticks(yTicks).tickSize(0));
 
-  svg.selectAll('.axis text').attr('fill', textSoft).attr('font-size', 12).attr('font-weight', 500);
+  svg
+    .selectAll('.axis text')
+    // Tweak: adjust axis font treatment globally here.
+    .attr('fill', textSoft)
+    .attr('font-size', 12)
+    .attr('font-weight', 500);
   svg.selectAll('.axis path, .axis line').attr('stroke', textSoft).attr('stroke-opacity', 0.2);
 
   /* ----------------------------- City palette lookups ----------------------------- */
   const cityColors: Record<string, string> = Object.fromEntries(
-    Object.entries(chartConfig.cityColors).map(([city, varName]) => [
-      city,
-      chartConfig.getVar(varName) ?? '#333',
-    ])
+    Object.entries(chartConfig.cityColors).map(([city, varName]) => [city, cssVar(varName)])
   );
 
   /* ----------------------------- Draw each line + points ----------------------------- */
@@ -166,8 +168,7 @@ export function renderLineChart({
       .attr('fill', 'none')
       .attr('stroke-width', 3)
       .attr('stroke-linecap', 'round')
-      .attr('stroke-linejoin', 'round')
-      .style('filter', `drop-shadow(0 8px 18px ${accent}20)`);
+      .attr('stroke-linejoin', 'round');
 
     const totalLength = path.node()?.getTotalLength() ?? 0;
 
@@ -175,6 +176,7 @@ export function renderLineChart({
       .attr('stroke-dasharray', `${totalLength} ${totalLength}`)
       .attr('stroke-dashoffset', totalLength)
       .transition()
+      // Tweak: change `chartConfig.animation.lineDrawIn` to speed up/slow down draw-on effect.
       .duration(chartConfig.animation.lineDrawIn)
       .ease(d3.easeCubicOut)
       .attr('stroke-dashoffset', 0);
@@ -189,6 +191,7 @@ export function renderLineChart({
       .attr('class', 'circle-point')
       .attr('cx', (d) => x(d.Jahr) ?? 0)
       .attr('cy', (d) => y(d.Anzahl))
+      // Tweak: dot radius/hover behavior defined here per city.
       .attr('r', pointRadius)
       .attr('fill', stroke)
       .on('mouseenter', (event: MouseEvent, d: LineData) =>
@@ -246,18 +249,12 @@ export function renderLineChart({
       item
         .append('div')
         .attr('class', 'legend-color')
-        .style('background-color', cityColors[city] ?? accentStrong)
-        .style('box-shadow', `0 0 10px ${accentStrong}30`);
+        // Tweak: update accent/glow to change legend swatches.
+        .style('background-color', cityColors[city] ?? accentStrong);
 
+      // Tweak: legend label copy derived from `formatCityName` result.
       item.append('span').text(formatCityName(city));
     });
-  }
-
-  /* -------------------------------- Export handlers ----------------------------------- */
-  const node = svgRoot.node();
-  if (node instanceof SVGSVGElement) {
-    const handlers = createChartExportHandlers(node, svgWidth, svgHeight, 'kebab_chart');
-    onExportReady?.(handlers);
   }
 
   /* -------------------------------- Cleanup ------------------------------------------- */

@@ -187,21 +187,28 @@
         "mittags": "Midday",
         "abends": "Evening"
       },
+      "cities": {
+        "Berlin": "Berlin",
+        "Köln": "Cologne"
+      },
       "flawed": {
         "label": "Flawed chart",
-        "title": "Misleading average pie",
-        "caption": "A deliberately bad view that hides day-to-day swings behind averages and a mismatched pie layout.",
+        "title": "Misleading weekly donut",
+        "caption": "Looks like a weekly distribution of kebab sales by city and time, but it collapses seven days into six slices and hides the city encoding in tiny labels.",
         "badge": "Misleading",
         "listTitle": "Design flaws",
-        "chartTitle": "Misleading average sales pie",
-        "chartDescription": "Seven-day averages crammed into a pie with mismatched legend colors and no time ordering.",
+        "chartTitle": "Weekly kebab sales distribution (time × city, flawed)",
+        "chartDescription": "Seven concentric rings (one per day) squeeze city × time-of-day totals into decorative slices. Warm colors still encode only time, while the legend pretends they stand for cities.",
+        "legendSalesPerDay": "Sales per day",
+        "legendRingPerDay": "Each ring = 1 day",
+        "legendAverage": "Average",
         "reasons": {
-          "axis": "Pie hides the y-axis entirely, so scale cannot be read at all.",
-          "colors": "Overlapping warm colors make categories hard to tell apart.",
-          "legend": "Legend colors are mismatched (evening and midday are swapped).",
-          "order": "No consistent order for morning → evening, so the sequence is lost.",
-          "aggregation": "Seven separate days are collapsed into averages so daily peaks and lows disappear.",
-          "mapping": "Combines cities and times into one pie: the visual elements no longer match the data structure."
+          "axis": "Seven concentric rings imply a third dimension, but no scale or markings tell you which ring corresponds to which day.",
+          "colors": "All slices share the same warm hues per time of day, so two cities become impossible to separate visually.",
+          "legend": "Legend labels pretend the colors encode cities (plus an average) even though the palette actually encodes time.",
+          "order": "Rings stack inner → outer without any labels for days, so the weekly progression is hidden behind decoration.",
+          "aggregation": "Each slice shows a daily total but the donut squeezes six metrics into a single angle, so city and day values blur together.",
+          "mapping": "Angles encode city × time, rings secretly encode days, and the legend claims something else—the visual channels contradict the data structure."
         }
       },
       "fixed": {
@@ -213,16 +220,19 @@
         "chartTitle": "Daily kebab sales by city and time of day",
         "chartDescription": "Single SVG with three horizontal panels (Morning, Midday, Evening). Each panel has two lines (Berlin, Köln) over seven days, shared x-scale, independent y-scales.",
         "axisLabel": "Sales per day",
-        "axisDays": "Day of the month",
+        "axisDays": "Day",
         "axisCity": "City comparison",
+        "axisTimeOfDay": "Time-of-day comparison",
         "legendTitle": "Cities",
+        "legendTimes": "Times of day",
+        "viewToggleAria": "Switch chart view",
         "reasons": {
-          "baseline": "Panels have y-axes and grids so scale is visible per time-of-day.",
-          "palette": "Distinct, colorblind-friendly palette with clear contrast.",
-          "legend": "Legend matches the encoding and separates the two cities clearly.",
-          "structure": "Panels stack Morning → Evening vertically to keep time-of-day order obvious.",
-          "fullData": "All 42 rows (2 cities × 7 days × 3 times) stay visible so trends and peaks stand out.",
-          "mapping": "Single chart, shared day axis, independent y-scales per time band; two lines per panel keep city comparisons clear."
+          "baseline": "Each panel keeps its own y-axis and grid, so peaks stay readable no matter the band.",
+          "palette": "Lines reuse the same high-contrast viridis colors whether they encode cities or times of day.",
+          "legend": "Legend copy matches the active encoding and updates automatically with the toggle.",
+          "structure": "Toggle flips between time-stacked and city-stacked panels without changing data or scales.",
+          "fullData": "All 42 daily values (2 cities × 3 times × 7 days) remain visible—only the grouping changes.",
+          "mapping": "Shared day axis, independent y-scales, dots for each day, and no hidden aggregation tricks."
         }
       }
     }

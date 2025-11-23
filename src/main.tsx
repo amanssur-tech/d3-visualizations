@@ -14,7 +14,9 @@ import { router } from './router';
 const LoadingScreen = () => {
   const { t } = useTranslation('common');
   return (
+    // Tweak: minimal full-screen splash styling while translations load.
     <div className="flex min-h-screen items-center justify-center bg-slate-50 text-sm text-slate-500 dark:bg-neutral-950 dark:text-slate-300">
+      {/* Tweak: Suspense fallback copy key lives here. */}
       <p>{t('loadingContent')}</p>
     </div>
   );

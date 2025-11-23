@@ -29,13 +29,20 @@ export interface DailyRow {
   sales: number;
 }
 
+export interface DailyValue {
+  day: number;
+  value: number;
+}
+
 export interface AggregatedRow {
   city: string;
   timeOfDay: TimeOfDay;
   total: number;
   average: number;
+  daily: DailyValue[];
 }
 
+// Tweak: change ordering here to rearrange the vertical stack of Case Study 4 bands.
 const timeOrder: readonly TimeOfDay[] = ['morgens', 'mittags', 'abends'];
 
 const isTimeOfDay = (value: string): value is TimeOfDay => timeOrder.includes(value as TimeOfDay);
@@ -93,25 +100,40 @@ export function useTimeOfDayData() {
 
   /* Aggregated rows (per city, per timeOfDay) */
   const aggregated = useMemo<AggregatedRow[]>(() => {
-    const totals = new Map<string, { total: number; count: number }>();
+    interface Bucket {
+      total: number;
+      count: number;
+      daily: Map<number, number>;
+    }
+
+    const totals = new Map<string, Bucket>();
 
     dailyRows.forEach((row) => {
       const key = `${row.city}-${row.timeOfDay}`;
-      const current = totals.get(key) ?? { total: 0, count: 0 };
-      totals.set(key, {
-        total: current.total + row.sales,
-        count: current.count + 1,
-      });
+      const current = totals.get(key) ?? {
+        total: 0,
+        count: 0,
+        daily: new Map<number, number>(),
+      };
+      current.total += row.sales;
+      current.count += 1;
+      current.daily.set(row.day, (current.daily.get(row.day) ?? 0) + row.sales);
+      totals.set(key, current);
     });
 
     const result: AggregatedRow[] = [];
     totals.forEach((value, key) => {
       const [city, timeOfDay] = key.split('-') as [string, TimeOfDay];
+      const daily = Array.from(value.daily.entries())
+        .map(([day, amount]) => ({ day, value: amount }))
+        .sort((a, b) => a.day - b.day);
+
       result.push({
         city,
         timeOfDay,
         total: value.total,
         average: value.count ? value.total / value.count : 0,
+        daily,
       });
     });
 

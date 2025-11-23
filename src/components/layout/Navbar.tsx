@@ -22,6 +22,7 @@ import LanguageToggle from './LanguageToggle';
 
 import type { SupportedLanguage } from '../../i18n/types';
 
+// Tweak: top-level nav items for the sticky header—adjust order/labels here.
 const primaryLinks = [{ labelKey: 'navbar.links.dashboard', to: '/' }] as const satisfies readonly {
   labelKey: string;
   to: string;
@@ -33,6 +34,7 @@ interface SecondaryLink {
   external?: boolean;
 }
 
+// Tweak: configure secondary CTAs (anchors/external links) surfaced on the right edge.
 const secondaryLinks: readonly SecondaryLink[] = [
   { labelKey: 'navbar.links.about', href: '#methodology' },
   {
@@ -75,7 +77,9 @@ const Navbar = () => {
   /* ----------------------------- Navigation bar layout ----------------------------- */
   return (
     <motion.header
+      // Tweak: sticky header spacing + offset from top of viewport.
       className="sticky top-0 z-50 px-4 pt-3 sm:px-6 sm:pt-4 lg:px-10"
+      // Tweak: entrance animation for navbar; adjust duration/delay for different feel.
       initial={{ opacity: 0, y: -16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, ease: 'easeOut', delay: 0.1 }}
@@ -83,11 +87,13 @@ const Navbar = () => {
       <div className="mx-auto max-w-7xl">
         <div className="relative">
           <nav
+            // Tweak: glassy navbar chrome, padding, and responsive flex behavior.
             className="relative mx-auto flex flex-col gap-4 rounded-full border border-white/60 bg-white/75 px-4 py-2 text-sm shadow-[0_2px_6px_rgba(0,0,0,0.06),0_4px_12px_rgba(0,0,0,0.08)] backdrop-blur-xl backdrop-saturate-150 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8 dark:border-white/10 dark:bg-neutral-900/70 dark:shadow-[0_2px_6px_rgba(0,0,0,0.35),0_4px_12px_rgba(0,0,0,0.55)]"
             style={{ backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)' }}
           >
             {/* Brand + signature */}
             <div className="flex items-center gap-3">
+              {/* Tweak: brand link target/image asset per theme. */}
               <a href="https://amanssur.com" title="Go to amanssur.com">
                 <img
                   src={theme === 'dark' ? '/favicons/AM-Logo-white.svg' : '/favicons/AM-Logo.svg'}
@@ -96,9 +102,11 @@ const Navbar = () => {
                 />
               </a>
               <div className="leading-tight">
+                {/* Tweak: signature copy + typographic treatment. */}
                 <p className="text-xs uppercase tracking-[0.4em] text-slate-500 dark:text-slate-400">
                   {translate('navbar.signature')}
                 </p>
+                {/* Tweak: brand name text + weight. */}
                 <NavLink to="/" className="text-lg font-semibold text-slate-900 dark:text-white">
                   {translate('navbar.brand')}
                 </NavLink>
@@ -109,6 +117,7 @@ const Navbar = () => {
             <div className="flex flex-wrap items-center gap-2 sm:justify-end">
               {primaryLinks.map((item) => (
                 <NavPill key={item.to} to={item.to}>
+                  {/* Tweak: visible label for each nav pill via translation key. */}
                   {translate(item.labelKey)}
                 </NavPill>
               ))}
@@ -121,6 +130,7 @@ const Navbar = () => {
                 aria-haspopup="true"
                 aria-controls={dropdownId}
               >
+                {/* Tweak: dropdown trigger text + chevron icon size. */}
                 <span>{translate('navbar.dropdown.label')}</span>
                 <ChevronIcon rotated={isDropdownOpen} size={14} className="" />
                 <span className="sr-only">{translate('navbar.dropdown.toggle')}</span>
@@ -141,6 +151,7 @@ const Navbar = () => {
                     target={link.external ? '_blank' : undefined}
                     rel={link.external ? 'noreferrer' : undefined}
                   >
+                    {/* Tweak: CTA text per button—edit translation keys for copy. */}
                     {translate(link.labelKey)}
                   </Button>
                 );
@@ -161,12 +172,13 @@ const Navbar = () => {
                   theme === 'dark' ? 'navbar.themeToggle.toLight' : 'navbar.themeToggle.toDark'
                 )}
               >
+                {/* Tweak: swap icon components to alter theme toggle visuals. */}
                 {theme === 'dark' ? <MoonIcon /> : <SunIcon />}
               </Button>
             </div>
           </nav>
 
-          {/* Dropdown listing case studies */}
+          {/* Tweak: animation presence for dropdown; wrap/replace to change mount logic. */}
           <AnimatePresence>
             {isDropdownOpen && (
               <CaseStudiesDropdown

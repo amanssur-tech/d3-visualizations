@@ -13,6 +13,7 @@ export interface CaseStudyMeta {
   preview: 'bar' | 'line' | 'random' | 'time';
 }
 
+// Tweak: central metadata registry for every case study (paths, copy keys, tags, preview style).
 export const caseStudies: CaseStudyMeta[] = [
   {
     id: 1,
@@ -22,6 +23,7 @@ export const caseStudies: CaseStudyMeta[] = [
     subtitleKey: 'caseStudies.1.subtitle',
     descriptionKey: 'caseStudies.1.description',
     tags: ['barChart', 'cityComparison', 'exportable'],
+    // Tweak: gradient classes powering carousel/index backgrounds per study.
     accentFrom: 'from-cyan-500/20',
     accentTo: 'to-emerald-500/20',
     preview: 'bar',

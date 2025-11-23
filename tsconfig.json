@@ -55,5 +55,5 @@
     "checkJs": false
   },
   "exclude": ["dist", "node_modules", "public", "vite.config.js", "eslint.config.js"],
-  "include": ["src", "global.d.ts"]
+  "include": ["src", "tests", "playwright.config.ts", "global.d.ts"]
 }

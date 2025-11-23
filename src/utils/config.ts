@@ -3,53 +3,37 @@
  * so components can stay readable without re-declaring base values.
  */
 export const chartConfig = {
-  /* Common margins for charts */
+  // Tweak: adjust shared bar/line margins to create more breathing room.
   margins: {
     bar: { top: 45, right: 30, bottom: 50, left: 70 },
     line: { top: 40, right: 100, bottom: 50, left: 70 },
   },
 
-  /* Standard dimensions for different chart types */
+  // Tweak: update canonical width/height for each chart renderer.
   dimensions: {
     bar: { width: 720, height: 420 },
     line: { width: 860, height: 440 },
   },
 
-  /* Animation durations (in milliseconds) */
+  // Tweak: central animation durations (ms) applied across D3 transitions.
   animation: {
     barGrow: 800,
     lineDrawIn: 1000,
     hover: 200,
   },
 
-  /* D3 curve types for line charts */
+  // Tweak: Catmull-Rom alpha for line smoothing.
   curves: {
     smooth: 0.5, // Catmull-Rom alpha value for smooth curves
   },
 
-  /* Chart element sizes */
+  // Tweak: base radii/padding for chart primitives.
   elements: {
     pointRadius: 5,
     barPadding: 0.2,
   },
 
-  /* Helper to get CSS variables with fallbacks */
-  getVar: (name: string): string | undefined => {
-    if (typeof window === 'undefined') return undefined;
-    const safeGet = (el: HTMLElement | null): string | undefined => {
-      if (!el) return undefined;
-      const value = getComputedStyle(el).getPropertyValue(name).trim();
-      return value || undefined;
-    };
-    const rootVal = safeGet(document.documentElement);
-    if (rootVal) return rootVal;
-    const chartEl = document.querySelector<HTMLElement>('.chart-container') ?? document.body;
-    const chartVal = safeGet(chartEl);
-    if (chartVal) return chartVal;
-    return safeGet(document.body);
-  },
-
-  /* City-specific colors (using CSS variables) */
+  // Tweak: override or expand this map to recolor per-city series.
   cityColors: {
     Köln: '--color-koeln',
     Berlin: '--color-berlin',

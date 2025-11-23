@@ -12,7 +12,28 @@
 
 import * as d3 from 'd3';
 
+import { chartTheme } from '../theme/chartTheme';
 import { chartConfig } from '../utils/config';
+
+import {
+  generateCaseStudy3GradientFromIndex,
+  getCaseStudy3CityGradient,
+} from './caseStudy3Palette';
+
+// Layout + animation blueprint for the Case Study 3 bar chart; adjust sizing/margins to fit new viewports.
+// Tweak: adjust width/height/margins here to resize the animated Case Study 3 chart.
+const randomizedBarsLayout = {
+  size: {
+    width: chartConfig.dimensions.bar.width,
+    height: chartConfig.dimensions.bar.height ?? 420,
+  },
+  margin: { top: 40, right: 24, bottom: 70, left: 64 },
+  barRadius: 12,
+  yTicks: 6,
+  transitionMs: 650,
+};
+
+const HIGHLIGHT_DURATION = 300;
 
 export interface CityDatum {
   city: string;
@@ -24,6 +45,8 @@ export interface RandomizedBarsRenderOptions {
   data: CityDatum[];
   highlightedCity: string | null;
   formatCityName: (name: string) => string;
+  svgTitle?: string;
+  svgDescription?: string;
 }
 
 /**
@@ -35,17 +58,22 @@ export function renderRandomizedBars({
   data,
   highlightedCity,
   formatCityName,
+  svgTitle = 'Randomized kebab shop counts',
+  svgDescription = 'Live updating randomized bar chart for Case Study 3',
 }: RandomizedBarsRenderOptions) {
   const host = d3.select(container);
-  const chartWidth = chartConfig.dimensions.bar.width;
-  const chartHeight = 420;
-  const margin = { top: 40, right: 24, bottom: 70, left: 64 };
-  const barRadius = 12;
-  const yTickCount = 6;
+  const chartWidth = randomizedBarsLayout.size.width;
+  const chartHeight = randomizedBarsLayout.size.height;
+  const margin = randomizedBarsLayout.margin;
+  const barRadius = randomizedBarsLayout.barRadius;
+  const yTickCount = randomizedBarsLayout.yTicks;
 
-  const textColor = chartConfig.getVar('--color-text') ?? '#0f172a';
-  const textSoft = chartConfig.getVar('--color-text-soft') ?? '#64748b';
-  const gridColor = chartConfig.getVar('--color-grid') ?? '#e2e8f0';
+  // Tweak: adjust base typography + grid colors by overriding CSS variables.
+  const textColor = chartTheme.textPrimary;
+  const textSoft = chartTheme.textMuted;
+  const gridColor = chartTheme.grid;
+  const accentStrong = chartTheme.accentStrong;
+  const glowFilter = `drop-shadow(0 0 4px ${accentStrong})`;
 
   // Persist SVG
   let svg = host.select<SVGSVGElement>('svg');
@@ -60,14 +88,11 @@ export function renderRandomizedBars({
     svg.append('defs');
   }
 
-  svg.select('title').text('Randomized kebab shop counts');
-  svg.select('desc').text('Live updating randomized bar chart for Case Study 3');
+  svg.select('title').text(svgTitle);
+  svg.select('desc').text(svgDescription);
 
   // Gradients per city
   const defs = svg.select('defs');
-  const colorScale = d3
-    .scaleSequential(d3.interpolateViridis)
-    .domain([0, Math.max(data.length - 1, 1)]);
 
   const safeId = (city: string) =>
     city
@@ -91,13 +116,13 @@ export function renderRandomizedBars({
       (exit) => exit.remove()
     )
     .attr('id', (d: CityDatum) => `cs3-${safeId(d.city)}`)
-    .each(function (_, index) {
+    .each(function (datum: CityDatum, index) {
       const gradient = d3.select(this);
-      const base = colorScale(index);
-      const parsed = d3.color(base);
-      const top = parsed ? parsed.brighter(0.8).formatHex() : base;
-      const bottom = parsed ? parsed.darker(0.8).formatHex() : base;
+      const cityGradient =
+        getCaseStudy3CityGradient(datum.city) ?? generateCaseStudy3GradientFromIndex(index);
+      const { gradientTop: top, gradientBottom: bottom } = cityGradient;
 
+      // Tweak: gradient stop offsets create the glossy top/bottom highlight for each bar.
       gradient
         .selectAll('stop')
         .data([
@@ -124,7 +149,11 @@ export function renderRandomizedBars({
     .nice()
     .range([chartHeight - margin.bottom, margin.top]);
 
-  const transition = d3.transition().duration(650).ease(d3.easeCubicOut);
+  const transition = d3
+    .transition()
+    // Tweak: shared transition durations/ease for re-sorting animations.
+    .duration(randomizedBarsLayout.transitionMs)
+    .ease(d3.easeCubicOut);
 
   // Grid
   const gridGroup = svg
@@ -208,8 +237,9 @@ export function renderRandomizedBars({
     bars
       .filter((d) => d.city === highlightedCity)
       .transition()
-      .duration(300)
-      .style('filter', 'drop-shadow(0 0 4px #38bdf8)');
+      .duration(HIGHLIGHT_DURATION)
+      // Tweak: glow effect for emphasized city (duration + filter color).
+      .style('filter', glowFilter);
   }
 
   // Value labels

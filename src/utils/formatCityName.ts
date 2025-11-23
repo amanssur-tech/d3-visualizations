@@ -8,12 +8,14 @@
 
 import type { TranslateFn } from '../i18n/translate';
 
+// Tweak: add entries here to normalize other locale-specific city spellings.
 const CITY_NORMALIZATIONS: Record<string, string> = {
   Köln: 'Koeln',
   München: 'Muenchen',
   Düsseldorf: 'Duesseldorf',
 };
 
+// Tweak: fallback display names if translations are missing.
 const FALLBACKS: Record<string, string> = {
   Koeln: 'Köln',
   Muenchen: 'München',

@@ -14,16 +14,19 @@ export type ButtonProps<T extends ElementType = 'button'> = {
   className?: string;
 } & Omit<ComponentPropsWithoutRef<T>, 'as' | 'className'>;
 
+// Tweak: shared interaction + focus ring behavior for all button variants.
 const baseClasses = cn(
   'inline-flex items-center justify-center font-semibold transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-60',
   uiTokens.utils.focusRing
 );
 
+// Tweak: edit token references here to change paddings per size.
 const sizeClasses: Record<ButtonSize, string> = {
   md: uiTokens.button.size.md,
   sm: uiTokens.button.size.sm,
 };
 
+// Tweak: update uiTokens mappings below to restyle each button flavor.
 const variantClasses: Record<ButtonVariant, string> = {
   primary: cn(
     uiTokens.button.primary.bg,

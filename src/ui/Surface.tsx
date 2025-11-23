@@ -14,6 +14,7 @@ export type SurfaceProps<T extends ElementType = 'div'> = {
   className?: string;
 } & Omit<ComponentPropsWithoutRef<T>, 'as' | 'className'>;
 
+// Tweak: choose new frame/blur/shadow tokens here to alter each surface style.
 const variantClasses: Record<SurfaceVariant, string> = {
   panel: cn(
     uiTokens.surface.panel.frame,
@@ -28,6 +29,7 @@ const variantClasses: Record<SurfaceVariant, string> = {
   ),
 };
 
+// Tweak: padding presets shared by panel sections—edit for different spacing ramps.
 const paddingClasses: Record<SurfacePadding, string> = {
   none: uiTokens.surface.padding.none,
   xs: uiTokens.surface.padding.xs,
