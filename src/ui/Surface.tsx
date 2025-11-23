@@ -1,7 +1,7 @@
-import type { ComponentPropsWithoutRef, ElementType } from 'react';
-
 import { uiTokens } from './tokens';
 import { cn } from './utils';
+
+import type { ComponentPropsWithoutRef, ElementType } from 'react';
 
 type SurfaceVariant = 'panel' | 'card' | 'muted';
 type SurfacePadding = 'none' | 'xs' | 'sm' | 'md' | 'lg' | 'xl';
@@ -15,9 +15,17 @@ export type SurfaceProps<T extends ElementType = 'div'> = {
 } & Omit<ComponentPropsWithoutRef<T>, 'as' | 'className'>;
 
 const variantClasses: Record<SurfaceVariant, string> = {
-  panel: cn(uiTokens.surface.panel.frame, uiTokens.surface.panel.shadow, uiTokens.surface.panel.blur),
+  panel: cn(
+    uiTokens.surface.panel.frame,
+    uiTokens.surface.panel.shadow,
+    uiTokens.surface.panel.blur
+  ),
   card: cn(uiTokens.surface.card.frame, uiTokens.surface.card.shadow, uiTokens.surface.card.blur),
-  muted: cn(uiTokens.surface.muted.frame, uiTokens.surface.muted.shadow, uiTokens.surface.muted.blur),
+  muted: cn(
+    uiTokens.surface.muted.frame,
+    uiTokens.surface.muted.shadow,
+    uiTokens.surface.muted.blur
+  ),
 };
 
 const paddingClasses: Record<SurfacePadding, string> = {
@@ -37,7 +45,7 @@ export const Surface = <T extends ElementType = 'div'>({
   className,
   ...props
 }: SurfaceProps<T>) => {
-  const Component = (as ?? 'div') as ElementType;
+  const Component: ElementType = as ?? 'div';
   return (
     <Component
       className={cn(

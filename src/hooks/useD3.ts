@@ -1,31 +1,30 @@
-import { useEffect, useRef, type DependencyList } from 'react';
+/**
+ * useD3.ts keeps D3 render logic aligned with React lifecycles by exposing a ref
+ * that triggers the provided render callback after animations settle.
+ */
+import { useEffect, useRef } from 'react';
 
 /**
- * Small helper hook that wires D3 render logic into React components.
- * Pass a render callback that receives the container element and returns an optional cleanup function.
+ * Pass a render callback that receives the container element and optional cleanup function.
  */
-export function useD3(
-  renderChart: (container: HTMLElement) => void | (() => void),
-  dependencies: DependencyList = []
-) {
+export function useD3(renderChart: (container: HTMLElement) => void | (() => void)) {
   const ref = useRef<HTMLDivElement | null>(null);
   const cleanupRef = useRef<(() => void) | null>(null);
 
+  /* ----------------------------- Run render callback when dependencies change ----------------------------- */
   useEffect(() => {
     let mounted = true;
-    // Clear previous render safely
+    // Clear any previous render before drawing again
     if (cleanupRef.current) {
-      console.log('[useD3] running previous cleanup');
       cleanupRef.current();
       cleanupRef.current = null;
     }
     if (!ref.current) return undefined;
 
-    // Add a small delay to avoid race conditions with React 19 and Framer Motion
+    // Small delay avoids layout thrash with React 19 + Framer Motion animations
     const id = setTimeout(() => {
       const container = ref.current;
       if (!mounted || !container) return;
-      console.log('[useD3] render callback firing');
       cleanupRef.current = renderChart(container) ?? null;
     }, 10);
 
@@ -33,13 +32,11 @@ export function useD3(
       mounted = false;
       clearTimeout(id);
       if (cleanupRef.current) {
-        console.log('[useD3] cleanup');
         cleanupRef.current();
         cleanupRef.current = null;
       }
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, dependencies);
+  }, [renderChart]);
 
   return ref;
 }

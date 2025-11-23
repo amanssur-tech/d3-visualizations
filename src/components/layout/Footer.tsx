@@ -1,3 +1,6 @@
+/**
+ * Footer.tsx renders the simple signature footer with legal + contact links.
+ */
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 
@@ -5,6 +8,7 @@ const Footer = () => {
   const { t } = useTranslation('footer');
   const legalHref = t('legal.href');
   const contactHref = t('cta.href');
+  /* ----------------------------- Footer layout ----------------------------- */
   return (
     <motion.footer
       className="border-t border-white/60 bg-white/60 px-4 py-6 text-center text-sm text-slate-500 backdrop-blur dark:border-white/5 dark:bg-neutral-950/70 dark:text-slate-400"
@@ -13,6 +17,7 @@ const Footer = () => {
       transition={{ duration: 0.6, ease: 'easeOut', delay: 0.25 }}
     >
       <p>{t('signature')}</p>
+      {/* Legal + contact links live here for easy edits */}
       <div className="mt-2 flex flex-col items-center gap-1 text-xs text-slate-400 dark:text-slate-500">
         <span>{t('copyright')}</span>
         <p>

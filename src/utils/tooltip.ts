@@ -1,10 +1,11 @@
-// tooltip.js
-// Small reusable tooltip module for D3-based charts
-
+/**
+ * tooltip.ts exposes minimal show/move/hide helpers while ensuring a shared tooltip node exists.
+ */
 import * as d3 from 'd3';
 
 type TooltipSelection = d3.Selection<HTMLDivElement, unknown, HTMLElement | null, unknown>;
 
+/* ----------------------------- Tooltip node factory ----------------------------- */
 export const createTooltip = () => {
   const existing = d3.select<HTMLDivElement, unknown>('#global-tooltip-root');
   const tip: TooltipSelection = existing.empty()

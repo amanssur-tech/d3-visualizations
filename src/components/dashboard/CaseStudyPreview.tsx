@@ -1,6 +1,11 @@
+/**
+ * CaseStudyPreview.tsx renders small animated placeholders for each case study card in lists.
+ * Each branch below mirrors the visual of a given case id using inline SVG or motion spans.
+ */
 import { motion } from 'framer-motion';
 
 import type { CaseStudyId } from '../../content/caseStudies';
+export type { CaseStudyId } from '../../content/caseStudies';
 
 interface CaseStudyPreviewProps {
   id: CaseStudyId;
@@ -10,14 +15,16 @@ const cardShell =
   'relative rounded-2xl border border-white/50 bg-white/70 p-4 shadow-inner shadow-slate-900/5 backdrop-blur dark:border-white/10 dark:bg-neutral-900/60';
 
 const CaseStudyPreview = ({ id }: CaseStudyPreviewProps) => {
+  /* ----------------------------- Case-specific mini previews ----------------------------- */
   if (id === 1) {
+    // Simple static growth bars for the bar chart case
     return (
       <div className={`${cardShell} h-36 overflow-hidden`}>
         <div className="flex h-full items-end gap-2">
           {[50, 76, 62, 84, 58, 70].map((height, index) => (
             <motion.span
               key={height + index}
-              className="flex-1 rounded-xl bg-gradient-to-t from-cyan-500/80 to-emerald-400/80 shadow shadow-cyan-500/30"
+              className="flex-1 rounded-xl bg-linear-to-t from-cyan-500/80 to-emerald-400/80 shadow shadow-cyan-500/30"
               style={{ height: `${height}%` }}
               initial={{ scaleY: 0 }}
               animate={{ scaleY: 1 }}
@@ -30,6 +37,7 @@ const CaseStudyPreview = ({ id }: CaseStudyPreviewProps) => {
   }
 
   if (id === 2) {
+    // Dual line series hint at the time-series case
     return (
       <div className={`${cardShell} h-36 overflow-hidden`}>
         <svg viewBox="0 0 200 120" className="h-full w-full text-cyan-500">
@@ -60,13 +68,14 @@ const CaseStudyPreview = ({ id }: CaseStudyPreviewProps) => {
   }
 
   if (id === 3) {
+    // Animated bars to mimic the randomized experiment
     return (
       <div className={`${cardShell} h-36 overflow-hidden`}>
         <div className="relative flex h-full items-end gap-2">
           {[62, 48, 80, 44, 72, 68].map((height, index) => (
             <motion.span
               key={`${height}-${index}`}
-              className="flex-1 rounded-lg bg-gradient-to-t from-emerald-500/80 to-cyan-500/80 shadow shadow-emerald-500/30"
+              className="flex-1 rounded-lg bg-linear-to-t from-emerald-500/80 to-cyan-500/80 shadow shadow-emerald-500/30"
               style={{ height: `${height}%` }}
               animate={{ height: [`${height * 0.85}%`, `${height * 1.1}%`, `${height}%`] }}
               transition={{
@@ -83,6 +92,7 @@ const CaseStudyPreview = ({ id }: CaseStudyPreviewProps) => {
     );
   }
 
+  // Default fallback references the flawed/fixed comparison
   return (
     <div className={`${cardShell} h-36 overflow-hidden`}>
       <div className="relative grid h-full grid-cols-2 gap-3">
@@ -93,9 +103,8 @@ const CaseStudyPreview = ({ id }: CaseStudyPreviewProps) => {
           <div className="flex items-end gap-1">
             {[72, 48, 90].map((height, index) => (
               <span
-                // eslint-disable-next-line react/no-array-index-key
                 key={index}
-                className="flex-1 rounded-lg bg-gradient-to-t from-amber-500/80 to-rose-400/80"
+                className="flex-1 rounded-lg bg-linear-to-t from-amber-500/80 to-rose-400/80"
                 style={{ height: `${height}%` }}
               />
             ))}
@@ -108,9 +117,8 @@ const CaseStudyPreview = ({ id }: CaseStudyPreviewProps) => {
           <div className="flex items-end gap-1">
             {[82, 68, 74].map((height, index) => (
               <span
-                // eslint-disable-next-line react/no-array-index-key
                 key={index}
-                className="flex-1 rounded-lg bg-gradient-to-t from-cyan-500/80 to-blue-500/80"
+                className="flex-1 rounded-lg bg-linear-to-t from-cyan-500/80 to-blue-500/80"
                 style={{ height: `${height}%` }}
               />
             ))}

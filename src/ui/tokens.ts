@@ -17,43 +17,50 @@ export const uiTokens = {
       border: 'border border-slate-200/80 dark:border-white/10',
       bg: 'bg-white/70 dark:bg-white/5',
       text: 'text-slate-700 dark:text-slate-200',
-      hover: 'hover:border-white hover:text-slate-900 dark:hover:border-white/30 dark:hover:text-white',
+      hover:
+        'hover:border-white hover:text-slate-900 dark:hover:border-white/30 dark:hover:text-white',
       shadow: 'shadow-sm shadow-slate-200/60 dark:shadow-black/40',
     },
     ghost: {
       border: 'border border-slate-200/70 dark:border-white/10',
       text: 'text-slate-600 dark:text-slate-100',
-      hover: 'hover:border-slate-300 hover:text-slate-900 dark:hover:border-white/30 dark:hover:text-white',
+      hover:
+        'hover:border-slate-300 hover:text-slate-900 dark:hover:border-white/30 dark:hover:text-white',
       shadow: 'shadow-sm shadow-slate-200/60 dark:shadow-black/40',
     },
     pill: {
       shape: 'rounded-full px-3 py-1.5 text-sm font-medium transition-all duration-200',
       text: 'text-slate-600 dark:text-slate-300',
-      hover: 'hover:bg-white/60 hover:text-slate-900 hover:shadow-md dark:hover:bg-white/10 dark:hover:text-white',
+      hover:
+        'hover:bg-white/60 hover:text-slate-900 hover:shadow-md dark:hover:bg-white/10 dark:hover:text-white',
     },
     icon: {
       shape: 'rounded-full',
       size: 'h-9 w-9',
       border: 'border border-slate-200/70 dark:border-white/10',
       text: 'text-slate-500 dark:text-slate-100',
-      hover: 'hover:-translate-y-0.5 hover:border-slate-300 hover:text-slate-900 dark:hover:border-white/40',
+      hover:
+        'hover:-translate-y-0.5 hover:border-slate-300 hover:text-slate-900 dark:hover:border-white/40',
       shadow: 'shadow-sm shadow-slate-200/60 dark:shadow-black/40 hover:shadow-md',
     },
   },
   // Surface tokens define glassmorphic shells used across panels.
   surface: {
     panel: {
-      frame: 'rounded-3xl border border-white/70 bg-white/80 dark:border-white/10 dark:bg-neutral-950/70',
+      frame:
+        'rounded-3xl border border-white/70 bg-white/80 dark:border-white/10 dark:bg-neutral-950/70',
       shadow: 'shadow-lg shadow-slate-900/5',
       blur: 'backdrop-blur',
     },
     card: {
-      frame: 'rounded-2xl border border-white/70 bg-white/80 dark:border-white/10 dark:bg-neutral-950/70',
+      frame:
+        'rounded-2xl border border-white/70 bg-white/80 dark:border-white/10 dark:bg-neutral-950/70',
       shadow: 'shadow-lg shadow-slate-900/5',
       blur: 'backdrop-blur',
     },
     muted: {
-      frame: 'rounded-2xl border border-white/60 bg-white/70 dark:border-white/10 dark:bg-neutral-900/60',
+      frame:
+        'rounded-2xl border border-white/60 bg-white/70 dark:border-white/10 dark:bg-neutral-900/60',
       shadow: 'shadow-inner shadow-slate-900/5',
       blur: 'backdrop-blur',
     },

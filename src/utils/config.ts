@@ -1,36 +1,39 @@
-// Shared chart configuration options for consistent styling and behavior
+/**
+ * config.ts centralizes common chart dimensions, margins, animations, and palettes
+ * so components can stay readable without re-declaring base values.
+ */
 export const chartConfig = {
-  // Common margins for charts
+  /* Common margins for charts */
   margins: {
     bar: { top: 45, right: 30, bottom: 50, left: 70 },
     line: { top: 40, right: 100, bottom: 50, left: 70 },
   },
 
-  // Standard dimensions for different chart types
+  /* Standard dimensions for different chart types */
   dimensions: {
     bar: { width: 720, height: 420 },
     line: { width: 860, height: 440 },
   },
 
-  // Animation durations (in milliseconds)
+  /* Animation durations (in milliseconds) */
   animation: {
     barGrow: 800,
     lineDrawIn: 1000,
     hover: 200,
   },
 
-  // D3 curve types for line charts
+  /* D3 curve types for line charts */
   curves: {
     smooth: 0.5, // Catmull-Rom alpha value for smooth curves
   },
 
-  // Chart element sizes
+  /* Chart element sizes */
   elements: {
     pointRadius: 5,
     barPadding: 0.2,
   },
 
-  // Helper to get CSS variables with fallbacks
+  /* Helper to get CSS variables with fallbacks */
   getVar: (name: string): string | undefined => {
     if (typeof window === 'undefined') return undefined;
     const safeGet = (el: HTMLElement | null): string | undefined => {
@@ -46,7 +49,7 @@ export const chartConfig = {
     return safeGet(document.body);
   },
 
-  // City-specific colors (using CSS variables)
+  /* City-specific colors (using CSS variables) */
   cityColors: {
     Köln: '--color-koeln',
     Berlin: '--color-berlin',

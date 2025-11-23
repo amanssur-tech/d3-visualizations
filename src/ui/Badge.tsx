@@ -1,7 +1,7 @@
-import type { ComponentPropsWithoutRef, ElementType } from 'react';
-
 import { uiTokens } from './tokens';
 import { cn } from './utils';
+
+import type { ComponentPropsWithoutRef, ElementType } from 'react';
 
 type BadgeVariant = 'neutral' | 'soft';
 type BadgeSize = 'sm' | 'xs';
@@ -37,9 +37,12 @@ export const Badge = <T extends ElementType = 'span'>({
   className,
   ...props
 }: BadgeProps<T>) => {
-  const Component = (as ?? 'span') as ElementType;
+  const Component: ElementType = as ?? 'span';
   return (
-    <Component className={cn(baseClasses, variantClasses[variant], sizeClasses[size], className)} {...props} />
+    <Component
+      className={cn(baseClasses, variantClasses[variant], sizeClasses[size], className)}
+      {...props}
+    />
   );
 };
 

@@ -1,3 +1,7 @@
+/**
+ * NotFound.tsx renders the fallback page for unknown routes,
+ * offering a CTA home button and a contextual "go back" action.
+ */
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { NavLink, useNavigate } from 'react-router-dom';
@@ -16,6 +20,7 @@ const NotFound = () => {
     void navigate('/');
   };
 
+  /* ----------------------------- Layout + actions ----------------------------- */
   return (
     <motion.section
       className="relative mx-auto flex w-full max-w-3xl flex-col items-center overflow-hidden rounded-4xl border border-white/50 bg-white/80 px-6 py-12 text-center shadow-2xl shadow-cyan-500/10 backdrop-blur dark:border-white/10 dark:bg-neutral-900/70 dark:shadow-black/40 sm:px-10 sm:py-16"

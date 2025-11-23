@@ -1,9 +1,11 @@
+/**
+ * Tooltip.tsx ensures a single tooltip container exists so D3-driven charts
+ * can share positioning logic without re-creating DOM nodes.
+ */
 import { useEffect } from 'react';
 
-/**
- * Ensures a single tooltip root exists for D3 to reuse across charts.
- */
 const Tooltip = () => {
+  /* ----------------------------- Create tooltip root once ----------------------------- */
   useEffect(() => {
     if (typeof document === 'undefined') return undefined;
     let el = document.getElementById('global-tooltip-root');

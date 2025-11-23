@@ -1,14 +1,18 @@
+/**
+ * router.tsx declares every route in the SPA, including named paths for each case study.
+ */
 import { createBrowserRouter } from 'react-router-dom';
 
 import App from './App';
-import CaseStudy1BarChart from './components/case-studies/CaseStudy1BarChart';
-import CaseStudy2LineChart from './components/case-studies/CaseStudy2LineChart';
-import CaseStudy3RandomizedBars from './components/case-studies/CaseStudy3RandomizedBars';
-import CaseStudy4TimeOfDay from './components/case-studies/CaseStudy4TimeOfDay';
-import Dashboard from './components/Dashboard';
-import NotFound from './components/NotFound';
+import CaseStudy1BarChart from './pages/case-studies/CaseStudy1BarChart';
+import CaseStudy2LineChart from './pages/case-studies/CaseStudy2LineChart';
+import CaseStudy3RandomizedBars from './pages/case-studies/CaseStudy3RandomizedBars';
+import CaseStudy4TimeOfDay from './pages/case-studies/CaseStudy4TimeOfDay';
 import CaseStudiesIndex from './pages/CaseStudiesIndex';
+import Dashboard from './pages/Dashboard';
+import NotFound from './pages/NotFound';
 
+/* ----------------------------- App route hierarchy ----------------------------- */
 export const router = createBrowserRouter([
   {
     path: '/',
@@ -22,6 +26,7 @@ export const router = createBrowserRouter([
         path: 'case-studies',
         element: <CaseStudiesIndex />,
       },
+      // Direct access to each case study for quick debugging
       {
         path: 'case-studies/1-bar-chart-city-comparison',
         element: <CaseStudy1BarChart />,

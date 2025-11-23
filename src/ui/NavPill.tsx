@@ -1,5 +1,4 @@
-import type { NavLinkProps } from 'react-router-dom';
-import { NavLink } from 'react-router-dom';
+import { NavLink, type NavLinkProps } from 'react-router-dom';
 
 import { uiTokens } from './tokens';
 import { cn } from './utils';
@@ -15,7 +14,9 @@ export type NavPillProps = Omit<NavLinkProps, 'className'> & {
 export const NavPill = ({ className, ...props }: NavPillProps) => (
   <NavLink
     {...props}
-    className={({ isActive }) => cn(navItemBase, isActive ? navItemActive : navItemInactive, className)}
+    className={({ isActive }) =>
+      cn(navItemBase, isActive ? navItemActive : navItemInactive, className)
+    }
   />
 );
 

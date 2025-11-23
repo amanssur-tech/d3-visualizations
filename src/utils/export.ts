@@ -1,8 +1,8 @@
-// src/utils/export.ts
 /**
- * Shared utilities for chart export functionality
+ * export.ts contains the shared SVG/PNG download helpers and path resolution for assets.
  */
 
+/* ----------------------------- SVG export helper ----------------------------- */
 export const downloadSVG = (svgElement: SVGSVGElement, filename = 'chart.svg'): void => {
   const serializer = new XMLSerializer();
 
@@ -27,6 +27,7 @@ export const downloadSVG = (svgElement: SVGSVGElement, filename = 'chart.svg'): 
   URL.revokeObjectURL(url);
 };
 
+/* ----------------------------- PNG export helper ----------------------------- */
 export const downloadPNG = (
   svgElement: SVGSVGElement,
   width: number,
@@ -80,6 +81,7 @@ export const downloadPNG = (
   img.src = url;
 };
 
+/* ----------------------------- Data path resolver ----------------------------- */
 export const resolveDataPath = (folder: string, file: string): string => {
   return window.location.pathname.includes(`/${folder}/`)
     ? `data/${file}`

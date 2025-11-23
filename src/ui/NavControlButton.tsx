@@ -1,8 +1,7 @@
-import { forwardRef } from 'react';
-import type { ButtonHTMLAttributes } from 'react';
+import { forwardRef, type ButtonHTMLAttributes } from 'react';
 
-import { cn } from './utils';
 import { navItemActive, navItemBase, navItemInactive } from './NavPill';
+import { cn } from './utils';
 
 export type NavControlButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   active?: boolean;

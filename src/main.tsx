@@ -1,4 +1,6 @@
-// src/main.tsx
+/**
+ * main.tsx bootstraps the React app, loads i18n + global styles, and mounts the router.
+ */
 import { Suspense } from 'react';
 import ReactDOM from 'react-dom/client';
 import { useTranslation } from 'react-i18next';
@@ -8,6 +10,7 @@ import './i18n/i18n';
 import './styles/global.css';
 import { router } from './router';
 
+/* ----------------------------- Suspense fallback view ----------------------------- */
 const LoadingScreen = () => {
   const { t } = useTranslation('common');
   return (
@@ -17,6 +20,7 @@ const LoadingScreen = () => {
   );
 };
 
+/* ----------------------------- Router with Suspense ----------------------------- */
 const Root = () => {
   return (
     <Suspense fallback={<LoadingScreen />}>
@@ -25,6 +29,7 @@ const Root = () => {
   );
 };
 
+/* ----------------------------- App mount ----------------------------- */
 const container = document.getElementById('root');
 if (!container) {
   throw new Error('Root element not found');

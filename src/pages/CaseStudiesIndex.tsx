@@ -1,35 +1,22 @@
+// src/pages/CaseStudiesIndex.tsx
+/**
+ * CaseStudiesIndex.tsx lists every case study card with previews and tags for browsing.
+ */
 import { motion } from 'framer-motion';
-import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
-import CaseStudyPreview from '../components/case-studies/CaseStudyPreview';
 import { caseStudies } from '../content/caseStudies';
+import { useTranslator } from '../hooks/useTranslator';
 import { Badge } from '../ui/Badge';
 import { Button } from '../ui/Button';
 import { Surface } from '../ui/Surface';
 
-const knownNamespaces = [
-  'common',
-  'navbar',
-  'footer',
-  'dashboard',
-  'charts',
-  'export',
-  'tooltips',
-  'caseStudies',
-] as const;
+import CaseStudyPreview from '../components/dashboard/CaseStudyPreview';
 
 const CaseStudiesIndex = () => {
-  const { t } = useTranslation(['caseStudies', 'common']);
-  const translate = (fullKey: string, options?: Record<string, unknown>): string => {
-    const [maybeNs, ...rest] = fullKey.split('.');
-    if (maybeNs && rest.length > 0 && (knownNamespaces as readonly string[]).includes(maybeNs)) {
-      const key = rest.join('.');
-      return t(key, { ns: maybeNs, ...(options ?? {}) });
-    }
-    return t(fullKey, options);
-  };
+  const { translate } = useTranslator(['caseStudies', 'common']);
 
+  /* ----------------------------- Page layout ----------------------------- */
   return (
     <motion.section
       className="mx-auto flex max-w-6xl flex-col gap-8"
@@ -37,20 +24,22 @@ const CaseStudiesIndex = () => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, ease: 'easeOut' }}
     >
+      {/* Library hero copy */}
       <Surface variant="panel" padding="lg" className="sm:px-10">
         <p className="text-xs font-semibold uppercase tracking-[0.4em] text-slate-500 dark:text-slate-400">
-          {t('caseStudies:library.eyebrow')}
+          {translate('caseStudies.library.eyebrow')}
         </p>
         <div className="mt-3 flex flex-wrap items-end gap-3">
           <h1 className="text-3xl font-semibold text-slate-900 dark:text-white sm:text-4xl">
-            {t('caseStudies:library.title')}
+            {translate('caseStudies.library.title')}
           </h1>
         </div>
         <p className="mt-3 max-w-3xl text-base text-slate-600 dark:text-slate-300">
-          {t('caseStudies:library.description')}
+          {translate('caseStudies.library.description')}
         </p>
       </Surface>
 
+      {/* Case study listing */}
       <div className="grid gap-6 lg:grid-cols-2">
         {caseStudies.map((study, index) => (
           <Surface
@@ -76,17 +65,14 @@ const CaseStudiesIndex = () => {
                 </p>
               </div>
               <Button as={Link} to={study.path} variant="secondary" size="sm" className="text-xs">
-                {t('caseStudies:library.cta')}
+                {translate('caseStudies.library.cta')}
               </Button>
             </div>
 
             <div className="mt-5 flex flex-wrap gap-2">
               {study.tags.map((tag) => (
-                <Badge
-                  key={`${study.id}-${tag}`}
-                  size="sm"
-                >
-                  {t(`caseStudies:tags.${tag}`)}
+                <Badge key={`${study.id}-${tag}`} size="sm">
+                  {translate(`caseStudies.tags.${tag}`)}
                 </Badge>
               ))}
             </div>
