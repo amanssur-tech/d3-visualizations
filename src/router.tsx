@@ -1,5 +1,9 @@
 /**
  * router.tsx declares every route in the SPA, including named paths for each case study.
+ *
+ * Note: Direct deep links to these routes (for example `/case-studies/...`) depend on the
+ * hosting configuration rewriting all non-asset paths to `/` so that the SPA can handle
+ * routing client-side (see vercel.json for the rewrite rule).
  */
 import { createBrowserRouter } from 'react-router-dom';
 
