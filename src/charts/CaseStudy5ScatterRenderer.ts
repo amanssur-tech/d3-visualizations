@@ -234,34 +234,39 @@ export const renderCaseStudy5Scatter = ({
   const shopLabels = bubbles
     .append('text')
     .attr('text-anchor', 'middle')
-    .attr('x', (d) => getShopShift(d.city).x)
-    .attr('y', (d) => getShopYOffset(d.city, radiusScale(d.shops)))
+    .attr('x', 4)
+    .attr('y', 4)
     .attr('fill', '#0f172a')
     .attr('font-weight', 700)
     .attr('font-size', 14)
     .text((d) => translate('caseStudies:5.scatter.shopsCount', { value: d3.format(',')(d.shops) }));
 
-  shopLabels.each(function (_datum, index, nodes) {
-    const labelNode = nodes[index] as SVGTextElement | undefined;
-    if (!labelNode) return;
-    const bbox = labelNode.getBBox();
-    const paddingX = 3;
-    const paddingY = 3;
+  // Deterministic pill rendering
+  const pillPaddingX = 6;
+  const pillPaddingY = 3;
+  const charWidth = 7.5;
+  const pillHeight = 20;
+
+  shopLabels.each(function (_datum, _index, nodes) {
+    const labelNode = this as SVGTextElement;
+    const text = labelNode.textContent ?? '';
+    const pillWidth = pillPaddingX * 2 + text.length * charWidth;
 
     const wrapper = d3.select(labelNode.parentNode as SVGGElement | null);
     if (wrapper.empty()) return;
 
-    wrapper
-      .insert('rect', function () {
-        return labelNode;
-      })
-      .attr('class', 'shops-pill')
-      .attr('x', bbox.x - paddingX)
-      .attr('y', bbox.y - paddingY)
-      .attr('width', bbox.width + paddingX * 2)
-      .attr('height', bbox.height + paddingY * 2)
-      .attr('rx', (bbox.height + paddingY * 2) / 2)
-      .attr('ry', (bbox.height + paddingY * 2) / 2)
+    let pill = wrapper.select<SVGRectElement>('rect.shops-pill');
+    if (pill.empty()) {
+      pill = wrapper.insert('rect', () => labelNode).attr('class', 'shops-pill');
+    }
+
+    pill
+      .attr('x', -pillWidth / 2)
+      .attr('y', -pillHeight / 2)
+      .attr('width', pillWidth)
+      .attr('height', pillHeight)
+      .attr('rx', pillHeight / 2)
+      .attr('ry', pillHeight / 2)
       .attr('fill', 'rgba(255,255,255,0.95)')
       .attr('stroke', 'rgba(15,23,42,0.12)');
   });
