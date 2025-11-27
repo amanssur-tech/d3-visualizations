@@ -40,6 +40,11 @@ const caseStudyLinks = [
     labelKey: 'navbar.dropdown.items.4',
     to: '/case-studies/4-time-of-day-sales-flawed-corrected',
   },
+  {
+    id: '5',
+    labelKey: 'navbar.dropdown.items.5',
+    to: '/case-studies/5-dual-dumbbell-bubble-city-story',
+  },
 ] as const;
 
 interface CaseStudiesDropdownProps {

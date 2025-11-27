@@ -46,7 +46,8 @@
         "1": "Case Study 1: Vergleichs-Barchart",
         "2": "Case Study 2: Städte-Trendlinien",
         "3": "Case Study 3: Live Random-Balken",
-        "4": "Case Study 4: Ethik-Panel"
+        "4": "Case Study 4: Ethik-Panel",
+        "5": "Case Study 5: Dumbbell + Bubble"
       }
     },
     "themeToggle": {
@@ -127,28 +128,6 @@
     }
   },
   "caseStudies": {
-    "library": {
-      "eyebrow": "Case Study Bibliothek",
-      "title": "D3 Case Studies zu Kebabläden",
-      "description": "Ausgearbeitete Studies: Städtevergleich, Zeitreihe, Zufallsbewegung und ein Design-Ethik Vorher/Nachher.",
-      "cta": "Case Study öffnen",
-      "tagsLabel": "Tags",
-      "open": "Case Study öffnen",
-      "viewAll": "Alle Case Studies ansehen"
-    },
-    "tags": {
-      "barChart": "Balkendiagramm",
-      "lineChart": "Liniendiagramm",
-      "cityComparison": "Städtevergleich",
-      "timeSeries": "Zeitreihe",
-      "randomized": "Zufallsdaten",
-      "live": "Live-Updates",
-      "ethics": "Ethik",
-      "design": "Designprinzipien",
-      "timeOfDay": "Tageszeit",
-      "multiPanel": "Mehrteilig",
-      "exportable": "Export"
-    },
     "1": {
       "title": "Case Study 1: Balkendiagramm der Kebabläden nach Stadt",
       "subtitle": "Abgerundete Verläufe und exportbereite Vergleiche.",
@@ -235,6 +214,89 @@
           "mapping": "Gemeinsame Tagesachse, eigene Y-Skalen, Punkte pro Tag und keine versteckten Aggregationen."
         }
       }
+    },
+    "5": {
+      "title": "Case Study 5: Dumbbell + Bubble Städtevergleich",
+      "subtitle": "Dual Encoding für Kunden, Umsatz und Menütypen",
+      "description": "Per Toggle zwischen einem menüfarbenen Dumbbell und einem Bubble-Scatterplot wechseln, um tägliche Kunden, Umsatz und Shop-Anzahlen je Stadt zu kontrastieren.",
+      "toggle": {
+        "label": "Ansicht umschalten",
+        "aria": "Case Study 5 Diagrammansicht wechseln",
+        "dumbbell": "Dumbbell-Chart",
+        "scatter": "Bubble-Scatterplot"
+      },
+      "legend": {
+        "menu": "Menü-Typ",
+        "customers": "Linker Punkt = Kunden pro Tag (Farbe folgt Menütyp)",
+        "revenue": "Rechter Punkt = Umsatz pro Tag (€)"
+      },
+      "menuTypes": {
+        "Veggie": "Veggie",
+        "Hähnchen": "Hähnchen",
+        "Kalb": "Kalb"
+      },
+      "dumbbell": {
+        "label": "Gemeinsame Achse",
+        "title": "Kunden vs. Umsatz pro Stadt",
+        "description": "Eine gemeinsame X-Achse zeigt die Lücke zwischen Kunden und Umsatz, während Strichstärke und Punktgröße die Anzahl der Shops kodieren.",
+        "axis": "Kunden & Umsatz pro Tag",
+        "chartTitle": "Kunden vs. Umsatz pro Stadt (Dumbbell)",
+        "chartDescription": "Jede Stadt erhält einen neutralen Verbinder, das Kundensymbol folgt der Menüfarbe und der Umsatzpunkt nutzt die Akzentfarbe. Die Shopzahl steht direkt auf der Linie.",
+        "shopsLabel": "{{count}} Shops",
+        "axis": "Kunden (links) / Umsatz (rechts in €) pro Tag",
+        "notes": {
+          "channels": "Linienlänge zeigt den Abstand zwischen Kunden und Umsatz, Strichstärke wächst mit der Anzahl der Shops.",
+          "labels": "Inline-Labels schreiben die genaue Shopzahl an den Mittelpunkt jeder Verbindung.",
+          "shops": "Die Menüfarbe am Kundensymbol verrät sofort, welches Angebot die Nachfrage antreibt."
+        }
+      },
+      "scatter": {
+        "label": "Bubble-Plot",
+        "title": "Bubble-Karte der Kebap-Nachfrage",
+        "description": "Bubbles liegen auf einem Kunden × Umsatz Raster; Farbe steht für Menü, Radius für Shops, Beschriftung für Stadtname und Shopzahl.",
+        "axis": {
+          "x": "Kunden pro Tag",
+          "y": "Umsatz pro Tag (€)"
+        },
+        "chartTitle": "Kunden vs. Umsatz Bubble-Chart",
+        "chartDescription": "Die Legende spiegelt die Menüreihenfolge, die Bubble-Größe zeigt die Shops, die Zahl steht innen und der Stadtname sitzt außen.",
+        "shopsCount": "{{value}} Läden",
+        "notes": {
+          "quadrants": "Rasterlinien machen sichtbar, welche Städte kundenstark bzw. umsatzstark sind.",
+          "legend": "Die Legende folgt der Veggie/Hähnchen/Kalb-Palette, sodass Anpassungen zentral erfolgen können.",
+          "annotation": "Jede Bubble enthält die Shopzahl und trägt den vollständigen Stadtnamen neben sich für schnelles Scannen."
+        }
+      },
+      "tooltip": {
+        "customers": "<strong>{{city}}</strong><br/>{{customers}} Kunden pro Tag<br/>Menü: {{menu}}<br/>{{shops}} Shops",
+        "revenue": "<strong>{{city}}</strong><br/>€{{revenue}} Umsatz pro Tag<br/>{{shops}} Shops",
+        "scatter": "<strong>{{city}}</strong><br/>{{customers}} Kunden / Tag<br/>€{{revenue}} Umsatz / Tag<br/>Menü: {{menu}}<br/>{{shops}} Shops"
+      }
+    },
+    "library": {
+      "eyebrow": "Case Study Bibliothek",
+      "title": "D3 Case Studies zu Kebabläden",
+      "description": "Ausgearbeitete Studies: Städtevergleich, Zeitreihe, Zufallsbewegung und ein Design-Ethik Vorher/Nachher.",
+      "cta": "Case Study öffnen",
+      "tagsLabel": "Tags",
+      "open": "Case Study öffnen",
+      "viewAll": "Alle Case Studies ansehen"
+    },
+    "tags": {
+      "barChart": "Balkendiagramm",
+      "lineChart": "Liniendiagramm",
+      "cityComparison": "Städtevergleich",
+      "timeSeries": "Zeitreihe",
+      "randomized": "Zufallsdaten",
+      "live": "Live-Updates",
+      "ethics": "Ethik",
+      "design": "Designprinzipien",
+      "timeOfDay": "Tageszeit",
+      "multiPanel": "Mehrteilig",
+      "exportable": "Export",
+      "dualView": "Dual-Ansicht",
+      "dumbbell": "Dumbbell-Diagramm",
+      "scatterplot": "Scatterplot"
     }
   },
   "charts": {

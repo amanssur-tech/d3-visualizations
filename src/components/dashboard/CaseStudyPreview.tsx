@@ -100,6 +100,47 @@ const CaseStudyPreview = ({ id }: CaseStudyPreviewProps) => {
     );
   }
 
+  if (id === 5) {
+    // Split panel showing a mini dumbbell + scatter hint for the dual view
+    return (
+      <div className={`${cardShell} h-36`}>
+        <div className="grid h-full grid-cols-2 gap-3">
+          <div className="flex flex-col justify-between rounded-xl border border-white/70 bg-white/80 p-3 shadow-inner dark:border-white/10 dark:bg-white/5">
+            {[0, 1, 2].map((index) => (
+              <div key={index} className="relative flex items-center">
+                <div className="h-[2px] flex-1 rounded bg-slate-200 dark:bg-slate-700" />
+                <span className="absolute right-0 h-3 w-3 rounded-full bg-sky-400 shadow shadow-sky-500/30" />
+                <span
+                  className="absolute left-0 h-2.5 w-2.5 rounded-full shadow"
+                  style={{
+                    background: index === 0 ? '#22c55e' : index === 1 ? '#6366f1' : '#f97316',
+                  }}
+                />
+              </div>
+            ))}
+          </div>
+          <div className="relative rounded-xl border border-white/70 bg-white/80 p-3 shadow-inner dark:border-white/10 dark:bg-white/5">
+            {[1, 2, 3, 4].map((index) => (
+              <span
+                key={index}
+                className="absolute inline-flex items-center justify-center rounded-full text-[10px] font-semibold text-white shadow"
+                style={{
+                  width: `${14 + index * 5}px`,
+                  height: `${14 + index * 5}px`,
+                  left: `${index * 14 + 10}px`,
+                  bottom: `${index * 8 + 8}px`,
+                  background: index % 2 === 0 ? '#22c55e' : index % 3 === 0 ? '#f97316' : '#6366f1',
+                }}
+              >
+                {index + 1}
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   // Default fallback references the flawed/fixed comparison
   return (
     <div className={`${cardShell} h-36 overflow-hidden`}>

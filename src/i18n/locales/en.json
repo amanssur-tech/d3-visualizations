@@ -46,7 +46,8 @@
         "1": "Case Study 1: Comparison Bar Chart",
         "2": "Case Study 2: City Trend Lines",
         "3": "Case Study 3: Live Randomized Bars",
-        "4": "Case Study 4: Ethics Panel"
+        "4": "Case Study 4: Ethics Panel",
+        "5": "Case Study 5: Dual Dumbbell + Scatter"
       }
     },
     "themeToggle": {
@@ -127,28 +128,6 @@
     }
   },
   "caseStudies": {
-    "library": {
-      "eyebrow": "Case Study Library",
-      "title": "D3 case studies on kebab shop data",
-      "description": "Browse polished studies: city comparisons, time trends, randomized motion, and a design ethics before/after.",
-      "cta": "Open Case Study",
-      "tagsLabel": "Tags",
-      "open": "Open Case Study",
-      "viewAll": "Browse all case studies"
-    },
-    "tags": {
-      "barChart": "Bar Chart",
-      "lineChart": "Line Chart",
-      "cityComparison": "City Comparison",
-      "timeSeries": "Time Series",
-      "randomized": "Random Data",
-      "live": "Live Updates",
-      "ethics": "Ethics",
-      "design": "Design Principles",
-      "timeOfDay": "Time of Day",
-      "multiPanel": "Multi-panel",
-      "exportable": "Exportable"
-    },
     "1": {
       "title": "Case Study 1: Bar Chart of Kebabläden by City",
       "subtitle": "Rounded gradients and export-ready comparisons.",
@@ -235,6 +214,89 @@
           "mapping": "Shared day axis, independent y-scales, dots for each day, and no hidden aggregation tricks."
         }
       }
+    },
+    "5": {
+      "title": "Case Study 5: Dumbbell + Bubble City Comparison",
+      "subtitle": "Dual encoding for customers, revenue, and menu types",
+      "description": "Toggle between a menu-colored dumbbell and a bubble scatterplot to compare daily customers, revenue, and the number of shops per German city.",
+      "toggle": {
+        "label": "Dual chart toggle",
+        "aria": "Switch Case Study 5 chart view",
+        "dumbbell": "Dumbbell chart",
+        "scatter": "Bubble scatterplot"
+      },
+      "legend": {
+        "menu": "Menu type",
+        "customers": "Left dots = customers per day (color follows menu type)",
+        "revenue": "Right dots = revenue per day (€)"
+      },
+      "menuTypes": {
+        "Veggie": "Veggie",
+        "Hähnchen": "Chicken",
+        "Kalb": "Veal"
+      },
+      "dumbbell": {
+        "label": "Shared-axis dumbbell",
+        "title": "Customers vs revenue per city",
+        "description": "Neutral connectors share one axis for customers and revenue; dots inherit menu colors and line weight scales with shop counts.",
+        "axis": "Customers & revenue per day",
+        "chartTitle": "Daily customers vs revenue per city (dumbbell)",
+        "chartDescription": "Each city uses menu color for the customer dot, an accent revenue dot, and a neutral connector. Shop counts print directly on the line.",
+        "shopsLabel": "{{count}} shops",
+        "axis": "Customers (left) / Revenue (right in €) per day",
+        "notes": {
+          "channels": "Line length compares customers to revenue while stroke width and dot radius scale with the number of shops.",
+          "labels": "Inline labels print exact shop totals midway along each connector.",
+          "shops": "Menu-colored customer dots reveal which flavor drives traffic before the revenue comparison."
+        }
+      },
+      "scatter": {
+        "label": "Bubble scatterplot",
+        "title": "Bubble map of kebab demand",
+        "description": "Bubbles sit on a customers × revenue grid with color for menu type, radius for shop count, and labels for both the city name and shop total.",
+        "axis": {
+          "x": "Customers per day",
+          "y": "Revenue per day (€)"
+        },
+        "chartTitle": "Customers vs revenue bubble chart",
+        "chartDescription": "Menu colors follow the legend, bubble radius tracks shop counts, the total sits inside each bubble, and the city label hugs the edge.",
+        "shopsCount": "{{value}} shops",
+        "notes": {
+          "quadrants": "Gridlines highlight which cities are customer-heavy versus revenue-heavy.",
+          "legend": "The legend mirrors the Veggie/Hähnchen/Kalb palette so editors can reorder hues centrally.",
+          "annotation": "Each bubble prints the shop count inside and the full city label outside for quick scanning."
+        }
+      },
+      "tooltip": {
+        "customers": "<strong>{{city}}</strong><br/>{{customers}} customers per day<br/>Menu: {{menu}}<br/>{{shops}} shops",
+        "revenue": "<strong>{{city}}</strong><br/>€{{revenue}} revenue per day<br/>{{shops}} shops",
+        "scatter": "<strong>{{city}}</strong><br/>{{customers}} customers / day<br/>€{{revenue}} revenue / day<br/>Menu: {{menu}}<br/>{{shops}} shops"
+      }
+    },
+    "library": {
+      "eyebrow": "Case Study Library",
+      "title": "D3 case studies on kebab shop data",
+      "description": "Browse polished studies: city comparisons, time trends, randomized motion, and a design ethics before/after.",
+      "cta": "Open Case Study",
+      "tagsLabel": "Tags",
+      "open": "Open Case Study",
+      "viewAll": "Browse all case studies"
+    },
+    "tags": {
+      "barChart": "Bar Chart",
+      "lineChart": "Line Chart",
+      "cityComparison": "City Comparison",
+      "timeSeries": "Time Series",
+      "randomized": "Random Data",
+      "live": "Live Updates",
+      "ethics": "Ethics",
+      "design": "Design Principles",
+      "timeOfDay": "Time of Day",
+      "multiPanel": "Multi-panel",
+      "exportable": "Exportable",
+      "dualView": "Dual view",
+      "dumbbell": "Dumbbell chart",
+      "scatterplot": "Scatterplot"
     }
   },
   "charts": {

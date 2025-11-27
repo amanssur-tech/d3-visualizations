@@ -12,6 +12,7 @@ import CaseStudy1BarChart from './pages/case-studies/CaseStudy1BarChart';
 import CaseStudy2LineChart from './pages/case-studies/CaseStudy2LineChart';
 import CaseStudy3RandomizedBars from './pages/case-studies/CaseStudy3RandomizedBars';
 import CaseStudy4TimeOfDay from './pages/case-studies/CaseStudy4TimeOfDay';
+import CaseStudy5DualView from './pages/case-studies/CaseStudy5DualView';
 import CaseStudiesIndex from './pages/CaseStudiesIndex';
 import Dashboard from './pages/Dashboard';
 import NotFound from './pages/NotFound';
@@ -47,6 +48,14 @@ export const router = createBrowserRouter([
       {
         path: 'case-studies/4-time-of-day-sales-flawed-corrected',
         element: <CaseStudy4TimeOfDay />,
+      },
+      {
+        path: 'case-studies/5-dual-dumbbell-bubble-city-story',
+        element: <CaseStudy5DualView />,
+      },
+      {
+        path: 'case-studies/cs5',
+        element: <CaseStudy5DualView />,
       },
       {
         path: '*',

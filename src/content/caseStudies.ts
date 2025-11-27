@@ -1,4 +1,4 @@
-export type CaseStudyId = 1 | 2 | 3 | 4;
+export type CaseStudyId = 1 | 2 | 3 | 4 | 5;
 
 export interface CaseStudyMeta {
   id: CaseStudyId;
@@ -10,7 +10,7 @@ export interface CaseStudyMeta {
   tags: string[];
   accentFrom: string;
   accentTo: string;
-  preview: 'bar' | 'line' | 'random' | 'time';
+  preview: 'bar' | 'line' | 'random' | 'time' | 'dual';
 }
 
 // Tweak: central metadata registry for every case study (paths, copy keys, tags, preview style).
@@ -63,6 +63,18 @@ export const caseStudies: CaseStudyMeta[] = [
     accentFrom: 'from-amber-500/20',
     accentTo: 'to-rose-500/20',
     preview: 'time',
+  },
+  {
+    id: 5,
+    slug: '5-dual-dumbbell-bubble-city-story',
+    path: '/case-studies/5-dual-dumbbell-bubble-city-story',
+    titleKey: 'caseStudies.5.title',
+    subtitleKey: 'caseStudies.5.subtitle',
+    descriptionKey: 'caseStudies.5.description',
+    tags: ['cityComparison', 'dualView', 'dumbbell', 'scatterplot'],
+    accentFrom: 'from-fuchsia-500/20',
+    accentTo: 'to-cyan-500/20',
+    preview: 'dual',
   },
 ];
 
