@@ -13,7 +13,7 @@ Originally inspired by an academic project, it has evolved into a professional-g
 
 ## 📸 Preview (coming soon)
 
-![Dashboard Screenshot](https://github.com/amanssur-tech/d3-visualizations/assets/preview.png)
+<img width="1920" height="1080" alt="Dashboard Screenshot" src="https://github.com/user-attachments/assets/16231b24-855d-421e-a0ed-c01dc751612c" />
 
 > Responsive, animated dashboard built with React, D3.js, Tailwind, and Vite.
 
