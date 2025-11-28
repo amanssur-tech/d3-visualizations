@@ -40,11 +40,6 @@ const CITY_LABEL_TWEAKS: Record<string, { x: number; y: number }> = {
   Aachen: { x: 0, y: 0 },
 };
 
-const SHOP_COUNT_TWEAKS: Record<string, { x: number; y: number }> = {
-  Bremen: { x: -20, y: 0 },
-  Muenchen: { x: 20, y: 0 },
-};
-
 export const renderCaseStudy5Scatter = ({
   container,
   data,
@@ -224,12 +219,6 @@ export const renderCaseStudy5Scatter = ({
       tooltip.hide();
     });
 
-  const getShopShift = (city: string) => SHOP_COUNT_TWEAKS[city] ?? { x: 0, y: 0 };
-  const getShopYOffset = (city: string, radius: number) => {
-    const baseline = radius < 18 ? radius + 16 : 4;
-    return baseline + getShopShift(city).y;
-  };
-
   // Number of restaurants inline.
   const shopLabels = bubbles
     .append('text')
@@ -243,12 +232,12 @@ export const renderCaseStudy5Scatter = ({
 
   // Deterministic pill rendering
   const pillPaddingX = 6;
-  const pillPaddingY = 3;
   const charWidth = 7.5;
   const pillHeight = 20;
 
-  shopLabels.each(function (_datum, _index, nodes) {
-    const labelNode = this as SVGTextElement;
+  shopLabels.each(function (_datum, index, nodes) {
+    const labelNode = nodes[index] as SVGTextElement | undefined;
+    if (!labelNode) return;
     const text = labelNode.textContent ?? '';
     const pillWidth = pillPaddingX * 2 + text.length * charWidth;
 
