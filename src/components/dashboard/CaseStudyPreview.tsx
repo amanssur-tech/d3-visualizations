@@ -141,6 +141,46 @@ const CaseStudyPreview = ({ id }: CaseStudyPreviewProps) => {
     );
   }
 
+  if (id === 6) {
+    // Parallel coordinates hint with intersecting station paths
+    const previewLines: [string, number[]][] = [
+      ['#22c55e', [80, 64, 70, 62, 76]],
+      ['#0ea5e9', [52, 78, 66, 58, 48]],
+      ['#a855f7', [70, 50, 84, 46, 68]],
+      ['#f97316', [60, 58, 72, 78, 54]],
+    ];
+
+    return (
+      <div className={`${cardShell} h-36`}>
+        <div className="relative h-full w-full rounded-xl border border-white/70 bg-white/70 p-3 dark:border-white/10 dark:bg-white/5">
+          <div className="absolute inset-x-2 top-3 bottom-3 flex justify-between">
+            {[0, 1, 2, 3, 4].map((index) => (
+              <span
+                key={index}
+                className="h-full w-[1px] rounded bg-slate-200 dark:bg-slate-800"
+                style={{ opacity: index === 0 || index === 4 ? 0.6 : 0.35 }}
+              />
+            ))}
+          </div>
+          {previewLines.map(([color, heights], lineIndex) => (
+            <svg key={`${color}-${lineIndex}`} viewBox="0 0 200 120" className="absolute inset-2">
+              <polyline
+                points={(heights as number[])
+                  .map((value, axis) => `${10 + axis * 45},${120 - value}`)
+                  .join(' ')}
+                fill="none"
+                stroke={color as string}
+                strokeWidth="3"
+                strokeLinecap="round"
+                opacity={0.82 - lineIndex * 0.12}
+              />
+            </svg>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   // Default fallback references the flawed/fixed comparison
   return (
     <div className={`${cardShell} h-36 overflow-hidden`}>

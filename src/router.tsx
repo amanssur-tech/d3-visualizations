@@ -13,6 +13,7 @@ import CaseStudy2LineChart from './pages/case-studies/CaseStudy2LineChart';
 import CaseStudy3RandomizedBars from './pages/case-studies/CaseStudy3RandomizedBars';
 import CaseStudy4TimeOfDay from './pages/case-studies/CaseStudy4TimeOfDay';
 import CaseStudy5DualView from './pages/case-studies/CaseStudy5DualView';
+import CaseStudy6ParallelCoordinates from './pages/case-studies/CaseStudy6ParallelCoordinates';
 import CaseStudiesIndex from './pages/CaseStudiesIndex';
 import Dashboard from './pages/Dashboard';
 import NotFound from './pages/NotFound';
@@ -56,6 +57,10 @@ export const router = createBrowserRouter([
       {
         path: 'case-studies/cs5',
         element: <CaseStudy5DualView />,
+      },
+      {
+        path: 'case-studies/6-parallel-coordinates-air-quality',
+        element: <CaseStudy6ParallelCoordinates />,
       },
       {
         path: '*',

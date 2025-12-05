@@ -273,6 +273,60 @@
         "scatter": "<strong>{{city}}</strong><br/>{{customers}} customers / day<br/>€{{revenue}} revenue / day<br/>Menu: {{menu}}<br/>{{shops}} shops"
       }
     },
+    "6": {
+      "title": "Case Study 6: Parallel Coordinates on Air Quality Stations",
+      "subtitle": "Feinstaub focus across five pollutants.",
+      "description": "Compare fine dust against four other pollutants across German monitoring stations in a normalized parallel coordinates plot.",
+      "summary": "Parallel coordinates view of five pollutant scores per station with hover focus.",
+      "chart": {
+        "title": "Air quality metrics per station",
+        "description": "Parallel coordinates plot with one axis per pollutant and color-coded networks.",
+        "note": "Scores are normalized within this sample (0 = lowest, 10 = highest) so relative differences stay visible.",
+        "tooltip": "<strong>{{name}}</strong><br/>Network: {{network}}<br/>{{environment}} • {{stationType}}<br/><em>{{metric}}</em>: {{value}}"
+      },
+      "starPlot": {
+        "title": "Star plot per station",
+        "description": "Each station becomes a five-point star; one spoke per pollutant, colored by network.",
+        "note": "Best for a handful of stations—overplotting rises quickly as stars overlap.",
+        "tooltip": "<strong>{{name}}</strong><br/>{{metric}}: {{value}}<br/>Network: {{network}}"
+      },
+      "metrics": {
+        "fineDust": "Feinstaub (PM10)",
+        "carbonMonoxide": "Carbon monoxide (CO)",
+        "ozone": "Ozone (O₃)",
+        "sulfurDioxide": "Sulfur dioxide (SO₂)",
+        "nitrogenDioxide": "Nitrogen dioxide (NO₂)"
+      },
+      "networks": {
+        "bremen": "Bremen",
+        "hessen": "Hesse",
+        "rheinlandPfalz": "Rhineland-Palatinate"
+      },
+      "environments": {
+        "urban": "Urban background"
+      },
+      "stationTypes": {
+        "background": "Background station"
+      },
+      "highlights": {
+        "normalized": "All pollutants are normalized to 0–10 so every axis is comparable at a glance.",
+        "fineDust": "The Feinstaub axis comes first to anchor the brief’s focus on particulate matter.",
+        "hover": "Hover isolates one station path, reveals exact values, and gently fades the rest."
+      },
+      "legend": {
+        "title": "Networks and context",
+        "envLabel": "Environment",
+        "typeLabel": "Station type"
+      },
+      "comparison": {
+        "question": "Können die Daten aller Messstationen abgelesen werden? Was gibt es beim Visualisierungsdesign zu beachten?",
+        "points": {
+          "coverage": "Parallel coordinates expose every station and pollutant at once; the star plot stays readable only with few stations before spokes overlap.",
+          "focus": "Both views need hover focus; parallels dim the other lines cleanly, while the star plot benefits from highlighting one polygon and its labels.",
+          "design": "Keep the metric order identical, reuse network colors, and if more stations arrive either filter or facet the star plot to avoid clutter."
+        }
+      }
+    },
     "library": {
       "eyebrow": "Case Study Library",
       "title": "D3 case studies on kebab shop data",
@@ -296,7 +350,10 @@
       "exportable": "Exportable",
       "dualView": "Dual view",
       "dumbbell": "Dumbbell chart",
-      "scatterplot": "Scatterplot"
+      "scatterplot": "Scatterplot",
+      "parallelCoordinates": "Parallel coordinates",
+      "airQuality": "Air quality",
+      "multiMetric": "Multi-metric"
     }
   },
   "charts": {

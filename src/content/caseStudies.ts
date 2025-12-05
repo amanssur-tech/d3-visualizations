@@ -1,4 +1,4 @@
-export type CaseStudyId = 1 | 2 | 3 | 4 | 5;
+export type CaseStudyId = 1 | 2 | 3 | 4 | 5 | 6;
 
 export interface CaseStudyMeta {
   id: CaseStudyId;
@@ -10,7 +10,7 @@ export interface CaseStudyMeta {
   tags: string[];
   accentFrom: string;
   accentTo: string;
-  preview: 'bar' | 'line' | 'random' | 'time' | 'dual';
+  preview: 'bar' | 'line' | 'random' | 'time' | 'dual' | 'parallel';
 }
 
 // Tweak: central metadata registry for every case study (paths, copy keys, tags, preview style).
@@ -75,6 +75,18 @@ export const caseStudies: CaseStudyMeta[] = [
     accentFrom: 'from-fuchsia-500/20',
     accentTo: 'to-cyan-500/20',
     preview: 'dual',
+  },
+  {
+    id: 6,
+    slug: '6-parallel-coordinates-air-quality',
+    path: '/case-studies/6-parallel-coordinates-air-quality',
+    titleKey: 'caseStudies.6.title',
+    subtitleKey: 'caseStudies.6.subtitle',
+    descriptionKey: 'caseStudies.6.description',
+    tags: ['parallelCoordinates', 'airQuality', 'multiMetric'],
+    accentFrom: 'from-emerald-500/20',
+    accentTo: 'to-sky-500/20',
+    preview: 'parallel',
   },
 ];
 

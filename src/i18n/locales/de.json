@@ -273,6 +273,60 @@
         "scatter": "<strong>{{city}}</strong><br/>{{customers}} Kunden / Tag<br/>€{{revenue}} Umsatz / Tag<br/>Menü: {{menu}}<br/>{{shops}} Shops"
       }
     },
+    "6": {
+      "title": "Case Study 6: Parallelkoordinaten für Luftmessstationen",
+      "subtitle": "Feinstaub im Fokus über fünf Schadstoffe.",
+      "description": "Vergleiche Feinstaub mit vier weiteren Schadstoffen über deutsche Messstationen in einem normalisierten Parallelkoordinaten-Plot.",
+      "summary": "Parallelkoordinaten mit fünf Schadstoffwerten pro Station und Hover-Fokus.",
+      "chart": {
+        "title": "Luftqualitäts-Metriken pro Station",
+        "description": "Parallelkoordinaten-Plot mit einer Achse pro Schadstoff und farbcodierten Messnetzen.",
+        "note": "Alle Werte sind innerhalb dieses Samples normalisiert (0 = niedrigster, 10 = höchster Wert), damit Unterschiede sofort sichtbar bleiben.",
+        "tooltip": "<strong>{{name}}</strong><br/>Messnetz: {{network}}<br/>{{environment}} • {{stationType}}<br/><em>{{metric}}</em>: {{value}}"
+      },
+      "starPlot": {
+        "title": "Stern-Plot pro Station",
+        "description": "Jede Station wird als fünfzackiger Stern gezeigt – ein Arm pro Schadstoff, eingefärbt nach Messnetz.",
+        "note": "Funktioniert am besten mit wenigen Stationen; bei vielen überlagern sich die Sterne schnell.",
+        "tooltip": "<strong>{{name}}</strong><br/>{{metric}}: {{value}}<br/>Messnetz: {{network}}"
+      },
+      "metrics": {
+        "fineDust": "Feinstaub (PM10)",
+        "carbonMonoxide": "Kohlenmonoxid (CO)",
+        "ozone": "Ozon (O₃)",
+        "sulfurDioxide": "Schwefeldioxid (SO₂)",
+        "nitrogenDioxide": "Stickstoffdioxid (NO₂)"
+      },
+      "networks": {
+        "bremen": "Bremen",
+        "hessen": "Hessen",
+        "rheinlandPfalz": "Rheinland-Pfalz"
+      },
+      "environments": {
+        "urban": "Städtisches Gebiet"
+      },
+      "stationTypes": {
+        "background": "Hintergrundstation"
+      },
+      "highlights": {
+        "normalized": "Alle Schadstoffe sind auf 0–10 normiert, damit jede Achse direkt vergleichbar ist.",
+        "fineDust": "Die Feinstaub-Achse steht zuerst, um den Fokus der Aufgabe sichtbar zu machen.",
+        "hover": "Hover isoliert einen Stationspfad, zeigt exakte Werte und dimmt den Rest ab."
+      },
+      "legend": {
+        "title": "Messnetze und Kontext",
+        "envLabel": "Umgebung",
+        "typeLabel": "Stationsart"
+      },
+      "comparison": {
+        "question": "Können die Daten aller Messstation abgelesen werden? Was gibt es beim Visualisierungsdesign zu beachten?",
+        "points": {
+          "coverage": "Parallelkoordinaten zeigen jede Station und jeden Schadstoff gleichzeitig; der Stern-Plot bleibt nur mit wenigen Stationen klar, bevor sich die Arme überlagern.",
+          "focus": "Beide Ansichten brauchen Hover-Fokus: Parallelen dimmen die restlichen Linien sauber, beim Stern-Plot hilft ein hervorgehobenes Polygon mit Tooltips.",
+          "design": "Achsenreihenfolge beibehalten, Messnetzfarben wiederverwenden, und bei mehr Stationen den Stern-Plot filtern oder facettieren, um Clutter zu vermeiden."
+        }
+      }
+    },
     "library": {
       "eyebrow": "Case Study Bibliothek",
       "title": "D3 Case Studies zu Kebabläden",
@@ -296,7 +350,10 @@
       "exportable": "Export",
       "dualView": "Dual-Ansicht",
       "dumbbell": "Dumbbell-Diagramm",
-      "scatterplot": "Scatterplot"
+      "scatterplot": "Scatterplot",
+      "parallelCoordinates": "Parallelkoordinaten",
+      "airQuality": "Luftqualität",
+      "multiMetric": "Mehrere Metriken"
     }
   },
   "charts": {

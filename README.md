@@ -101,7 +101,7 @@ For local or alternative hosting:
 | Styling    | Tailwind CSS                      |
 | Animations | Framer Motion                     |
 | Language   | TypeScript                        |
-| Hosting    | Vercel (https://viz.amanssur.com) |
+| Hosting    | Vercel (<https://viz.amanssur.com>) |
 
 ---
 
