@@ -4,6 +4,8 @@
  * A tiny reusable SVG chevron arrow used in dropdown toggles.
  */
 
+import type { ReactElement } from 'react';
+
 interface ChevronIconProps {
   rotated?: boolean;
   size?: number;
@@ -17,7 +19,7 @@ const ChevronIcon = ({
   size = 14,
   strokeWidth = 2,
   className = '',
-}: ChevronIconProps) => {
+}: ChevronIconProps): ReactElement => {
   return (
     <svg
       width={size}

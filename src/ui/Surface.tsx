@@ -1,7 +1,7 @@
 import { uiTokens } from './tokens';
 import { cn } from './utils';
 
-import type { ComponentPropsWithoutRef, ElementType } from 'react';
+import type { ComponentPropsWithoutRef, ElementType, ReactElement } from 'react';
 
 type SurfaceVariant = 'panel' | 'card' | 'muted';
 type SurfacePadding = 'none' | 'xs' | 'sm' | 'md' | 'lg' | 'xl';
@@ -46,7 +46,7 @@ export const Surface = <T extends ElementType = 'div'>({
   elevated,
   className,
   ...props
-}: SurfaceProps<T>) => {
+}: SurfaceProps<T>): ReactElement => {
   const Component: ElementType = as ?? 'div';
   return (
     <Component

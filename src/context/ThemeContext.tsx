@@ -8,6 +8,7 @@ import {
   useEffect,
   useMemo,
   useState,
+  type ReactElement,
   type ReactNode,
 } from 'react';
 
@@ -24,21 +25,22 @@ interface ThemeProviderProps {
 }
 
 const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
+type ThemeDataset = DOMStringMap & { theme?: ThemeMode };
 
 /* ----------------------------- System + storage helpers ----------------------------- */
 const getSystemTheme = (): ThemeMode => {
-  if (typeof window === 'undefined') return 'light';
-  return window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  if (globalThis.window === undefined) return 'light';
+  return globalThis.window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 };
 
 const getStoredTheme = (): ThemeMode | null => {
-  if (typeof window === 'undefined') return null;
-  const stored = window.localStorage.getItem('preferred-theme');
+  if (globalThis.window === undefined) return null;
+  const stored = globalThis.window.localStorage.getItem('preferred-theme');
   return stored === 'dark' || stored === 'light' ? stored : null;
 };
 
 /* ----------------------------- Theme provider ----------------------------- */
-export const ThemeProvider = ({ children }: ThemeProviderProps) => {
+export const ThemeProvider = ({ children }: ThemeProviderProps): ReactElement => {
   const stored = getStoredTheme();
   const [systemTheme, setSystemTheme] = useState<ThemeMode>(getSystemTheme);
   const [manualMode, setManualMode] = useState(Boolean(stored));
@@ -46,8 +48,8 @@ export const ThemeProvider = ({ children }: ThemeProviderProps) => {
 
   /* Listen for operating-system preference changes */
   useEffect(() => {
-    if (typeof window === 'undefined') return undefined;
-    const media = window.matchMedia('(prefers-color-scheme: dark)');
+    if (globalThis.window === undefined) return undefined;
+    const media = globalThis.window.matchMedia('(prefers-color-scheme: dark)');
     const handleChange = (event: MediaQueryListEvent) => {
       const next = event.matches ? 'dark' : 'light';
       setSystemTheme(next);
@@ -71,17 +73,18 @@ export const ThemeProvider = ({ children }: ThemeProviderProps) => {
     if (typeof document === 'undefined') return undefined;
     // Tweak: customize body theme data/class handling here if you change theming tokens.
     const root = document.documentElement;
+    const dataset = root.dataset as ThemeDataset;
     root.classList.toggle('dark', theme === 'dark');
-    root.dataset.theme = theme;
+    dataset.theme = theme;
     root.style.setProperty('color-scheme', theme);
     return undefined;
   }, [theme]);
 
   /* Persist manual preferences */
   useEffect(() => {
-    if (typeof window === 'undefined' || !manualMode) return undefined;
+    if (globalThis.window === undefined || !manualMode) return undefined;
     // Tweak: rename this key if multiple apps share storage namespace.
-    window.localStorage.setItem('preferred-theme', theme);
+    globalThis.window.localStorage.setItem('preferred-theme', theme);
     return undefined;
   }, [manualMode, theme]);
 
@@ -103,7 +106,7 @@ export const ThemeProvider = ({ children }: ThemeProviderProps) => {
 };
 
 /* ----------------------------- Hook consumer ----------------------------- */
-export const useTheme = () => {
+export const useTheme = (): ThemeContextValue => {
   const context = useContext(ThemeContext);
   if (!context) {
     throw new Error('useTheme must be used within a ThemeProvider');

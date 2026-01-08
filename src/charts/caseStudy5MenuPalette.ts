@@ -5,7 +5,11 @@
  * the entire case study at once (legend, dots, tooltips, etc.).
  */
 
-export type CaseStudy5MenuType = 'Veggie' | 'Hähnchen' | 'Kalb' | (string & {});
+export type CaseStudy5MenuType =
+  | 'Veggie'
+  | 'Hähnchen'
+  | 'Kalb'
+  | (string & { __caseStudy5MenuType: never });
 
 // Tweak: update fallback hues here to shift the Veggie/Hähnchen/Kalb encoding.
 export const CASE_STUDY_5_MENU_COLORS: Record<string, string> = {
@@ -17,4 +21,5 @@ export const CASE_STUDY_5_MENU_COLORS: Record<string, string> = {
 // Ordered list used by the legend so menu types stay in the same sequence everywhere.
 export const CASE_STUDY_5_MENU_ORDER: CaseStudy5MenuType[] = ['Veggie', 'Hähnchen', 'Kalb'];
 
-export const getMenuColor = (menuType: string) => CASE_STUDY_5_MENU_COLORS[menuType] ?? '#94a3b8';
+export const getMenuColor = (menuType: string): string =>
+  CASE_STUDY_5_MENU_COLORS[menuType] ?? '#94a3b8';

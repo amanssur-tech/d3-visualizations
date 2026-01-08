@@ -5,7 +5,7 @@
  */
 import { AnimatePresence, motion } from 'framer-motion';
 import Cookies from 'js-cookie';
-import { useMemo, type MouseEvent as ReactMouseEvent } from 'react';
+import { useMemo, type MouseEvent as ReactMouseEvent, type ReactElement } from 'react';
 import { NavLink } from 'react-router-dom';
 
 import { useTheme } from '../../context/ThemeContext';
@@ -44,7 +44,7 @@ const secondaryLinks: readonly SecondaryLink[] = [
   },
 ];
 
-const Navbar = () => {
+const Navbar = (): ReactElement => {
   const { theme, toggleTheme } = useTheme();
   const { i18n, translate } = useTranslator(['navbar', 'common']);
   const activeLanguage: SupportedLanguage = i18n.language?.toLowerCase().startsWith('de')
@@ -64,13 +64,13 @@ const Navbar = () => {
   /* ----------------------------- Smooth scroll for in-page anchors ----------------------------- */
   const handleAnchorNav = (event: ReactMouseEvent<HTMLAnchorElement>, href?: string) => {
     if (!href?.startsWith('#')) return;
-    if (typeof document === 'undefined') return;
-    const target = document.querySelector(href);
+    if (globalThis.document === undefined) return;
+    const target = globalThis.document.querySelector(href);
     if (!target) return;
     event.preventDefault();
     target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    if (typeof window !== 'undefined') {
-      window.history.replaceState(null, '', href);
+    if (globalThis.window !== undefined) {
+      globalThis.history.replaceState(null, '', href);
     }
   };
 

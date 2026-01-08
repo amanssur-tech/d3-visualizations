@@ -1,7 +1,7 @@
 // src/components/dashboard/DashboardSection.tsx
 import { Surface } from '../../ui/Surface';
 
-import type { ReactNode } from 'react';
+import type { ReactElement, ReactNode } from 'react';
 
 /**
  * DashboardSection is a lightweight layout helper used inside Dashboard.tsx.
@@ -25,7 +25,7 @@ const DashboardSection = ({
   action,
   children,
   className,
-}: DashboardSectionProps) => {
+}: DashboardSectionProps): ReactElement => {
   const shouldRenderHeader = Boolean(eyebrow ?? title ?? action);
 
   return (

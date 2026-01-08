@@ -5,7 +5,7 @@
  * Sections below cover translations, data loading, chart rendering, and UI wrapper content.
  */
 import { motion } from 'framer-motion';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, type ReactElement } from 'react';
 
 import { renderBarChart } from '../../charts/BarChartRenderer';
 import kebabData from '../../data/case-study01.json';
@@ -22,7 +22,10 @@ interface BarChartProps {
   enableMotion?: boolean;
 }
 
-const CaseStudy1BarChart = ({ showHeader = true, enableMotion = true }: BarChartProps) => {
+const CaseStudy1BarChart = ({
+  showHeader = true,
+  enableMotion = true,
+}: BarChartProps): ReactElement => {
   const [data, setData] = useState<KebabData[] | null>(null);
   const [errorKey, setErrorKey] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);

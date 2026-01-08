@@ -2,7 +2,9 @@ import { defineConfig, devices } from '@playwright/test';
 
 type NodeLikeGlobal = typeof globalThis & {
   process?: {
-    env?: Record<string, string | undefined>;
+    env?: Record<string, string | undefined> & {
+      CI?: string;
+    };
   };
 };
 
@@ -29,7 +31,7 @@ export default defineConfig({
   /* Shared settings for all projects. Requires `npm run dev` to be running locally. */
   use: {
     /* Base URL for `page.goto` calls in tests */
-    baseURL: 'http://localhost:5175',
+    baseURL: 'http://127.0.0.1:5175',
 
     /* Collect traces on first retry */
     trace: 'on-first-retry',
@@ -55,8 +57,8 @@ export default defineConfig({
 
   /* Start a dedicated Vite dev server for tests on port 5175 */
   webServer: {
-    command: 'npm run dev -- --port=5175',
-    url: 'http://localhost:5175',
+    command: 'pnpm exec vite --host 127.0.0.1 --port 5175 --strictPort',
+    url: 'http://127.0.0.1:5175',
     reuseExistingServer: !isCI,
     timeout: 60_000,
   },

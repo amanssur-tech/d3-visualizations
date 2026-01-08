@@ -2,7 +2,7 @@
  * main.tsx bootstraps the React app, loads i18n + global styles, and mounts the router.
  */
 import { Suspense } from 'react';
-import ReactDOM from 'react-dom/client';
+import { createRoot } from 'react-dom/client';
 import { useTranslation } from 'react-i18next';
 import { RouterProvider } from 'react-router-dom';
 
@@ -37,4 +37,4 @@ if (!container) {
   throw new Error('Root element not found');
 }
 
-ReactDOM.createRoot(container).render(<Root />);
+createRoot(container).render(<Root />);

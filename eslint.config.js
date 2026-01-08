@@ -17,7 +17,7 @@ const reactRules = {
   'react/react-in-jsx-scope': 'off',
   'react/prop-types': 'off',
   'react-hooks/rules-of-hooks': 'error',
-  'react-hooks/exhaustive-deps': 'warn',
+  'react-hooks/exhaustive-deps': 'error',
   'import/order': [
     'warn',
     {
@@ -70,9 +70,10 @@ export default tseslint.config(
     rules: {
       ...reactRules,
       '@typescript-eslint/consistent-type-imports': [
-        'warn',
+        'error',
         {
           prefer: 'type-imports',
+          fixStyle: 'separate-type-imports',
           disallowTypeAnnotations: false,
         },
       ],
@@ -90,6 +91,11 @@ export default tseslint.config(
           'ts-ignore': 'allow-with-description',
         },
       ],
+      '@typescript-eslint/no-floating-promises': 'error',
+      '@typescript-eslint/no-unsafe-assignment': 'error',
+      '@typescript-eslint/no-unsafe-call': 'error',
+      '@typescript-eslint/no-unsafe-member-access': 'error',
+      '@typescript-eslint/explicit-module-boundary-types': 'warn',
     },
   },
   {

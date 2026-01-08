@@ -1,8 +1,7 @@
 # Node dependencies
 node_modules/
-package-lock.json
 yarn.lock
-pnpm-lock.yaml
+.pnpm-store/
 
 # Build outputs
 dist/
@@ -48,6 +47,8 @@ yarn-error.log*
 exported/
 generated/
 project_contents.txt
+local/
+*.diff
 
 # Misc
 *.tsbuildinfo

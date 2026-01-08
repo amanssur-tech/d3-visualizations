@@ -5,6 +5,7 @@
 import { motion } from 'framer-motion';
 
 import type { CaseStudyId } from '../../content/caseStudies';
+import type { ReactElement } from 'react';
 export type { CaseStudyId } from '../../content/caseStudies';
 
 interface CaseStudyPreviewProps {
@@ -15,17 +16,18 @@ interface CaseStudyPreviewProps {
 const cardShell =
   'relative rounded-2xl border border-white/50 bg-white/70 p-4 shadow-inner shadow-slate-900/5 backdrop-blur dark:border-white/10 dark:bg-neutral-900/60';
 
-const CaseStudyPreview = ({ id }: CaseStudyPreviewProps) => {
+const CaseStudyPreview = ({ id }: CaseStudyPreviewProps): ReactElement => {
   /* ----------------------------- Case-specific mini previews ----------------------------- */
   if (id === 1) {
     // Simple static growth bars for the bar chart case
+    const barHeights = [50, 76, 62, 84, 58, 70];
     return (
       <div className={`${cardShell} h-36 overflow-hidden`}>
         <div className="flex h-full items-end gap-2">
           {/* Tweak: adjust sample heights/count here to showcase different bar silhouettes. */}
-          {[50, 76, 62, 84, 58, 70].map((height, index) => (
+          {barHeights.map((height, index) => (
             <motion.span
-              key={height + index}
+              key={`bar-${height}`}
               // Tweak: gradient palette + glow for this preview's bars.
               className="flex-1 rounded-xl bg-linear-to-t from-cyan-500/80 to-emerald-400/80 shadow shadow-cyan-500/30"
               style={{ height: `${height}%` }}
@@ -75,12 +77,13 @@ const CaseStudyPreview = ({ id }: CaseStudyPreviewProps) => {
 
   if (id === 3) {
     // Animated bars to mimic the randomized experiment
+    const randomizedHeights = [62, 48, 80, 44, 72, 68];
     return (
       <div className={`${cardShell} h-36 overflow-hidden`}>
         <div className="relative flex h-full items-end gap-2">
-          {[62, 48, 80, 44, 72, 68].map((height, index) => (
+          {randomizedHeights.map((height, index) => (
             <motion.span
-              key={`${height}-${index}`}
+              key={`random-${height}`}
               // Tweak: animated bar palette + softness for randomized preview.
               className="flex-1 rounded-lg bg-linear-to-t from-emerald-500/80 to-cyan-500/80 shadow shadow-emerald-500/30"
               style={{ height: `${height}%` }}
@@ -102,37 +105,42 @@ const CaseStudyPreview = ({ id }: CaseStudyPreviewProps) => {
 
   if (id === 5) {
     // Split panel showing a mini dumbbell + scatter hint for the dual view
+    const dumbbellMarkerColors = ['#22c55e', '#6366f1', '#f97316'];
+    const bubbleSizes = [1, 2, 3, 4];
+    const getBubbleColor = (size: number) => {
+      if (size % 2 === 0) return '#22c55e';
+      if (size % 3 === 0) return '#f97316';
+      return '#6366f1';
+    };
     return (
       <div className={`${cardShell} h-36`}>
         <div className="grid h-full grid-cols-2 gap-3">
           <div className="flex flex-col justify-between rounded-xl border border-white/70 bg-white/80 p-3 shadow-inner dark:border-white/10 dark:bg-white/5">
-            {[0, 1, 2].map((index) => (
-              <div key={index} className="relative flex items-center">
-                <div className="h-[2px] flex-1 rounded bg-slate-200 dark:bg-slate-700" />
+            {dumbbellMarkerColors.map((color) => (
+              <div key={color} className="relative flex items-center">
+                <div className="h-0.5 flex-1 rounded bg-slate-200 dark:bg-slate-700" />
                 <span className="absolute right-0 h-3 w-3 rounded-full bg-sky-400 shadow shadow-sky-500/30" />
                 <span
                   className="absolute left-0 h-2.5 w-2.5 rounded-full shadow"
-                  style={{
-                    background: index === 0 ? '#22c55e' : index === 1 ? '#6366f1' : '#f97316',
-                  }}
+                  style={{ background: color }}
                 />
               </div>
             ))}
           </div>
           <div className="relative rounded-xl border border-white/70 bg-white/80 p-3 shadow-inner dark:border-white/10 dark:bg-white/5">
-            {[1, 2, 3, 4].map((index) => (
+            {bubbleSizes.map((size) => (
               <span
-                key={index}
+                key={`bubble-${size}`}
                 className="absolute inline-flex items-center justify-center rounded-full text-[10px] font-semibold text-white shadow"
                 style={{
-                  width: `${14 + index * 5}px`,
-                  height: `${14 + index * 5}px`,
-                  left: `${index * 14 + 10}px`,
-                  bottom: `${index * 8 + 8}px`,
-                  background: index % 2 === 0 ? '#22c55e' : index % 3 === 0 ? '#f97316' : '#6366f1',
+                  width: `${14 + size * 5}px`,
+                  height: `${14 + size * 5}px`,
+                  left: `${size * 14 + 10}px`,
+                  bottom: `${size * 8 + 8}px`,
+                  background: getBubbleColor(size),
                 }}
               >
-                {index + 1}
+                {size + 1}
               </span>
             ))}
           </div>
@@ -154,28 +162,31 @@ const CaseStudyPreview = ({ id }: CaseStudyPreviewProps) => {
       <div className={`${cardShell} h-36`}>
         <div className="relative h-full w-full rounded-xl border border-white/70 bg-white/70 p-3 dark:border-white/10 dark:bg-white/5">
           <div className="absolute inset-x-2 top-3 bottom-3 flex justify-between">
-            {[0, 1, 2, 3, 4].map((index) => (
+            {[0, 1, 2, 3, 4].map((axis) => (
               <span
-                key={index}
-                className="h-full w-[1px] rounded bg-slate-200 dark:bg-slate-800"
-                style={{ opacity: index === 0 || index === 4 ? 0.6 : 0.35 }}
+                key={`axis-${axis}`}
+                className="h-full w-px rounded bg-slate-200 dark:bg-slate-800"
+                style={{ opacity: axis === 0 || axis === 4 ? 0.6 : 0.35 }}
               />
             ))}
           </div>
-          {previewLines.map(([color, heights], lineIndex) => (
-            <svg key={`${color}-${lineIndex}`} viewBox="0 0 200 120" className="absolute inset-2">
-              <polyline
-                points={(heights as number[])
-                  .map((value, axis) => `${10 + axis * 45},${120 - value}`)
-                  .join(' ')}
-                fill="none"
-                stroke={color as string}
-                strokeWidth="3"
-                strokeLinecap="round"
-                opacity={0.82 - lineIndex * 0.12}
-              />
-            </svg>
-          ))}
+          {previewLines.map((line, lineIndex) => {
+            const [color, heights] = line;
+            return (
+              <svg key={color} viewBox="0 0 200 120" className="absolute inset-2">
+                <polyline
+                  points={heights
+                    .map((value, axis) => `${10 + axis * 45},${120 - value}`)
+                    .join(' ')}
+                  fill="none"
+                  stroke={color}
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                  opacity={0.82 - lineIndex * 0.12}
+                />
+              </svg>
+            );
+          })}
         </div>
       </div>
     );
@@ -192,9 +203,9 @@ const CaseStudyPreview = ({ id }: CaseStudyPreviewProps) => {
           </div>
           <div className="flex items-end gap-1">
             {/* Tweak: flawed sample heights + palette illustrate intentionally weak design. */}
-            {[72, 48, 90].map((height, index) => (
+            {[72, 48, 90].map((height) => (
               <span
-                key={index}
+                key={`flawed-${height}`}
                 className="flex-1 rounded-lg bg-linear-to-t from-amber-500/80 to-rose-400/80"
                 style={{ height: `${height}%` }}
               />
@@ -208,9 +219,9 @@ const CaseStudyPreview = ({ id }: CaseStudyPreviewProps) => {
           </div>
           <div className="flex items-end gap-1">
             {/* Tweak: fixed variant heights + colors showing improved state. */}
-            {[82, 68, 74].map((height, index) => (
+            {[82, 68, 74].map((height) => (
               <span
-                key={index}
+                key={`fixed-${height}`}
                 className="flex-1 rounded-lg bg-linear-to-t from-cyan-500/80 to-blue-500/80"
                 style={{ height: `${height}%` }}
               />

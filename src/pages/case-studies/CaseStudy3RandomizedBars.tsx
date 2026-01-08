@@ -5,7 +5,7 @@
  * Sections guide translations, data/interval management, D3 rendering, and the UI shell.
  */
 import { motion } from 'framer-motion';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, type ReactElement } from 'react';
 
 import { renderRandomizedBars } from '../../charts/RandomizedBarsRenderer';
 import { useD3 } from '../../hooks/useD3';
@@ -15,7 +15,7 @@ import { useTranslator } from '../../hooks/useTranslator';
 // Tweak: edit `randomizedBarsConfig.slider` if you need different magnitude range/step.
 const MAGNITUDE_CONTROL = randomizedBarsConfig.slider;
 
-const CaseStudy3RandomizedBars = () => {
+const CaseStudy3RandomizedBars = (): ReactElement => {
   const { translate } = useTranslator(['caseStudies', 'common', 'charts']);
 
   const { data, loading, errorMessage, magnitude, setMagnitude, highlightedCity, formatCityName } =
@@ -126,17 +126,17 @@ const CaseStudy3RandomizedBars = () => {
           className="chart-container relative w-full overflow-hidden rounded-2xl border border-white/50 bg-linear-to-b from-white/80 to-white/50 p-2 shadow-inner dark:border-white/10 dark:from-white/10 dark:to-transparent"
         >
           {loading && (
-            <div className="flex min-h-[280px] items-center justify-center text-sm text-slate-500 dark:text-slate-400">
+            <div className="flex min-h-70 items-center justify-center text-sm text-slate-500 dark:text-slate-400">
               {translate('common:loading')}
             </div>
           )}
           {!loading && errorMessage && (
-            <div className="flex min-h-[280px] items-center justify-center text-center text-sm text-rose-500 dark:text-rose-300">
+            <div className="flex min-h-70 items-center justify-center text-center text-sm text-rose-500 dark:text-rose-300">
               {errorMessage}
             </div>
           )}
           {!loading && !errorMessage && !data.length && (
-            <div className="flex min-h-[280px] items-center justify-center text-sm text-slate-500 dark:text-slate-400">
+            <div className="flex min-h-70 items-center justify-center text-sm text-slate-500 dark:text-slate-400">
               {translate('common:loading')}
             </div>
           )}

@@ -36,10 +36,9 @@ export const createTranslator = <Ns extends Namespace>(t: TFunction<Ns>): Transl
 
     if (maybeNs && rest.length > 0 && (KNOWN_NAMESPACES as readonly string[]).includes(maybeNs)) {
       const key = rest.join('.');
-      const finalOptions: TranslateOptions = {
-        ...(options ?? {}),
-        ns: maybeNs,
-      };
+      const finalOptions: TranslateOptions = options
+        ? { ...options, ns: maybeNs }
+        : { ns: maybeNs };
       return rawT(key, finalOptions);
     }
 

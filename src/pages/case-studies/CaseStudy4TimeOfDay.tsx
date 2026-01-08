@@ -3,7 +3,7 @@
  * to showcase data ethics lessons. Sections cover translations, data prep, both charts, and layout.
  */
 import { motion } from 'framer-motion';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, type ReactElement } from 'react';
 
 import { caseStudy4Palette } from '../../charts/caseStudy4Palette';
 import { caseStudy4TimePalette } from '../../charts/caseStudy4TimePalette';
@@ -12,7 +12,8 @@ import { renderFlawedDonut } from '../../charts/FlawedDonutRenderer';
 import { useTimeOfDayData } from '../../hooks/useTimeOfDayData';
 import { useTranslator } from '../../hooks/useTranslator';
 
-const CASE4_PALETTE = caseStudy4Palette;
+type CaseStudy4Palette = typeof caseStudy4Palette & { Berlin?: string };
+const CASE4_PALETTE: CaseStudy4Palette = caseStudy4Palette;
 
 // Translation keys powering the flawed vs fixed talking points; reorder/edit here to change the story beats.
 const TALKING_POINT_KEYS = {
@@ -20,7 +21,7 @@ const TALKING_POINT_KEYS = {
   fixed: ['baseline', 'palette', 'legend', 'structure', 'fullData', 'mapping'] as const,
 };
 
-const CaseStudy4TimeOfDay = () => {
+const CaseStudy4TimeOfDay = (): ReactElement => {
   const { translate } = useTranslator(['caseStudies', 'common']);
   const flawedRef = useRef<HTMLDivElement | null>(null);
   const fixedRef = useRef<HTMLDivElement | null>(null);
@@ -49,9 +50,9 @@ const CaseStudy4TimeOfDay = () => {
   const sanitizeForClass = (value: string) =>
     `city-${value
       .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .replace(/[^a-z0-9]+/gi, '-')
-      .replace(/^-+|-+$/g, '')
+      .replaceAll(/[\u0300-\u036f]/g, '')
+      .replaceAll(/[^a-z0-9]+/gi, '-')
+      .replaceAll(/(?:^-+|-+$)/g, '')
       .toLowerCase()}`;
 
   const cityComparisonView = useMemo(
@@ -193,11 +194,10 @@ const CaseStudy4TimeOfDay = () => {
                       : 'caseStudies:4.fixed.axisTimeOfDay'
                   )}
                 </p>
-                <div
-                  className="inline-flex items-center gap-1 rounded-full border border-slate-200/70 bg-white/70 p-1 text-xs font-semibold text-slate-600 shadow-sm shadow-slate-200/60 dark:border-white/10 dark:bg-white/5 dark:text-slate-200 dark:shadow-black/40"
-                  role="group"
-                  aria-label={translate('caseStudies:4.fixed.viewToggleAria')}
-                >
+                <fieldset className="inline-flex items-center gap-1 rounded-full border border-slate-200/70 bg-white/70 p-1 text-xs font-semibold text-slate-600 shadow-sm shadow-slate-200/60 dark:border-white/10 dark:bg-white/5 dark:text-slate-200 dark:shadow-black/40">
+                  <legend className="sr-only">
+                    {translate('caseStudies:4.fixed.viewToggleAria')}
+                  </legend>
                   {(['city', 'timeOfDay'] as const).map((mode) => {
                     const isActive = viewMode === mode;
                     const labelKey =
@@ -220,7 +220,7 @@ const CaseStudy4TimeOfDay = () => {
                       </button>
                     );
                   })}
-                </div>
+                </fieldset>
               </div>
             </div>
             <span className="rounded-full border border-emerald-300/70 bg-emerald-100 px-3 py-1 text-xs font-semibold uppercase text-emerald-700 shadow-sm dark:border-emerald-300/20 dark:bg-emerald-400/15 dark:text-emerald-100">

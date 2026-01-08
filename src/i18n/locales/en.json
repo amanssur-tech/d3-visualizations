@@ -239,7 +239,6 @@
         "label": "Shared-axis dumbbell",
         "title": "Customers vs revenue per city",
         "description": "Neutral connectors share one axis for customers and revenue; dots inherit menu colors and line weight scales with shop counts.",
-        "axis": "Customers & revenue per day",
         "chartTitle": "Daily customers vs revenue per city (dumbbell)",
         "chartDescription": "Each city uses menu color for the customer dot, an accent revenue dot, and a neutral connector. Shop counts print directly on the line.",
         "shopsLabel": "{{count}} shops",

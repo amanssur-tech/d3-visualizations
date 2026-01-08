@@ -1,7 +1,9 @@
 // src/ui/icons/SunIcon.tsx
 
+import type { ReactElement } from 'react';
+
 // Tweak: adjust stroke width/paths here to change the theme toggle sun icon.
-const SunIcon = () => (
+const SunIcon = (): ReactElement => (
   <svg
     width="20"
     height="20"

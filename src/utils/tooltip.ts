@@ -5,8 +5,15 @@ import * as d3 from 'd3';
 
 type TooltipSelection = d3.Selection<HTMLDivElement, unknown, HTMLElement | null, unknown>;
 
+interface TooltipApi {
+  show: (html: string, event: MouseEvent) => void;
+  move: (event: MouseEvent) => void;
+  hide: () => void;
+  node: () => HTMLDivElement | null;
+}
+
 /* ----------------------------- Tooltip node factory ----------------------------- */
-export const createTooltip = () => {
+export const createTooltip = (): TooltipApi => {
   const existing = d3.select<HTMLDivElement, unknown>('#global-tooltip-root');
   const tip: TooltipSelection = existing.empty()
     ? d3.select('body').append<HTMLDivElement>('div').attr('id', 'global-tooltip-root')

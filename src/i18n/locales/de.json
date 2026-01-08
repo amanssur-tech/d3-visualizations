@@ -239,7 +239,6 @@
         "label": "Gemeinsame Achse",
         "title": "Kunden vs. Umsatz pro Stadt",
         "description": "Eine gemeinsame X-Achse zeigt die Lücke zwischen Kunden und Umsatz, während Strichstärke und Punktgröße die Anzahl der Shops kodieren.",
-        "axis": "Kunden & Umsatz pro Tag",
         "chartTitle": "Kunden vs. Umsatz pro Stadt (Dumbbell)",
         "chartDescription": "Jede Stadt erhält einen neutralen Verbinder, das Kundensymbol folgt der Menüfarbe und der Umsatzpunkt nutzt die Akzentfarbe. Die Shopzahl steht direkt auf der Linie.",
         "shopsLabel": "{{count}} Shops",

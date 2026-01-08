@@ -7,9 +7,17 @@
  * - refs for toggle + menu
  */
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type RefObject } from 'react';
 
-export const useDropdownBehavior = () => {
+interface DropdownBehavior {
+  isOpen: boolean;
+  toggle: () => void;
+  close: () => void;
+  menuRef: RefObject<HTMLDivElement | null>;
+  toggleRef: RefObject<HTMLButtonElement | null>;
+}
+
+export const useDropdownBehavior = (): DropdownBehavior => {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
   const toggleRef = useRef<HTMLButtonElement | null>(null);

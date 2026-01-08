@@ -4,8 +4,10 @@
  * Extracted from Navbar.tsx for reuse and cleanliness.
  */
 
+import type { ReactElement } from 'react';
+
 // Tweak: edit viewBox/paths to swap out the moon icon used for theme toggling.
-const MoonIcon = () => (
+const MoonIcon = (): ReactElement => (
   <svg
     width="20"
     height="20"

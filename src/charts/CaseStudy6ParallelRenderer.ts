@@ -8,9 +8,10 @@
 
 import * as d3 from 'd3';
 
-import type { TranslateFn } from '../i18n/translate';
 import { chartTheme } from '../theme/chartTheme';
 import { createTooltip } from '../utils/tooltip';
+
+import type { TranslateFn } from '../i18n/translate';
 
 export type CaseStudy6MetricKey =
   | 'fineDust'
@@ -42,7 +43,7 @@ const NETWORK_COLORS: Record<string, string> = {
   'Rheinland-Pfalz': '#a855f7',
 };
 
-export const getNetworkColor = (network: string) => NETWORK_COLORS[network] ?? '#6366f1';
+export const getNetworkColor = (network: string): string => NETWORK_COLORS[network] ?? '#6366f1';
 
 interface ParallelRenderOptions {
   container: HTMLDivElement;
@@ -71,9 +72,9 @@ export const renderCaseStudy6Parallel = ({
   formatNetwork,
   formatEnvironment,
   formatStationType,
-}: ParallelRenderOptions) => {
+}: ParallelRenderOptions): (() => void) => {
   const metrics = metricOrder.filter((metric) => metricLabels[metric]);
-  if (!metrics.length) return () => {};
+  if (!metrics.length) return () => undefined;
 
   const root = d3.select(container);
   root.selectAll('*').remove();
@@ -199,13 +200,15 @@ export const renderCaseStudy6Parallel = ({
     .attr('stroke', (d) => getNetworkColor(d.network))
     .attr('stroke-width', CONFIG.lineWidth)
     .attr('stroke-opacity', 0.9)
-    .attr('d', (d) =>
-      lineGenerator(
-        metrics.map((metric) => [
-          xScale(metric) ?? 0,
-          yScales[metric](d.values[metric]),
-        ]) as [number, number][]
-      ) ?? ''
+    .attr(
+      'd',
+      (d) =>
+        lineGenerator(
+          metrics.map((metric): [number, number] => [
+            xScale(metric) ?? 0,
+            yScales[metric](d.values[metric]),
+          ])
+        ) ?? ''
     );
 
   const points = svg
@@ -276,7 +279,8 @@ export const renderCaseStudy6Parallel = ({
         value: datum.values[metricKey].toFixed(1),
       });
 
-      tooltip.show(html, event as MouseEvent);
+      const mouseEvent = event as MouseEvent;
+      tooltip.show(html, mouseEvent);
     })
     .on('mouseleave', () => {
       tooltip.hide();

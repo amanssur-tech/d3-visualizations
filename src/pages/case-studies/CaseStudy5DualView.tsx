@@ -10,7 +10,7 @@
  */
 
 import { motion } from 'framer-motion';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactElement } from 'react';
 
 import {
   renderCaseStudy5Dumbbell,
@@ -46,7 +46,7 @@ const mapDataEntry = (entry: CaseStudy5RawEntry): CaseStudy5Datum => ({
 const DUMBELL_NOTES = ['channels', 'labels', 'shops'] as const;
 const SCATTER_NOTES = ['quadrants', 'legend', 'annotation'] as const;
 
-const CaseStudy5DualView = () => {
+const CaseStudy5DualView = (): ReactElement => {
   const { translate } = useTranslator(['caseStudies', 'common']);
   const formatCityName = useMemo(() => formatCityNameFactory(translate), [translate]);
   const formatMenuType = useCallback(
@@ -157,11 +157,8 @@ const CaseStudy5DualView = () => {
                 )}
               </p>
             </div>
-            <div
-              className="inline-flex items-center gap-1 rounded-full border border-slate-200/70 bg-white/70 p-1 text-xs font-semibold text-slate-600 shadow-sm shadow-slate-200/60 dark:border-white/10 dark:bg-white/5 dark:text-slate-200 dark:shadow-black/40"
-              role="group"
-              aria-label={translate('caseStudies:5.toggle.aria')}
-            >
+            <fieldset className="inline-flex items-center gap-1 rounded-full border border-slate-200/70 bg-white/70 p-1 text-xs font-semibold text-slate-600 shadow-sm shadow-slate-200/60 dark:border-white/10 dark:bg-white/5 dark:text-slate-200 dark:shadow-black/40">
+              <legend className="sr-only">{translate('caseStudies:5.toggle.aria')}</legend>
               {(['dumbbell', 'scatter'] as const).map((mode) => {
                 const isActive = viewMode === mode;
                 return (
@@ -180,10 +177,10 @@ const CaseStudy5DualView = () => {
                   </button>
                 );
               })}
-            </div>
+            </fieldset>
           </div>
 
-          <div className="mt-5 relative min-h-[400px] rounded-2xl border border-white/50 bg-linear-to-b from-white/85 to-white/60 p-6 pl-0 pr-35 shadow-inner dark:border-white/10 dark:from-white/10 dark:to-transparent">
+          <div className="mt-5 relative min-h-100 rounded-2xl border border-white/50 bg-linear-to-b from-white/85 to-white/60 p-6 pl-0 pr-35 shadow-inner dark:border-white/10 dark:from-white/10 dark:to-transparent">
             {errorKey ? (
               <p className="rounded-xl bg-rose-50/70 px-4 py-3 text-sm text-rose-700 dark:bg-rose-500/10 dark:text-rose-200">
                 {translate(errorKey)}

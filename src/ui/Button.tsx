@@ -1,7 +1,7 @@
 import { uiTokens } from './tokens';
 import { cn } from './utils';
 
-import type { ComponentPropsWithoutRef, ElementType } from 'react';
+import type { ComponentPropsWithoutRef, ElementType, ReactElement } from 'react';
 
 type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'pill' | 'icon';
 type ButtonSize = 'md' | 'sm';
@@ -75,11 +75,11 @@ export const Button = <T extends ElementType = 'button'>({
   fullWidth,
   className,
   ...props
-}: ButtonProps<T>) => {
+}: ButtonProps<T>): ReactElement => {
   const Component: ElementType = as ?? 'button';
   const shouldApplySize = variant !== 'pill' && variant !== 'icon';
   const isButtonElement = typeof Component === 'string' && Component === 'button';
-  const hasTypeProp = Object.prototype.hasOwnProperty.call(props, 'type');
+  const hasTypeProp = Object.hasOwn(props, 'type');
   const resolvedProps = isButtonElement && !hasTypeProp ? { ...props, type: 'button' } : props;
   return (
     <Component

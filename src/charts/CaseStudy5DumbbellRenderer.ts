@@ -49,7 +49,7 @@ export const renderCaseStudy5Dumbbell = ({
   translate,
   formatCityName,
   formatMenuType,
-}: DumbbellRenderOptions) => {
+}: DumbbellRenderOptions): (() => void) => {
   const root = d3.select(container);
   root.selectAll('*').remove();
 

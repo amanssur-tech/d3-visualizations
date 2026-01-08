@@ -16,7 +16,7 @@
 import { motion } from 'framer-motion';
 import { NavLink } from 'react-router-dom';
 
-import type { RefObject } from 'react';
+import type { ReactElement, RefObject } from 'react';
 
 // Tweak: edit case study ordering/paths here; translation keys resolve human-facing labels.
 const caseStudyLinks = [
@@ -59,7 +59,7 @@ const CaseStudiesDropdown = ({
   closeDropdown,
   dropdownMenuRef,
   dropdownId,
-}: CaseStudiesDropdownProps) => {
+}: CaseStudiesDropdownProps): ReactElement => {
   return (
     <motion.div
       id={dropdownId}

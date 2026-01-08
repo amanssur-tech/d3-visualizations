@@ -4,7 +4,7 @@
  * stays in sync with the current light/dark theme instantly.
  */
 
-export const cssVar = (token: string) => `var(${token})`;
+export const cssVar = (token: string): string => `var(${token})`;
 
 export const chartTheme = {
   textPrimary: cssVar('--color-text'),

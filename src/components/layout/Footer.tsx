@@ -4,7 +4,9 @@
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 
-const Footer = () => {
+import type { ReactElement } from 'react';
+
+const Footer = (): ReactElement => {
   const { t } = useTranslation('footer');
   const legalHref = t('legal.href');
   const contactHref = t('cta.href');

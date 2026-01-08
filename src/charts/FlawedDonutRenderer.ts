@@ -51,7 +51,71 @@ export interface FlawedDonutOptions {
   translate: (key: string) => string;
 }
 
-export function renderFlawedDonut({ container, aggregated, translate }: FlawedDonutOptions) {
+const buildDaySlices = (aggregated: AggregatedRow[], dayNumbers: number[]): SliceDatum[][] => {
+  const result: SliceDatum[][] = [];
+
+  for (const day of dayNumbers) {
+    const slicesForDay: SliceDatum[] = [];
+    for (const time of flawedOrder) {
+      for (const row of aggregated) {
+        if (row.timeOfDay !== time) continue;
+        const dailyEntry = row.daily.find((entry) => entry.day === day);
+        slicesForDay.push({
+          key: `${row.city}-${row.timeOfDay}-${day}`,
+          city: row.city,
+          timeOfDay: row.timeOfDay,
+          day,
+          value: dailyEntry?.value ?? 0,
+        });
+      }
+    }
+    result.push(slicesForDay);
+  }
+
+  return result;
+};
+
+const renderLegend = (
+  svg: d3.Selection<SVGSVGElement, unknown, null, undefined>,
+  chartWidth: number,
+  chartHeight: number,
+  entries: LegendEntry[],
+  labelColor: string,
+  labelFontSize: number,
+  legendStroke: string
+) => {
+  const legend = svg
+    .append('g')
+    .attr('transform', `translate(${chartWidth / 2 - 300},${chartHeight - 60})`);
+
+  legend
+    .selectAll<SVGGElement, LegendEntry>('g.legend-item')
+    .data(entries)
+    .join('g')
+    .attr('class', 'legend-item')
+    .attr('transform', (_, index) => `translate(${index * 130}, 0)`)
+    .each(function (entry) {
+      const group = d3.select(this);
+      group
+        .append('rect')
+        .attr('width', 14)
+        .attr('height', 14)
+        .attr('rx', 5)
+        .attr('fill', entry.color)
+        .attr('stroke', legendStroke)
+        .attr('stroke-width', 0.6);
+
+      group
+        .append('text')
+        .attr('x', 20)
+        .attr('y', 11)
+        .attr('fill', labelColor)
+        .attr('font-size', labelFontSize)
+        .text(entry.label);
+    });
+};
+
+export function renderFlawedDonut({ container, aggregated, translate }: FlawedDonutOptions): void {
   const root = d3.select(container);
   root.selectAll('*').remove();
 
@@ -70,22 +134,7 @@ export function renderFlawedDonut({ container, aggregated, translate }: FlawedDo
     new Set(aggregated.flatMap((row) => row.daily.map((entry) => entry.day)))
   ).sort((a, b) => a - b);
 
-  const daySlices: SliceDatum[][] = dayNumbers.map((day) =>
-    flawedOrder.flatMap((time) =>
-      aggregated
-        .filter((row) => row.timeOfDay === time)
-        .map((row) => {
-          const dailyEntry = row.daily.find((entry) => entry.day === day);
-          return {
-            key: `${row.city}-${row.timeOfDay}-${day}`,
-            city: row.city,
-            timeOfDay: row.timeOfDay,
-            day,
-            value: dailyEntry?.value ?? 0,
-          };
-        })
-    )
-  );
+  const daySlices = buildDaySlices(aggregated, dayNumbers);
 
   const svg = root
     .append('svg')
@@ -109,7 +158,7 @@ export function renderFlawedDonut({ container, aggregated, translate }: FlawedDo
   const ringThickness = 14;
   const ringData: d3.PieArcDatum<SliceDatum>[][] = [];
 
-  daySlices.forEach((slicesForDay, index) => {
+  for (const [index, slicesForDay] of daySlices.entries()) {
     const pieData = pie(slicesForDay);
     ringData.push(pieData);
 
@@ -134,9 +183,9 @@ export function renderFlawedDonut({ container, aggregated, translate }: FlawedDo
       .attr('stroke-width', 1.5)
       .attr('opacity', 0.95)
       .attr('d', (d) => ringArc(d) ?? '');
-  });
+  }
 
-  const outerPieData = ringData[ringData.length - 1] ?? [];
+  const outerPieData = ringData.at(-1) ?? [];
   const outerInner = innerRadius + (ringData.length - 1) * ringThickness;
   const outerArc = d3
     .arc<d3.PieArcDatum<SliceDatum>>()
@@ -170,33 +219,13 @@ export function renderFlawedDonut({ container, aggregated, translate }: FlawedDo
     { label: translate('caseStudies:4.flawed.legendRingPerDay'), color: chartTheme.textMuted },
   ];
 
-  const legend = svg
-    .append('g')
-    .attr('transform', `translate(${chartWidth / 2 - 300},${chartHeight - 60})`);
-
-  legend
-    .selectAll<SVGGElement, LegendEntry>('g.legend-item')
-    .data(legendEntries)
-    .join('g')
-    .attr('class', 'legend-item')
-    .attr('transform', (_, index) => `translate(${index * 130}, 0)`)
-    .each(function (d) {
-      const group = d3.select(this);
-      group
-        .append('rect')
-        .attr('width', 14)
-        .attr('height', 14)
-        .attr('rx', 5)
-        .attr('fill', d.color)
-        .attr('stroke', legendStroke)
-        .attr('stroke-width', 0.6);
-
-      group
-        .append('text')
-        .attr('x', 20)
-        .attr('y', 11)
-        .attr('fill', labelColor)
-        .attr('font-size', labelFontSize)
-        .text(d.label);
-    });
+  renderLegend(
+    svg,
+    chartWidth,
+    chartHeight,
+    legendEntries,
+    labelColor,
+    labelFontSize,
+    legendStroke
+  );
 }

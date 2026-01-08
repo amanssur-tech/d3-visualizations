@@ -13,6 +13,8 @@ import { useTranslator } from '../hooks/useTranslator';
 import { Button } from '../ui/Button';
 import { Surface } from '../ui/Surface';
 
+import type { ReactElement } from 'react';
+
 // Tweak: add/remove methodology cards by editing this key list.
 const methodologyKeys = ['ethics', 'perception', 'design'] as const;
 
@@ -24,7 +26,7 @@ const toolBadges = [
   { key: 'vite', color: 'bg-purple-500' },
 ] as const;
 
-const Dashboard = () => {
+const Dashboard = (): ReactElement => {
   const { translate } = useTranslator(['dashboard', 'caseStudies', 'common']);
   const featured = caseStudies;
 

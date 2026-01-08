@@ -4,7 +4,7 @@
  * a persistent legend, and export controls so developers can tweak visuals inline.
  */
 import { motion } from 'framer-motion';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactElement } from 'react';
 
 import { renderLineChart } from '../../charts/LineChartRenderer';
 import lineDataJson from '../../data/case-study02.json';
@@ -23,7 +23,10 @@ interface LineChartProps {
   enableMotion?: boolean;
 }
 
-const CaseStudy2LineChart = ({ showHeader = true, enableMotion = true }: LineChartProps) => {
+const CaseStudy2LineChart = ({
+  showHeader = true,
+  enableMotion = true,
+}: LineChartProps): ReactElement => {
   const [data, setData] = useState<RawLineData[] | null>(null);
   const [errorKey, setErrorKey] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);

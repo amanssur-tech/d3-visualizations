@@ -67,16 +67,16 @@ d3-visualizations/
 
 ```bash
 # install dependencies
-npm install
+pnpm install
 
 # start the local dev server
-npm run dev
+pnpm run dev
 
 # build production files
-npm run build
+pnpm run build
 
 # preview the production build
-npm run preview
+pnpm run preview
 ```
 
 ---
@@ -86,7 +86,7 @@ npm run preview
 Deployed live at **[viz.amanssur.com](https://viz.amanssur.com)** via **Vercel**.  
 For local or alternative hosting:
 
-1. Run `npm run build` to generate optimized assets in `/dist`.
+1. Run `pnpm run build` to generate optimized assets in `/dist`.
 2. Deploy to your preferred platform (Vercel, Netlify, or GitHub Pages).
 3. Ensure SPA fallback is enabled so routes (`/`, `/case-studies`, and each `/case-studies/...` deep link) work properly.
 
@@ -94,13 +94,13 @@ For local or alternative hosting:
 
 ## 🧠 Tech Stack
 
-| Category   | Tools                             |
-| ---------- | --------------------------------- |
-| Framework  | React + Vite                      |
-| Charts     | D3.js                             |
-| Styling    | Tailwind CSS                      |
-| Animations | Framer Motion                     |
-| Language   | TypeScript                        |
+| Category   | Tools                               |
+| ---------- | ----------------------------------- |
+| Framework  | React + Vite                        |
+| Charts     | D3.js                               |
+| Styling    | Tailwind CSS                        |
+| Animations | Framer Motion                       |
+| Language   | TypeScript                          |
 | Hosting    | Vercel (<https://viz.amanssur.com>) |
 
 ---

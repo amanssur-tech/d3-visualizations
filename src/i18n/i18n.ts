@@ -1,4 +1,4 @@
-import i18n from 'i18next';
+import i18next from 'i18next';
 import Cookies from 'js-cookie';
 import { initReactI18next } from 'react-i18next';
 
@@ -7,6 +7,8 @@ import en from './locales/en.json';
 import { supportedLanguages, type SupportedLanguage } from './types';
 
 export const LANG_COOKIE = 'lang';
+
+const i18n = i18next.createInstance();
 
 const isSupportedLanguage = (lang?: string): lang is SupportedLanguage =>
   typeof lang === 'string' && (supportedLanguages as readonly string[]).includes(lang);

@@ -50,7 +50,7 @@ export function renderLineChart({
   data,
   translate,
   formatCityName,
-}: LineChartRenderOptions) {
+}: LineChartRenderOptions): (() => void) | undefined {
   const root = d3.select(container);
   root.selectAll('*').remove();
 

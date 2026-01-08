@@ -12,7 +12,9 @@ import { Badge } from '../ui/Badge';
 import { Button } from '../ui/Button';
 import { Surface } from '../ui/Surface';
 
-const CaseStudiesIndex = () => {
+import type { ReactElement } from 'react';
+
+const CaseStudiesIndex = (): ReactElement => {
   const { translate } = useTranslator(['caseStudies', 'common']);
 
   /* ----------------------------- Page layout ----------------------------- */

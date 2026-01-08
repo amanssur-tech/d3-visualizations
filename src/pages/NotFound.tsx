@@ -8,16 +8,18 @@ import { NavLink, useNavigate } from 'react-router-dom';
 
 import { Button } from '../ui/Button';
 
-const NotFound = () => {
+import type { ReactElement } from 'react';
+
+const NotFound = (): ReactElement => {
   const { t } = useTranslation('notFound');
   const navigate = useNavigate();
 
   const handleBack = () => {
-    if (typeof window !== 'undefined' && window.history.length > 1) {
-      void navigate(-1);
+    if (globalThis.window !== undefined && globalThis.window.history.length > 1) {
+      Promise.resolve(navigate(-1)).catch(() => undefined);
       return;
     }
-    void navigate('/');
+    Promise.resolve(navigate('/')).catch(() => undefined);
   };
 
   /* ----------------------------- Layout + actions ----------------------------- */

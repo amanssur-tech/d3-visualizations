@@ -7,15 +7,16 @@
 
 import * as d3 from 'd3';
 
-import type { TranslateFn } from '../i18n/translate';
 import { chartTheme } from '../theme/chartTheme';
 import { createTooltip } from '../utils/tooltip';
+
 import {
   CASE_STUDY_6_METRICS,
   getNetworkColor,
   type CaseStudy6Datum,
-  type CaseStudy6MetricKey,
 } from './CaseStudy6ParallelRenderer';
+
+import type { TranslateFn } from '../i18n/translate';
 
 interface StarRenderOptions {
   container: HTMLDivElement;
@@ -39,14 +40,15 @@ export const renderCaseStudy6Star = ({
   translate,
   metricLabels,
   formatNetwork,
-}: StarRenderOptions) => {
+}: StarRenderOptions): (() => void) => {
   const root = d3.select(container);
   root.selectAll('*').remove();
   const tooltip = createTooltip();
 
   const { width, height } = CONFIG.dimensions;
   const margin = CONFIG.margins;
-  const radius = Math.min(width - margin.left - margin.right, height - margin.top - margin.bottom) / 2;
+  const radius =
+    Math.min(width - margin.left - margin.right, height - margin.top - margin.bottom) / 2;
   const center = { x: width / 2, y: height / 2 };
 
   const svgRoot = root
@@ -121,11 +123,7 @@ export const renderCaseStudy6Star = ({
     .attr('fill-opacity', CONFIG.polygonOpacity)
     .attr('stroke', (d) => getNetworkColor(d.network))
     .attr('stroke-width', 1.5)
-    .attr('d', (d) =>
-      lineGenerator(
-        CASE_STUDY_6_METRICS.map((metric) => d.values[metric])
-      )
-    );
+    .attr('d', (d) => lineGenerator(CASE_STUDY_6_METRICS.map((metric) => d.values[metric])));
 
   /* ----------------------------- Interaction ----------------------------- */
   const reset = () => {
@@ -145,8 +143,7 @@ export const renderCaseStudy6Star = ({
       const angle = Math.atan2(mouseY, mouseX) + Math.PI / 2;
       const normalizedAngle = (angle + Math.PI * 2) % (Math.PI * 2);
       const index = Math.round(normalizedAngle / angleStep) % CASE_STUDY_6_METRICS.length;
-      const metricKey = (CASE_STUDY_6_METRICS[index] ??
-        CASE_STUDY_6_METRICS[0]) as CaseStudy6MetricKey;
+      const metricKey = CASE_STUDY_6_METRICS[index] ?? CASE_STUDY_6_METRICS[0]!;
 
       tooltip.show(
         translate('caseStudies:6.starPlot.tooltip', {

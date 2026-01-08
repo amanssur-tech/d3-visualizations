@@ -8,7 +8,7 @@
  *  - highlight window
  */
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type Dispatch, type SetStateAction } from 'react';
 
 import caseStudy3Data from '../data/case-study03.json';
 import { formatCityNameFactory } from '../utils/formatCityName';
@@ -18,6 +18,16 @@ import { useTranslator } from './useTranslator';
 export interface CityDatum {
   city: string;
   value: number;
+}
+
+interface UseRandomizedBarsResult {
+  data: CityDatum[];
+  loading: boolean;
+  errorMessage: string | null;
+  magnitude: number;
+  setMagnitude: Dispatch<SetStateAction<number>>;
+  highlightedCity: string | null;
+  formatCityName: (name: string) => string;
 }
 
 interface CaseStudy3Row {
@@ -38,7 +48,7 @@ export const randomizedBarsConfig = {
   highlightDurationMs: 800,
 };
 
-export function useRandomizedBars() {
+export function useRandomizedBars(): UseRandomizedBarsResult {
   const { translate } = useTranslator(['common', 'caseStudies']);
 
   const [data, setData] = useState<CityDatum[]>([]);
@@ -50,8 +60,8 @@ export function useRandomizedBars() {
 
   const [highlightedCity, setHighlightedCity] = useState<string | null>(null);
 
-  const updateIntervalRef = useRef<ReturnType<typeof window.setInterval> | null>(null);
-  const highlightTimeoutRef = useRef<ReturnType<typeof window.setTimeout> | null>(null);
+  const updateIntervalRef = useRef<ReturnType<typeof globalThis.setInterval> | null>(null);
+  const highlightTimeoutRef = useRef<ReturnType<typeof globalThis.setTimeout> | null>(null);
 
   const formatCityName = formatCityNameFactory(translate);
 
@@ -78,41 +88,49 @@ export function useRandomizedBars() {
 
   const hasData = data.length > 0;
 
+  const applyRandomUpdate = (prev: CityDatum[]) => {
+    if (!prev.length) return { next: prev, highlighted: null };
+
+    const delta = magnitudeRef.current;
+    if (delta <= 0) return { next: prev, highlighted: null };
+
+    const index = Math.floor(Math.random() * prev.length);
+    const direction = Math.random() < 0.5 ? -1 : 1;
+
+    const current = prev[index];
+    if (!current) return { next: prev, highlighted: null };
+
+    const adjustedValue = Math.max(0, current.value + direction * delta);
+    const next = prev.map((row, i) => (i === index ? { ...row, value: adjustedValue } : row));
+
+    return { next, highlighted: current.city };
+  };
+
   /* Random interval updates */
   useEffect(() => {
     if (!hasData) return;
 
     if (updateIntervalRef.current != null) {
-      clearInterval(updateIntervalRef.current);
+      globalThis.clearInterval(updateIntervalRef.current);
     }
 
-    const id = window.setInterval(() => {
+    const tick = () => {
       setData((prev) => {
-        if (!prev.length) return prev;
-
-        const delta = magnitudeRef.current;
-        if (delta <= 0) return prev;
-
-        const index = Math.floor(Math.random() * prev.length);
-        const direction = Math.random() < 0.5 ? -1 : 1;
-
-        const current = prev[index];
-        if (!current) return prev;
-
-        const adjustedValue = Math.max(0, current.value + direction * delta);
-
-        const next = prev.map((row, i) => (i === index ? { ...row, value: adjustedValue } : row));
-
-        setHighlightedCity(current.city);
+        const { next, highlighted } = applyRandomUpdate(prev);
+        if (highlighted) {
+          setHighlightedCity(highlighted);
+        }
         return next;
       });
-    }, randomizedBarsConfig.updateIntervalMs);
+    };
+
+    const id = globalThis.setInterval(tick, randomizedBarsConfig.updateIntervalMs);
 
     updateIntervalRef.current = id;
 
     return () => {
       if (updateIntervalRef.current != null) {
-        clearInterval(updateIntervalRef.current);
+        globalThis.clearInterval(updateIntervalRef.current);
       }
     };
   }, [hasData]);
@@ -122,10 +140,10 @@ export function useRandomizedBars() {
     if (!highlightedCity) return;
 
     if (highlightTimeoutRef.current != null) {
-      clearTimeout(highlightTimeoutRef.current);
+      globalThis.clearTimeout(highlightTimeoutRef.current);
     }
 
-    const timeout = window.setTimeout(
+    const timeout = globalThis.setTimeout(
       () => setHighlightedCity(null),
       randomizedBarsConfig.highlightDurationMs
     );
@@ -139,10 +157,10 @@ export function useRandomizedBars() {
   useEffect(() => {
     return () => {
       if (updateIntervalRef.current != null) {
-        clearInterval(updateIntervalRef.current);
+        globalThis.clearInterval(updateIntervalRef.current);
       }
       if (highlightTimeoutRef.current != null) {
-        clearTimeout(highlightTimeoutRef.current);
+        globalThis.clearTimeout(highlightTimeoutRef.current);
       }
     };
   }, []);

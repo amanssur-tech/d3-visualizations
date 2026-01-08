@@ -13,6 +13,8 @@ import { Surface } from '../../ui/Surface';
 
 import CaseStudyPreview, { type CaseStudyId } from './CaseStudyPreview';
 
+import type { ReactElement } from 'react';
+
 interface CarouselProps {
   featured: {
     id: CaseStudyId;
@@ -26,7 +28,7 @@ interface CarouselProps {
   translate: (key: string) => string;
 }
 
-const DashboardCarousel = ({ featured, translate }: CarouselProps) => {
+const DashboardCarousel = ({ featured, translate }: CarouselProps): ReactElement => {
   return (
     // Tweak: horizontal scroll wrapper—adjust negative margins/padding for bleed effect.
     <div className="group relative -mx-4 overflow-x-auto px-4">
@@ -44,7 +46,7 @@ const DashboardCarousel = ({ featured, translate }: CarouselProps) => {
               variant="panel"
               padding="md"
               // Tweak: card width + hover lift for featured tiles.
-              className="w-[310px] flex-none transition hover:-translate-y-1"
+              className="w-77.5 flex-none transition hover:-translate-y-1"
               // Tweak: per-card entrance animation timing/delay.
               initial={{ opacity: 0, y: 14 }}
               animate={{ opacity: 1, y: 0 }}

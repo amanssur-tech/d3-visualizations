@@ -50,7 +50,12 @@ export interface FixedTimeBandsOptions {
 const buildGroupClass = (base: string, extra?: string, mode?: FixedTimeBandViewMode) =>
   [base, mode ? `${base}--${mode}` : null, extra ?? null].filter(Boolean).join(' ');
 
-export function renderFixedTimeBands({ container, days, translate, view }: FixedTimeBandsOptions) {
+export function renderFixedTimeBands({
+  container,
+  days,
+  translate,
+  view,
+}: FixedTimeBandsOptions): void {
   const root = d3.select(container);
   root.selectAll('*').remove();
 

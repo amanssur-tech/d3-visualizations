@@ -2,9 +2,9 @@
  * Tooltip.tsx ensures a single tooltip container exists so D3-driven charts
  * can share positioning logic without re-creating DOM nodes.
  */
-import { useEffect } from 'react';
+import { useEffect, type ReactElement } from 'react';
 
-const Tooltip = () => {
+const Tooltip = (): ReactElement | null => {
   /* ----------------------------- Create tooltip root once ----------------------------- */
   useEffect(() => {
     if (typeof document === 'undefined') return undefined;
@@ -21,7 +21,7 @@ const Tooltip = () => {
       document.body.appendChild(el);
     }
     return () => {
-      el?.parentNode?.removeChild(el);
+      el?.remove();
     };
   }, []);
 

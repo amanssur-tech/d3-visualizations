@@ -5,7 +5,7 @@
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/react';
 import { motion } from 'framer-motion';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Outlet, useNavigation } from 'react-router-dom';
 
@@ -16,30 +16,37 @@ import { ThemeProvider } from './context/ThemeContext';
 
 const Layout = () => {
   const navigation = useNavigation();
-  const [isHydrated, setHydrated] = useState(false);
-  const [isRouterReady, setRouterReady] = useState(false);
+  const [hydrationState, setHydrationState] = useState({
+    isHydrated: false,
+    isRouterReady: false,
+  });
+  const { isHydrated, isRouterReady } = hydrationState;
   const { t } = useTranslation('common');
 
   /* ----------------------------- Hydration guard ----------------------------- */
   useEffect(() => {
-    if (typeof window === 'undefined') {
-      setHydrated(true);
+    if (globalThis.window === undefined) {
+      setHydrationState((prev) => (prev.isHydrated ? prev : { ...prev, isHydrated: true }));
       return undefined;
     }
-    const raf = window.requestAnimationFrame(() => setHydrated(true));
-    return () => window.cancelAnimationFrame(raf);
+    const raf = globalThis.window.requestAnimationFrame(() => {
+      setHydrationState((prev) => (prev.isHydrated ? prev : { ...prev, isHydrated: true }));
+    });
+    return () => globalThis.window.cancelAnimationFrame(raf);
   }, []);
 
   /* ----------------------------- Wait for router to settle ----------------------------- */
   useEffect(() => {
     if (isRouterReady) return undefined;
-    if (typeof window === 'undefined') {
-      setRouterReady(true);
+    if (globalThis.window === undefined) {
+      setHydrationState((prev) => (prev.isRouterReady ? prev : { ...prev, isRouterReady: true }));
       return undefined;
     }
     if (navigation.state !== 'idle') return undefined;
-    const raf = window.requestAnimationFrame(() => setRouterReady(true));
-    return () => window.cancelAnimationFrame(raf);
+    const raf = globalThis.window.requestAnimationFrame(() => {
+      setHydrationState((prev) => (prev.isRouterReady ? prev : { ...prev, isRouterReady: true }));
+    });
+    return () => globalThis.window.cancelAnimationFrame(raf);
   }, [navigation.state, isRouterReady]);
 
   /* ----------------------------- Layout markup ----------------------------- */
@@ -76,7 +83,7 @@ const Layout = () => {
 };
 
 /* ----------------------------- Theme provider root ----------------------------- */
-const App = () => (
+const App = (): ReactElement => (
   <ThemeProvider>
     <Layout />
     <SpeedInsights />

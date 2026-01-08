@@ -60,7 +60,7 @@ export function renderRandomizedBars({
   formatCityName,
   svgTitle = 'Randomized kebab shop counts',
   svgDescription = 'Live updating randomized bar chart for Case Study 3',
-}: RandomizedBarsRenderOptions) {
+}: RandomizedBarsRenderOptions): void {
   const host = d3.select(container);
   const chartWidth = randomizedBarsLayout.size.width;
   const chartHeight = randomizedBarsLayout.size.height;
@@ -97,8 +97,8 @@ export function renderRandomizedBars({
   const safeId = (city: string) =>
     city
       .toLowerCase()
-      .replace(/\s+/g, '-')
-      .replace(/[^a-z0-9-]/g, '');
+      .replaceAll(/\s+/g, '-')
+      .replaceAll(/[^a-z0-9-]/g, '');
 
   defs
     .selectAll<SVGLinearGradientElement, CityDatum>('linearGradient.bar-gradient')

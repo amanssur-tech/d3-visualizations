@@ -42,7 +42,12 @@ interface RenderOptions {
   formatCityName: (name: string) => string;
 }
 
-export function renderBarChart({ container, data, translate, formatCityName }: RenderOptions) {
+export function renderBarChart({
+  container,
+  data,
+  translate,
+  formatCityName,
+}: RenderOptions): () => void {
   // Clear old chart
   const root = d3.select(container);
   root.selectAll('*').remove();
@@ -75,9 +80,9 @@ export function renderBarChart({ container, data, translate, formatCityName }: R
     city
       .toLowerCase()
       .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-+|-+$/g, '');
+      .replaceAll(/[\u0300-\u036f]/g, '')
+      .replaceAll(/[^a-z0-9]+/g, '-')
+      .replaceAll(/(?:^-+|-+$)/g, '');
 
   const cityColorEntries: CityColorEntry[] = data.map((d, index) => {
     const gradient =

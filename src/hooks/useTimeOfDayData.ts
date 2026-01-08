@@ -42,12 +42,21 @@ export interface AggregatedRow {
   daily: DailyValue[];
 }
 
+interface UseTimeOfDayDataResult {
+  timeOrder: readonly TimeOfDay[];
+  dailyRows: DailyRow[];
+  aggregated: AggregatedRow[];
+  days: number[];
+  cities: string[];
+  getSales: (city: string, day: number, time: TimeOfDay) => number;
+}
+
 // Tweak: change ordering here to rearrange the vertical stack of Case Study 4 bands.
 const timeOrder: readonly TimeOfDay[] = ['morgens', 'mittags', 'abends'];
 
 const isTimeOfDay = (value: string): value is TimeOfDay => timeOrder.includes(value as TimeOfDay);
 
-export function useTimeOfDayData() {
+export function useTimeOfDayData(): UseTimeOfDayDataResult {
   /* Normalize CSV rows */
   const dailyRows = useMemo<DailyRow[]>(() => {
     const rows = caseStudy4Data as RawRow[];

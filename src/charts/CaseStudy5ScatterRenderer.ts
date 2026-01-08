@@ -46,7 +46,7 @@ export const renderCaseStudy5Scatter = ({
   translate,
   formatCityName,
   formatMenuType,
-}: ScatterRenderOptions) => {
+}: ScatterRenderOptions): (() => void) => {
   const root = d3.select(container);
   root.selectAll('*').remove();
 
@@ -236,7 +236,7 @@ export const renderCaseStudy5Scatter = ({
   const pillHeight = 20;
 
   shopLabels.each(function (_datum, index, nodes) {
-    const labelNode = nodes[index] as SVGTextElement | undefined;
+    const labelNode = nodes[index];
     if (!labelNode) return;
     const text = labelNode.textContent ?? '';
     const pillWidth = pillPaddingX * 2 + text.length * charWidth;

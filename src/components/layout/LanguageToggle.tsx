@@ -11,6 +11,7 @@
  */
 
 import type { SupportedLanguage } from '../../i18n/types';
+import type { ReactElement } from 'react';
 
 interface LanguageToggleProps {
   activeLanguage: SupportedLanguage;
@@ -24,14 +25,11 @@ const LanguageToggle = ({
   languages,
   translate,
   onChange,
-}: LanguageToggleProps) => {
+}: LanguageToggleProps): ReactElement => {
   return (
     // Tweak: pill styling + spacing of the language toggle container lives here.
-    <div
-      className="inline-flex items-center gap-1 rounded-full border border-slate-200/70 bg-white/70 p-1 text-xs font-semibold text-slate-600 shadow-sm shadow-slate-200/60 dark:border-white/10 dark:bg-white/5 dark:text-slate-200 dark:shadow-black/40"
-      role="group"
-      aria-label={translate('navbar.languageToggle.aria')}
-    >
+    <fieldset className="inline-flex items-center gap-1 rounded-full border border-slate-200/70 bg-white/70 p-1 text-xs font-semibold text-slate-600 shadow-sm shadow-slate-200/60 dark:border-white/10 dark:bg-white/5 dark:text-slate-200 dark:shadow-black/40">
+      <legend className="sr-only">{translate('navbar.languageToggle.aria')}</legend>
       {languages.map((lang) => {
         const isActive = activeLanguage === lang;
         return (
@@ -58,7 +56,7 @@ const LanguageToggle = ({
           </button>
         );
       })}
-    </div>
+    </fieldset>
   );
 };
 

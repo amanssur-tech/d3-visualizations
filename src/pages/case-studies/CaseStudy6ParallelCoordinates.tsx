@@ -5,7 +5,7 @@
  * Layout: hero intro, context cards (metrics/legend/highlights), and the chart panel.
  */
 import { motion } from 'framer-motion';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactElement } from 'react';
 
 import {
   CASE_STUDY_6_METRICS,
@@ -49,7 +49,7 @@ const STATION_TYPE_KEY_MAP: Record<string, string> = {
 
 const HIGHLIGHT_KEYS = ['normalized', 'fineDust', 'hover'] as const;
 
-const CaseStudy6ParallelCoordinates = () => {
+const CaseStudy6ParallelCoordinates = (): ReactElement => {
   const { translate } = useTranslator(['caseStudies', 'common']);
   const [data, setData] = useState<CaseStudy6Datum[]>([]);
   const [errorKey, setErrorKey] = useState<string | null>(null);
@@ -225,7 +225,8 @@ const CaseStudy6ParallelCoordinates = () => {
 
             <div className="flex flex-wrap gap-2 text-xs text-slate-600 dark:text-slate-300">
               <Badge size="xs" variant="soft">
-                {translate('caseStudies:6.legend.envLabel')}: {translateEnvironment('städtisches Gebiet')}
+                {translate('caseStudies:6.legend.envLabel')}:{' '}
+                {translateEnvironment('städtisches Gebiet')}
               </Badge>
               <Badge size="xs" variant="soft">
                 {translate('caseStudies:6.legend.typeLabel')}: {translateStationType('Hintergrund')}
@@ -277,7 +278,7 @@ const CaseStudy6ParallelCoordinates = () => {
 
           <div
             ref={chartRef}
-            className={`relative min-h-[440px] rounded-2xl border border-white/50 bg-linear-to-b from-white/85 to-white/60 p-3 shadow-inner dark:border-white/10 dark:from-white/10 dark:to-transparent ${
+            className={`relative min-h-110 rounded-2xl border border-white/50 bg-linear-to-b from-white/85 to-white/60 p-3 shadow-inner dark:border-white/10 dark:from-white/10 dark:to-transparent ${
               loading ? 'animate-pulse opacity-80' : ''
             }`}
             aria-live="polite"
@@ -306,7 +307,7 @@ const CaseStudy6ParallelCoordinates = () => {
 
           <div
             ref={starRef}
-            className={`relative min-h-[420px] rounded-2xl border border-white/50 bg-linear-to-b from-white/85 to-white/60 p-3 shadow-inner dark:border-white/10 dark:from-white/10 dark:to-transparent ${
+            className={`relative min-h-105 rounded-2xl border border-white/50 bg-linear-to-b from-white/85 to-white/60 p-3 shadow-inner dark:border-white/10 dark:from-white/10 dark:to-transparent ${
               loading ? 'animate-pulse opacity-80' : ''
             }`}
             aria-live="polite"
