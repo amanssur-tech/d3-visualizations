@@ -14,7 +14,7 @@
     "url": "https://github.com/amanssur-tech/d3-visualizations/issues"
   },
   "engines": {
-    "node": ">=22"
+    "node": ">=24"
   },
   "keywords": [
     "react",

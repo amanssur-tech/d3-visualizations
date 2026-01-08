@@ -5,18 +5,22 @@
  * hosting configuration rewriting all non-asset paths to `/` so that the SPA can handle
  * routing client-side (see vercel.json for the rewrite rule).
  */
+import { lazy } from 'react';
 import { createBrowserRouter } from 'react-router-dom';
 
 import App from './App';
-import CaseStudy1BarChart from './pages/case-studies/CaseStudy1BarChart';
-import CaseStudy2LineChart from './pages/case-studies/CaseStudy2LineChart';
-import CaseStudy3RandomizedBars from './pages/case-studies/CaseStudy3RandomizedBars';
-import CaseStudy4TimeOfDay from './pages/case-studies/CaseStudy4TimeOfDay';
-import CaseStudy5DualView from './pages/case-studies/CaseStudy5DualView';
-import CaseStudy6ParallelCoordinates from './pages/case-studies/CaseStudy6ParallelCoordinates';
-import CaseStudiesIndex from './pages/CaseStudiesIndex';
-import Dashboard from './pages/Dashboard';
-import NotFound from './pages/NotFound';
+
+const Dashboard = lazy(() => import('./pages/Dashboard'));
+const CaseStudiesIndex = lazy(() => import('./pages/CaseStudiesIndex'));
+const CaseStudy1BarChart = lazy(() => import('./pages/case-studies/CaseStudy1BarChart'));
+const CaseStudy2LineChart = lazy(() => import('./pages/case-studies/CaseStudy2LineChart'));
+const CaseStudy3RandomizedBars = lazy(() => import('./pages/case-studies/CaseStudy3RandomizedBars'));
+const CaseStudy4TimeOfDay = lazy(() => import('./pages/case-studies/CaseStudy4TimeOfDay'));
+const CaseStudy5DualView = lazy(() => import('./pages/case-studies/CaseStudy5DualView'));
+const CaseStudy6ParallelCoordinates = lazy(
+  () => import('./pages/case-studies/CaseStudy6ParallelCoordinates')
+);
+const NotFound = lazy(() => import('./pages/NotFound'));
 
 /* ----------------------------- App route hierarchy ----------------------------- */
 export const router = createBrowserRouter([
