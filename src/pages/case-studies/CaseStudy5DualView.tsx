@@ -22,19 +22,15 @@ interface RawCaseStudy5Datum {
 }
 
 interface DualViewProps {
-  showHeader?: boolean;
   enableMotion?: boolean;
 }
 
 const CaseStudy5DualView = ({
-  showHeader = true,
   enableMotion = true,
 }: DualViewProps): ReactElement => {
   const { translate } = useTranslator(['caseStudies', 'common', 'tooltips']);
   const [firstLoad, setFirstLoad] = useState(true);
   const formatCityName = useMemo(() => formatCityNameFactory(translate), [translate]);
-
-  void showHeader;
 
   useEffect(() => {
     setFirstLoad(false);

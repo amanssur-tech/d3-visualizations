@@ -30,18 +30,14 @@ interface RawCaseStudy6Datum {
 }
 
 interface ParallelViewProps {
-  showHeader?: boolean;
   enableMotion?: boolean;
 }
 
 const CaseStudy6ParallelCoordinates = ({
-  showHeader = true,
   enableMotion = true,
 }: ParallelViewProps): ReactElement => {
   const { translate } = useTranslator(['caseStudies', 'common', 'tooltips']);
   const [firstLoad, setFirstLoad] = useState(true);
-
-  void showHeader;
 
   useEffect(() => {
     setFirstLoad(false);
