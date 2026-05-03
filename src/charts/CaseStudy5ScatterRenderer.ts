@@ -17,7 +17,7 @@ import type { CaseStudy5Datum } from './CaseStudy5DumbbellRenderer';
 import type { TranslateFn } from '../i18n/translate';
 
 interface ScatterRenderOptions {
-  container: HTMLDivElement;
+  container: HTMLElement;
   data: CaseStudy5Datum[];
   translate: TranslateFn;
   formatCityName: (value: string) => string;
@@ -54,7 +54,6 @@ export const renderCaseStudy5Scatter = ({
   const { width, height } = SCATTER_CONFIG.dimensions;
   const margin = SCATTER_CONFIG.margins;
 
-  /* ----------------------------- SVG shell ----------------------------- */
   const svgRoot = root
     .append('svg')
     .attr('viewBox', `0 0 ${width} ${height}`)
@@ -63,7 +62,6 @@ export const renderCaseStudy5Scatter = ({
   svgRoot.append('title').text(translate('caseStudies:5.scatter.chartTitle'));
   svgRoot.append('desc').text(translate('caseStudies:5.scatter.chartDescription'));
 
-  // Add defs for filters
   const defs = svgRoot.append('defs');
   defs
     .append('filter')
@@ -77,11 +75,9 @@ export const renderCaseStudy5Scatter = ({
 
   const svg = svgRoot.append('g');
 
-  /* ----------------------------- Scales ----------------------------- */
   const maxCustomers = d3.max(data, (d) => d.customersPerDay) ?? 0;
   const maxRevenue = d3.max(data, (d) => d.revenuePerDay) ?? 0;
 
-  // Tweak: adjust domain padding factor to create more breathing room at the extremes.
   const xScale = d3
     .scaleLinear()
     .domain([900, maxCustomers * 1.1])
@@ -95,10 +91,8 @@ export const renderCaseStudy5Scatter = ({
     .nice();
 
   const shopsExtent = d3.extent(data, (d) => d.shops) as [number, number];
-  // Tweak: adjust the size range here to make bubble area encode shops more/less strongly.
   const radiusScale = d3.scaleSqrt().domain(shopsExtent).range([12, 36]);
 
-  /* ----------------------------- Grid + axes ----------------------------- */
   const gridX = d3
     .axisBottom(xScale)
     .tickSize(-height + margin.top + margin.bottom)
@@ -158,7 +152,6 @@ export const renderCaseStudy5Scatter = ({
     .attr('font-size', 16)
     .attr('font-weight', 500);
 
-  // Axis labels
   svg
     .append('text')
     .attr('x', margin.left + (width - margin.left - margin.right) / 2)
@@ -180,7 +173,6 @@ export const renderCaseStudy5Scatter = ({
     .attr('font-weight', 600)
     .text(translate('caseStudies:5.scatter.axis.y'));
 
-  /* ----------------------------- Bubble groups ----------------------------- */
   const getLabelShift = (city: string) => CITY_LABEL_TWEAKS[city] ?? { x: 0, y: 0 };
 
   const bubbles = svg
@@ -219,7 +211,6 @@ export const renderCaseStudy5Scatter = ({
       tooltip.hide();
     });
 
-  // Number of restaurants inline.
   const shopLabels = bubbles
     .append('text')
     .attr('text-anchor', 'middle')
@@ -230,7 +221,6 @@ export const renderCaseStudy5Scatter = ({
     .attr('font-size', 14)
     .text((d) => translate('caseStudies:5.scatter.shopsCount', { value: d3.format(',')(d.shops) }));
 
-  // Deterministic pill rendering
   const pillPaddingX = 6;
   const charWidth = 7.5;
   const pillHeight = 20;
@@ -260,7 +250,6 @@ export const renderCaseStudy5Scatter = ({
       .attr('stroke', 'rgba(15,23,42,0.12)');
   });
 
-  // City labels positioned above each bubble.
   bubbles
     .append('text')
     .attr('class', 'city-label')
@@ -277,6 +266,7 @@ export const renderCaseStudy5Scatter = ({
     .text((d) => formatCityName(d.city));
 
   return () => {
-    tooltip.hide();
+    tooltip.destroy();
+    root.selectAll('*').remove();
   };
 };
