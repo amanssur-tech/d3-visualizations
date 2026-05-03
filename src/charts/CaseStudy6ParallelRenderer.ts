@@ -9,6 +9,7 @@
 import * as d3 from 'd3';
 
 import { chartTheme } from '../theme/chartTheme';
+import { createChartExportHandlers, type ChartExportHandlers } from '../utils/chartExport';
 import { createTooltip } from '../utils/tooltip';
 
 import type { TranslateFn } from '../i18n/translate';
@@ -46,7 +47,7 @@ const NETWORK_COLORS: Record<string, string> = {
 export const getNetworkColor = (network: string): string => NETWORK_COLORS[network] ?? '#6366f1';
 
 interface ParallelRenderOptions {
-  container: HTMLDivElement;
+  container: HTMLElement;
   data: CaseStudy6Datum[];
   translate: TranslateFn;
   metricOrder?: CaseStudy6MetricKey[];
@@ -54,6 +55,7 @@ interface ParallelRenderOptions {
   formatNetwork: (network: string) => string;
   formatEnvironment: (environment: string) => string;
   formatStationType: (stationType: string) => string;
+  onExportReady?: (handlers: ChartExportHandlers) => void;
 }
 
 const CONFIG = {
@@ -72,9 +74,14 @@ export const renderCaseStudy6Parallel = ({
   formatNetwork,
   formatEnvironment,
   formatStationType,
+  onExportReady,
 }: ParallelRenderOptions): (() => void) => {
   const metrics = metricOrder.filter((metric) => metricLabels[metric]);
-  if (!metrics.length) return () => undefined;
+  if (!metrics.length) {
+    return () => {
+      d3.select(container).selectAll('*').remove();
+    };
+  }
 
   const root = d3.select(container);
   root.selectAll('*').remove();
@@ -83,7 +90,6 @@ export const renderCaseStudy6Parallel = ({
   const { width, height } = CONFIG.dimensions;
   const margin = CONFIG.margins;
 
-  /* ----------------------------- SVG shell ----------------------------- */
   const svgRoot = root
     .append('svg')
     .attr('viewBox', `0 0 ${width} ${height}`)
@@ -94,7 +100,6 @@ export const renderCaseStudy6Parallel = ({
 
   const svg = svgRoot.append('g');
 
-  /* ----------------------------- Scales ----------------------------- */
   const xScale = d3
     .scalePoint<CaseStudy6MetricKey>()
     .domain(metrics)
@@ -115,7 +120,6 @@ export const renderCaseStudy6Parallel = ({
       .range([height - margin.bottom, margin.top]);
   });
 
-  /* ----------------------------- Axes + grid ----------------------------- */
   const axisGroups = svg
     .selectAll<SVGGElement, CaseStudy6MetricKey>('g.axis')
     .data(metrics)
@@ -147,7 +151,6 @@ export const renderCaseStudy6Parallel = ({
     .attr('font-weight', 700)
     .text((metric) => metricLabels[metric]);
 
-  /* ----------------------------- Legend ----------------------------- */
   const networks = Array.from(new Set(data.map((d) => d.network)));
   const legend = svg
     .append('g')
@@ -178,7 +181,6 @@ export const renderCaseStudy6Parallel = ({
         .text((network) => formatNetwork(network));
     });
 
-  /* ----------------------------- Lines + points ----------------------------- */
   const lineGenerator = d3
     .line<[number, number]>()
     .x(([x]) => x)
@@ -240,7 +242,6 @@ export const renderCaseStudy6Parallel = ({
     .attr('cx', (d) => d.x)
     .attr('cy', (d) => yScales[d.metric](d.value));
 
-  /* ----------------------------- Interactions ----------------------------- */
   const resetLines = () => {
     lines.attr('stroke-opacity', 0.9).attr('stroke-width', CONFIG.lineWidth);
     points.attr('opacity', 1);
@@ -299,8 +300,19 @@ export const renderCaseStudy6Parallel = ({
     .attr('font-size', 12)
     .text(translate('caseStudies:6.chart.note'));
 
+  const svgNode = svgRoot.node();
+  if (svgNode instanceof SVGSVGElement && onExportReady) {
+    const handlers = createChartExportHandlers(
+      svgNode,
+      CONFIG.dimensions.width,
+      CONFIG.dimensions.height,
+      'parallel_coordinates_chart'
+    );
+    onExportReady(handlers);
+  }
+
   return () => {
-    tooltip.hide();
+    tooltip.destroy();
     root.selectAll('*').remove();
   };
 };

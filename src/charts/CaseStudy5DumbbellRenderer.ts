@@ -12,6 +12,7 @@
 import * as d3 from 'd3';
 
 import { chartTheme } from '../theme/chartTheme';
+import { createChartExportHandlers, type ChartExportHandlers } from '../utils/chartExport';
 import { createTooltip } from '../utils/tooltip';
 
 import { getMenuColor } from './caseStudy5MenuPalette';
@@ -27,11 +28,12 @@ export interface CaseStudy5Datum {
 }
 
 interface DumbbellRenderOptions {
-  container: HTMLDivElement;
+  container: HTMLElement;
   data: CaseStudy5Datum[];
   translate: TranslateFn;
   formatCityName: (value: string) => string;
   formatMenuType: (value: string) => string;
+  onExportReady?: (handlers: ChartExportHandlers) => void;
 }
 
 const DUMBELL_CONFIG = {
@@ -49,18 +51,17 @@ export const renderCaseStudy5Dumbbell = ({
   translate,
   formatCityName,
   formatMenuType,
+  onExportReady,
 }: DumbbellRenderOptions): (() => void) => {
   const root = d3.select(container);
   root.selectAll('*').remove();
 
   const tooltip = createTooltip();
 
-  // Tweak: change `dimensions` above to alter base aspect ratio.
   const { width, height } = DUMBELL_CONFIG.dimensions;
   const margin = DUMBELL_CONFIG.margins;
   const neutral = DUMBELL_CONFIG.neutralLine;
 
-  /* ----------------------------- SVG shell ----------------------------- */
   const svgRoot = root
     .append('svg')
     .attr('viewBox', `0 0 ${width} ${height}`)
@@ -71,8 +72,6 @@ export const renderCaseStudy5Dumbbell = ({
 
   const svg = svgRoot.append('g');
 
-  /* ----------------------------- Scales ----------------------------- */
-  // Tweak: extend the domain padding to widen or tighten left/right breathing room.
   const maxValue = d3.max(data, (d) => Math.max(d.customersPerDay, d.revenuePerDay)) ?? 0;
   const xScale = d3
     .scaleLinear()
@@ -80,18 +79,15 @@ export const renderCaseStudy5Dumbbell = ({
     .range([margin.left, width - margin.right])
     .nice();
 
-  // Tweak: adjust `.padding()` for more/less vertical separation between dumbbells.
   const yScale = d3
     .scaleBand()
     .domain(data.map((d) => d.city))
     .range([margin.top, height - margin.bottom])
     .padding(0.5);
 
-  // Tweak: adjust stroke scale to make connector thickness encode shop counts more/less.
   const shopsExtent = d3.extent(data, (d) => d.shops) as [number, number];
   const strokeScale = d3.scaleLinear().domain(shopsExtent).range([2, 12]);
 
-  /* ----------------------------- Grid + axes ----------------------------- */
   const verticalGridGroup = svg.insert('g', ':first-child').attr('class', 'vertical-grid');
 
   verticalGridGroup
@@ -105,7 +101,6 @@ export const renderCaseStudy5Dumbbell = ({
     .attr('y2', height - margin.bottom)
     .attr('stroke-width', 1);
 
-  // Bottom axis with numeric ticks for customers/revenue scale.
   svg
     .append('g')
     .attr('class', 'axis axis--x')
@@ -119,7 +114,6 @@ export const renderCaseStudy5Dumbbell = ({
     )
     .call((g) => g.select('.domain').attr('stroke', chartTheme.textMuted));
 
-  // Left axis with formatted city names.
   svg
     .append('g')
     .attr('class', 'axis axis--y')
@@ -138,7 +132,6 @@ export const renderCaseStudy5Dumbbell = ({
     .attr('font-size', 16)
     .attr('font-weight', 500);
 
-  // Axis labels help future editors locate where to tweak copy.
   svg
     .append('text')
     .attr('x', margin.left + (width - margin.left - margin.right) / 2)
@@ -149,7 +142,6 @@ export const renderCaseStudy5Dumbbell = ({
     .attr('font-weight', 600)
     .text(translate('caseStudies:5.dumbbell.axis'));
 
-  /* ----------------------------- Dumbbell lines ----------------------------- */
   const rowGroupsGroup = svg.append('g').attr('class', 'dumbbells');
   rowGroupsGroup.raise();
 
@@ -172,7 +164,6 @@ export const renderCaseStudy5Dumbbell = ({
     .attr('stroke-linecap', 'round')
     .attr('opacity', 1);
 
-  /* ----------------------------- Inline shop labels ----------------------------- */
   rowGroups
     .append('text')
     .attr('class', 'shop-label')
@@ -191,7 +182,6 @@ export const renderCaseStudy5Dumbbell = ({
       })
     );
 
-  /* ----------------------------- Customer vs revenue dots ----------------------------- */
   const dotEnter = (
     selection: d3.Selection<SVGCircleElement, CaseStudy5Datum, SVGGElement, unknown>
   ) => {
@@ -204,7 +194,6 @@ export const renderCaseStudy5Dumbbell = ({
       .attr('stroke-width', 1.5);
   };
 
-  // Left dots (customers per day) coloured by menu type.
   rowGroups
     .append('circle')
     .attr('class', 'dot dot--customers')
@@ -230,10 +219,9 @@ export const renderCaseStudy5Dumbbell = ({
       tooltip.hide();
     });
 
-  // Right dots (revenue per day) emphasized by accent color + glow.
   rowGroups
     .append('circle')
-    .attr('class', 'dot dot--revenue fill-zinc-400 dark:fill-zinc-300') // Tailwind red-500
+    .attr('class', 'dot dot--revenue fill-zinc-400 dark:fill-zinc-300')
     .attr('cx', (d) => xScale(d.revenuePerDay))
     .attr('fill', chartTheme.accentStrong)
     .call(dotEnter)
@@ -256,7 +244,19 @@ export const renderCaseStudy5Dumbbell = ({
       tooltip.hide();
     });
 
+  const svgNode = svgRoot.node();
+  if (svgNode instanceof SVGSVGElement && onExportReady) {
+    const handlers = createChartExportHandlers(
+      svgNode,
+      DUMBELL_CONFIG.dimensions.width,
+      DUMBELL_CONFIG.dimensions.height,
+      'dumbbell_chart'
+    );
+    onExportReady(handlers);
+  }
+
   return () => {
-    tooltip.hide();
+    tooltip.destroy();
+    root.selectAll('*').remove();
   };
 };

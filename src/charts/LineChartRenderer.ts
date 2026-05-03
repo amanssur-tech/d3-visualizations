@@ -16,6 +16,7 @@ import * as d3 from 'd3';
 
 import { chartTheme, cssVar } from '../theme/chartTheme';
 import { chartConfig } from '../utils/config';
+import { createChartExportHandlers, type ChartExportHandlers } from '../utils/chartExport';
 import { createTooltip } from '../utils/tooltip';
 
 import type { TranslateFn } from '../i18n/translate';
@@ -38,27 +39,29 @@ export interface LineChartRenderOptions {
   data: RawLineData[];
   translate: TranslateFn;
   formatCityName: (name: string) => string;
+  onExportReady?: (handlers: ChartExportHandlers) => void;
 }
 
-/**
- * renderLineChart
- * Executes the full D3 rendering pipeline for the multi‑city time‑series chart.
- */
 export function renderLineChart({
   container,
   legendContainer,
   data,
   translate,
   formatCityName,
-}: LineChartRenderOptions): (() => void) | undefined {
+  onExportReady,
+}: LineChartRenderOptions): (() => void) {
   const root = d3.select(container);
   root.selectAll('*').remove();
 
-  if (!data || data.length === 0) return;
-
   const tooltip = createTooltip();
 
-  /* ----------------------------------- Normalize data ----------------------------------- */
+  if (!data || data.length === 0) {
+    return () => {
+      tooltip.destroy();
+      root.selectAll('*').remove();
+    };
+  }
+
   const normalized: LineData[] = data.map((row) => ({
     Stadt: row.Stadt,
     Jahr: Number(row.Jahr),
@@ -74,20 +77,16 @@ export function renderLineChart({
     return map;
   }, new Map());
 
-  /* ----------------------------------- Layout config ----------------------------------- */
-  // Tweak: global canvas + margin settings for Case Study 2 line chart.
   const margin = chartConfig.margins.line;
   const { width: svgWidth, height: svgHeight } = chartConfig.dimensions.line;
   const innerWidth = svgWidth - margin.left - margin.right;
   const innerHeight = svgHeight - margin.top - margin.bottom;
 
-  // Tweak: palette + dot sizing pulled from shared config; override CSS vars to recolor.
   const accentStrong = chartTheme.accentStrong;
   const textSoft = chartTheme.textMuted;
   const gridColor = chartTheme.grid;
   const pointRadius = chartConfig.elements.pointRadius;
 
-  /* ------------------------------------- SVG root -------------------------------------- */
   const svgRoot = root
     .append('svg')
     .attr('viewBox', `0 0 ${svgWidth} ${svgHeight}`)
@@ -98,8 +97,6 @@ export function renderLineChart({
 
   const svg = svgRoot.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
 
-  /* ------------------------------------- Scales ---------------------------------------- */
-  // Tweak: change `.padding(0.5)` or switch to scaleLinear for different spacing along x.
   const x = d3.scalePoint<number>().domain(years).range([0, innerWidth]).padding(0.5);
 
   const maxValue = d3.max(normalized, (d) => d.Anzahl) ?? 0;
@@ -115,7 +112,6 @@ export function renderLineChart({
     .y((d) => y(d.Anzahl))
     .curve(d3.curveCatmullRom.alpha(chartConfig.curves.smooth));
 
-  /* -------------------------------- Grid + axes ---------------------------------------- */
   const yTicks = Math.max(2, Math.floor(innerHeight / 40));
 
   svg
@@ -143,18 +139,15 @@ export function renderLineChart({
 
   svg
     .selectAll('.axis text')
-    // Tweak: adjust axis font treatment globally here.
     .attr('fill', textSoft)
     .attr('font-size', 12)
     .attr('font-weight', 500);
   svg.selectAll('.axis path, .axis line').attr('stroke', textSoft).attr('stroke-opacity', 0.2);
 
-  /* ----------------------------- City palette lookups ----------------------------- */
   const cityColors: Record<string, string> = Object.fromEntries(
     Object.entries(chartConfig.cityColors).map(([city, varName]) => [city, cssVar(varName)])
   );
 
-  /* ----------------------------- Draw each line + points ----------------------------- */
   for (const [city, rows] of grouped) {
     const sortedRows = rows.slice().sort((a, b) => a.Jahr - b.Jahr);
     const stroke = cityColors[city] ?? '#333';
@@ -176,7 +169,6 @@ export function renderLineChart({
       .attr('stroke-dasharray', `${totalLength} ${totalLength}`)
       .attr('stroke-dashoffset', totalLength)
       .transition()
-      // Tweak: change `chartConfig.animation.lineDrawIn` to speed up/slow down draw-on effect.
       .duration(chartConfig.animation.lineDrawIn)
       .ease(d3.easeCubicOut)
       .attr('stroke-dashoffset', 0);
@@ -191,7 +183,6 @@ export function renderLineChart({
       .attr('class', 'circle-point')
       .attr('cx', (d) => x(d.Jahr) ?? 0)
       .attr('cy', (d) => y(d.Anzahl))
-      // Tweak: dot radius/hover behavior defined here per city.
       .attr('r', pointRadius)
       .attr('fill', stroke)
       .on('mouseenter', (event: MouseEvent, d: LineData) =>
@@ -208,7 +199,6 @@ export function renderLineChart({
       .on('mouseleave', () => tooltip.hide());
   }
 
-  /* -------------------------------- Axis labels --------------------------------------- */
   svg
     .append('text')
     .attr('x', innerWidth / 2)
@@ -226,7 +216,6 @@ export function renderLineChart({
     .attr('fill', textSoft)
     .text(translate('charts.line.axis.count'));
 
-  /* -------------------------------- Legend building ----------------------------------- */
   const lineSelection = svg.selectAll<SVGPathElement, LineData[]>('.line');
 
   if (legendContainer) {
@@ -249,16 +238,25 @@ export function renderLineChart({
       item
         .append('div')
         .attr('class', 'legend-color')
-        // Tweak: update accent/glow to change legend swatches.
         .style('background-color', cityColors[city] ?? accentStrong);
 
-      // Tweak: legend label copy derived from `formatCityName` result.
       item.append('span').text(formatCityName(city));
     });
   }
 
-  /* -------------------------------- Cleanup ------------------------------------------- */
+  const svgNode = svgRoot.node();
+  if (svgNode instanceof SVGSVGElement && onExportReady) {
+    const handlers = createChartExportHandlers(
+      svgNode,
+      svgWidth,
+      svgHeight,
+      'kebablaeden_linechart'
+    );
+    onExportReady(handlers);
+  }
+
   return () => {
+    tooltip.destroy();
     root.selectAll('*').remove();
     if (legendContainer) {
       d3.select(legendContainer).selectAll('*').remove();

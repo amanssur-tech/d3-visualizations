@@ -5,11 +5,14 @@
  * Sections below cover translations, data loading, chart rendering, and UI wrapper content.
  */
 import { motion } from 'framer-motion';
-import { useEffect, useMemo, useRef, useState, type ReactElement } from 'react';
+import { useCallback, useEffect, useMemo, useState, type ReactElement } from 'react';
 
 import { renderBarChart } from '../../charts/BarChartRenderer';
+import ExportButtons from '../../components/ExportButtons';
 import kebabData from '../../data/case-study01.json';
+import { useD3 } from '../../hooks/useD3';
 import { useTranslator } from '../../hooks/useTranslator';
+import type { ChartExportHandlers } from '../../utils/chartExport';
 import { formatCityNameFactory } from '../../utils/formatCityName';
 
 interface KebabData {
@@ -29,13 +32,11 @@ const CaseStudy1BarChart = ({
   const [data, setData] = useState<KebabData[] | null>(null);
   const [errorKey, setErrorKey] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const chartRef = useRef<HTMLDivElement | null>(null);
-  const mounted = useRef(false);
   const [firstLoad, setFirstLoad] = useState(true);
-  const { i18n, translate } = useTranslator(['charts', 'common', 'tooltips']);
+  const [exportHandlers, setExportHandlers] = useState<ChartExportHandlers | null>(null);
+  const { translate } = useTranslator(['charts', 'common', 'tooltips']);
   const formatCityName = useMemo(() => formatCityNameFactory(translate), [translate]);
 
-  /* ----------------------------- First paint + data load ----------------------------- */
   useEffect(() => {
     setFirstLoad(false);
   }, []);
@@ -51,32 +52,29 @@ const CaseStudy1BarChart = ({
     }
   }, []);
 
-  /* ----------------------------- Chart rendering ----------------------------- */
-  useEffect(() => {
-    if (!data || data.length === 0 || !chartRef.current) return;
+  const renderChart = useCallback(
+    (container: HTMLElement) => {
+      if (!data || data.length === 0) return undefined;
 
-    if (!mounted.current) {
-      mounted.current = true;
-    }
+      return renderBarChart({
+        container,
+        data,
+        translate,
+        formatCityName,
+        onExportReady: setExportHandlers,
+      });
+    },
+    [data, translate, formatCityName]
+  );
 
-    const cleanup = renderBarChart({
-      container: chartRef.current,
-      data,
-      translate,
-      formatCityName,
-    });
-
-    return cleanup;
-  }, [data, translate, formatCityName, i18n.language]);
+  const chartRef = useD3(renderChart);
 
   const allowMotion = enableMotion && !firstLoad;
   const initial = allowMotion ? { opacity: 0, y: 18 } : {};
   const animate = allowMotion ? { opacity: 1, y: 0 } : {};
   const exit = allowMotion ? { opacity: 0, y: -18 } : {};
 
-  /* ----------------------------- UI wrapper + controls ----------------------------- */
   return (
-    // Tweak: chart panel radius, blur, and padding via this wrapper class string.
     <motion.section
       id="barchart-section"
       data-layer="chart-section"
@@ -86,39 +84,41 @@ const CaseStudy1BarChart = ({
       exit={exit}
       transition={{ duration: 0.4, ease: 'easeOut' }}
     >
-      {/* Optional header copy */}
       {showHeader && (
         <div id="barchart-header" data-layer="chart-header" className="space-y-2">
-          {/* Tweak: headline copy for Case Study 1 lives here. */}
           <h1 className="text-2xl font-semibold text-slate-900 dark:text-white">
             {translate('caseStudies.1.title')}
           </h1>
         </div>
       )}
 
-      {/* Load errors surface inline */}
       {errorKey ? (
         <p
           id="barchart-error"
           data-layer="chart-error"
-          // Tweak: error alert colors + typography for data load issues.
           className="mt-4 rounded-xl bg-red-50/80 px-4 py-3 text-sm text-red-600 dark:bg-red-500/10 dark:text-red-300"
         >
           {translate(errorKey)}
         </p>
       ) : null}
 
-      {/* Chart mount target */}
       <div
         id="barchart-container"
         data-layer="chart-container"
         ref={chartRef}
-        // Tweak: chart canvas background gradient + loading shimmer toggled here.
         className={`relative mt-6 w-full overflow-hidden rounded-2xl border border-white/50 bg-linear-to-b from-white/80 to-white/40 p-2 shadow-inner dark:border-white/10 dark:from-white/10 dark:to-transparent ${
           loading ? 'animate-pulse opacity-80' : ''
         }`}
         aria-live="polite"
       />
+
+      {exportHandlers && (
+        <ExportButtons
+          onExportSvg={exportHandlers.exportSvg}
+          onExportPng={exportHandlers.exportPng}
+          disabled={loading}
+        />
+      )}
     </motion.section>
   );
 };

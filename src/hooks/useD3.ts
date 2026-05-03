@@ -1,11 +1,14 @@
 /**
  * useD3.ts keeps D3 render logic aligned with React lifecycles by exposing a ref
  * that triggers the provided render callback after animations settle.
+ * Improved version with better cleanup and consistent lifecycle management.
  */
 import { useEffect, useRef, type RefObject } from 'react';
 
+import { hideGlobalTooltip } from '../utils/tooltip';
+
 /**
- * Pass a render callback that receives the container element and optional cleanup function.
+ * Pass a render callback that receives the container element and returns an optional cleanup function.
  */
 export function useD3(
   renderChart: (container: HTMLElement) => void | (() => void)
@@ -13,21 +16,24 @@ export function useD3(
   const ref = useRef<HTMLDivElement | null>(null);
   const cleanupRef = useRef<(() => void) | null>(null);
 
-  /* ----------------------------- Run render callback when dependencies change ----------------------------- */
   useEffect(() => {
     let mounted = true;
-    // Clear any previous render before drawing again
+
     if (cleanupRef.current) {
       cleanupRef.current();
       cleanupRef.current = null;
     }
+    hideGlobalTooltip();
+
     if (!ref.current) return undefined;
 
-    // Small delay avoids layout thrash with React 19 + Framer Motion animations
     const id = setTimeout(() => {
       const container = ref.current;
       if (!mounted || !container) return;
-      cleanupRef.current = renderChart(container) ?? null;
+      const cleanup = renderChart(container);
+      if (cleanup) {
+        cleanupRef.current = cleanup;
+      }
     }, 10);
 
     return () => {
@@ -37,6 +43,7 @@ export function useD3(
         cleanupRef.current();
         cleanupRef.current = null;
       }
+      hideGlobalTooltip();
     };
   }, [renderChart]);
 

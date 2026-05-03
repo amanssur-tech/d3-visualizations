@@ -1,5 +1,6 @@
 /**
  * tooltip.ts exposes minimal show/move/hide helpers while ensuring a shared tooltip node exists.
+ * Improved version with better cleanup support for chart lifecycles.
  */
 import * as d3 from 'd3';
 
@@ -10,30 +11,45 @@ interface TooltipApi {
   move: (event: MouseEvent) => void;
   hide: () => void;
   node: () => HTMLDivElement | null;
+  destroy: () => void;
 }
 
-/* ----------------------------- Tooltip node factory ----------------------------- */
-export const createTooltip = (): TooltipApi => {
-  const existing = d3.select<HTMLDivElement, unknown>('#global-tooltip-root');
-  const tip: TooltipSelection = existing.empty()
-    ? d3.select('body').append<HTMLDivElement>('div').attr('id', 'global-tooltip-root')
-    : existing;
+let activeOwnerCount = 0;
 
-  tip
-    .classed('tooltip', true)
-    .attr('role', 'tooltip')
-    .attr('aria-hidden', 'true')
-    .style('opacity', 0);
+const TOOLTIP_ID = 'global-tooltip-root';
+
+const getOrCreateTooltip = (): TooltipSelection => {
+  const existing = d3.select<HTMLDivElement, unknown>(`#${TOOLTIP_ID}`);
+  if (existing.empty()) {
+    const tip = d3
+      .select('body')
+      .append<HTMLDivElement>('div')
+      .attr('id', TOOLTIP_ID)
+      .classed('tooltip', true)
+      .attr('role', 'tooltip')
+      .attr('aria-hidden', 'true')
+      .style('opacity', 0)
+      .style('pointer-events', 'none')
+      .style('position', 'fixed')
+      .style('z-index', '9999');
+    return tip;
+  }
+  return existing;
+};
+
+export const createTooltip = (): TooltipApi => {
+  activeOwnerCount++;
+
+  const tip = getOrCreateTooltip();
 
   const show = (html: string, event: MouseEvent) => {
     tip
       .html(html)
-      // Tweak: adjust offset values for tooltip pointer distance.
       .style('left', `${event.pageX + 12}px`)
       .style('top', `${event.pageY + 12}px`)
       .attr('aria-hidden', 'false')
+      .interrupt()
       .transition()
-      // Tweak: fade duration if tooltip should linger longer.
       .duration(120)
       .style('opacity', 1);
   };
@@ -43,8 +59,35 @@ export const createTooltip = (): TooltipApi => {
   };
 
   const hide = () => {
-    tip.transition().duration(120).style('opacity', 0).attr('aria-hidden', 'true');
+    tip.interrupt().transition().duration(120).style('opacity', 0).attr('aria-hidden', 'true');
   };
 
-  return { show, move, hide, node: () => tip.node() };
+  const destroy = () => {
+    activeOwnerCount--;
+    hide();
+    if (activeOwnerCount <= 0) {
+      const element = tip.node();
+      if (element) {
+        d3.select(element).remove();
+      }
+      activeOwnerCount = 0;
+    }
+  };
+
+  const api: TooltipApi = {
+    show,
+    move,
+    hide,
+    node: () => tip.node(),
+    destroy,
+  };
+
+  return api;
+};
+
+export const hideGlobalTooltip = (): void => {
+  const existing = d3.select<HTMLDivElement, unknown>(`#${TOOLTIP_ID}`);
+  if (!existing.empty()) {
+    existing.interrupt().transition().duration(120).style('opacity', 0).attr('aria-hidden', 'true');
+  }
 };

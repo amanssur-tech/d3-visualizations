@@ -15,6 +15,7 @@ import * as d3 from 'd3';
 
 import { chartTheme } from '../theme/chartTheme';
 import { chartConfig } from '../utils/config';
+import { createChartExportHandlers, type ChartExportHandlers } from '../utils/chartExport';
 import { createTooltip } from '../utils/tooltip';
 
 import {
@@ -36,10 +37,11 @@ interface CityColorEntry {
 }
 
 interface RenderOptions {
-  container: HTMLDivElement;
+  container: HTMLElement;
   data: KebabData[];
   translate: TranslateFn;
   formatCityName: (name: string) => string;
+  onExportReady?: (handlers: ChartExportHandlers) => void;
 }
 
 export function renderBarChart({
@@ -47,25 +49,22 @@ export function renderBarChart({
   data,
   translate,
   formatCityName,
+  onExportReady,
 }: RenderOptions): () => void {
-  // Clear old chart
   const root = d3.select(container);
   root.selectAll('*').remove();
 
   const tooltip = createTooltip();
 
-  // Tweak: base chart dimensions + margins pulled from shared config.
   const chartWidth = chartConfig.dimensions.bar.width;
   const chartHeight = chartConfig.dimensions.bar.height;
   const margin = chartConfig.margins.bar;
   const barRadius = 14;
 
-  // Tweak: palette + typography colors resolved from CSS variables.
   const textColor = chartTheme.textPrimary;
   const textSoft = chartTheme.textMuted;
   const gridColor = chartTheme.grid;
 
-  /* Root SVG */
   const svgRoot = root
     .append('svg')
     .attr('viewBox', `0 0 ${chartWidth} ${chartHeight}`)
@@ -125,12 +124,10 @@ export function renderBarChart({
 
   const svg = svgRoot.append('g');
 
-  /* Scales */
   const x = d3
     .scaleBand<string>()
     .domain(data.map((d) => d.Stadt))
     .range([margin.left, chartWidth - margin.right])
-    // Tweak: adjust shared `chartConfig.elements.barPadding` for horizontal spacing.
     .padding(chartConfig.elements.barPadding);
 
   const maxCount = d3.max(data, (d) => d.Anzahl_Kebabläden) ?? 0;
@@ -140,11 +137,9 @@ export function renderBarChart({
     .nice()
     .range([chartHeight - margin.bottom, margin.top]);
 
-  /* Grid */
   const yGrid = d3
     .axisLeft(y)
     .tickSize(-chartWidth + margin.left + margin.right)
-    // Tweak: change tick count or formatting for denser grids.
     .ticks(8)
     .tickFormat(() => '');
 
@@ -156,7 +151,6 @@ export function renderBarChart({
     .attr('stroke', gridColor)
     .attr('stroke-opacity', 0.4);
 
-  /* Axes */
   svg
     .append('g')
     .attr('transform', `translate(0,${chartHeight - margin.bottom})`)
@@ -169,7 +163,6 @@ export function renderBarChart({
 
   svg
     .selectAll('.axis text')
-    // Tweak: alter font size/weight here for axis labels.
     .attr('fill', textSoft)
     .attr('font-size', 12)
     .attr('font-weight', 500);
@@ -179,7 +172,6 @@ export function renderBarChart({
     .attr('stroke-opacity', 0.2)
     .attr('shape-rendering', 'crispEdges');
 
-  /* Bars */
   svg
     .append('g')
     .selectAll('rect')
@@ -208,12 +200,10 @@ export function renderBarChart({
       tooltip.hide();
     })
     .transition()
-    // Tweak: global bar entrance timing controlled via `chartConfig.animation.barGrow`.
     .duration(chartConfig.animation.barGrow)
     .attr('y', (d) => y(d.Anzahl_Kebabläden))
     .attr('height', (d) => y(0) - y(d.Anzahl_Kebabläden));
 
-  /* Value labels */
   svg
     .append('g')
     .selectAll('text')
@@ -225,11 +215,9 @@ export function renderBarChart({
     .attr('y', chartHeight - margin.bottom)
     .text((d) => d.Anzahl_Kebabläden ?? '')
     .transition()
-    // Tweak: sync label float-up speed with `chartConfig.animation.barGrow`.
     .duration(chartConfig.animation.barGrow)
     .attr('y', (d) => y(d.Anzahl_Kebabläden) - 8);
 
-  /* Axis labels */
   svg
     .append('text')
     .attr('x', chartWidth / 2)
@@ -247,7 +235,19 @@ export function renderBarChart({
     .attr('fill', textColor)
     .text(translate('charts.bar.axis.count'));
 
+  const svgNode = svgRoot.node();
+  if (svgNode instanceof SVGSVGElement && onExportReady) {
+    const handlers = createChartExportHandlers(
+      svgNode,
+      chartWidth,
+      chartHeight,
+      'kebablaeden_barchart'
+    );
+    onExportReady(handlers);
+  }
+
   return () => {
+    tooltip.destroy();
     root.selectAll('*').remove();
   };
 }
