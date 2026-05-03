@@ -8,9 +8,11 @@ import { useCallback, useEffect, useMemo, useState, type ReactElement } from 're
 
 import { renderCaseStudy5Dumbbell, type CaseStudy5Datum } from '../../charts/CaseStudy5DumbbellRenderer';
 import { renderCaseStudy5Scatter } from '../../charts/CaseStudy5ScatterRenderer';
+import ExportButtons from '../../components/ExportButtons';
 import rawData from '../../data/case-study05.json';
 import { useD3 } from '../../hooks/useD3';
 import { useTranslator } from '../../hooks/useTranslator';
+import type { ChartExportHandlers } from '../../utils/chartExport';
 import { formatCityNameFactory } from '../../utils/formatCityName';
 
 interface RawCaseStudy5Datum {
@@ -23,13 +25,17 @@ interface RawCaseStudy5Datum {
 
 interface DualViewProps {
   enableMotion?: boolean;
+  showHeader?: boolean;
 }
 
 const CaseStudy5DualView = ({
   enableMotion = true,
+  showHeader = true,
 }: DualViewProps): ReactElement => {
   const { translate } = useTranslator(['caseStudies', 'common', 'tooltips']);
   const [firstLoad, setFirstLoad] = useState(true);
+  const [dumbbellExportHandlers, setDumbbellExportHandlers] = useState<ChartExportHandlers | null>(null);
+  const [scatterExportHandlers, setScatterExportHandlers] = useState<ChartExportHandlers | null>(null);
   const formatCityName = useMemo(() => formatCityNameFactory(translate), [translate]);
 
   useEffect(() => {
@@ -69,6 +75,7 @@ const CaseStudy5DualView = ({
         translate,
         formatCityName,
         formatMenuType,
+        onExportReady: setDumbbellExportHandlers,
       });
     },
     [data, translate, formatCityName, formatMenuType]
@@ -84,6 +91,7 @@ const CaseStudy5DualView = ({
         translate,
         formatCityName,
         formatMenuType,
+        onExportReady: setScatterExportHandlers,
       });
     },
     [data, translate, formatCityName, formatMenuType]
@@ -105,17 +113,19 @@ const CaseStudy5DualView = ({
       exit={exit}
       transition={{ duration: 0.45, ease: 'easeOut' }}
     >
-      <div className="rounded-2xl border border-white/50 bg-white/70 p-4 shadow-md dark:border-white/10 dark:bg-neutral-950/60 sm:p-6 md:p-8">
-        <p className="text-xs uppercase tracking-[0.4em] text-slate-500 dark:text-slate-400">
-          {translate('caseStudies:5.subtitle')}
-        </p>
-        <h1 className="mt-2 text-3xl font-semibold text-slate-900 dark:text-white">
-          {translate('caseStudies:5.title')}
-        </h1>
-        <p className="mt-4 max-w-3xl text-base text-slate-600 dark:text-slate-300">
-          {translate('caseStudies:5.description')}
-        </p>
-      </div>
+      {showHeader && (
+        <div className="rounded-2xl border border-white/50 bg-white/70 p-4 shadow-md dark:border-white/10 dark:bg-neutral-950/60 sm:p-6 md:p-8">
+          <p className="text-xs uppercase tracking-[0.4em] text-slate-500 dark:text-slate-400">
+            {translate('caseStudies:5.subtitle')}
+          </p>
+          <h1 className="mt-2 text-3xl font-semibold text-slate-900 dark:text-white">
+            {translate('caseStudies:5.title')}
+          </h1>
+          <p className="mt-4 max-w-3xl text-base text-slate-600 dark:text-slate-300">
+            {translate('caseStudies:5.description')}
+          </p>
+        </div>
+      )}
 
       <div className="space-y-6">
         <div className="rounded-2xl border border-white/50 bg-white/80 px-4 py-6 shadow-md dark:border-white/10 dark:bg-neutral-950/60 sm:px-6">
@@ -149,6 +159,13 @@ const CaseStudy5DualView = ({
               ))}
             </ul>
           </div>
+
+          {dumbbellExportHandlers && (
+            <ExportButtons
+              onExportSvg={dumbbellExportHandlers.exportSvg}
+              onExportPng={dumbbellExportHandlers.exportPng}
+            />
+          )}
         </div>
 
         <div className="rounded-2xl border border-white/50 bg-white/80 px-4 py-6 shadow-md dark:border-white/10 dark:bg-neutral-950/60 sm:px-6">
@@ -182,6 +199,13 @@ const CaseStudy5DualView = ({
               ))}
             </ul>
           </div>
+
+          {scatterExportHandlers && (
+            <ExportButtons
+              onExportSvg={scatterExportHandlers.exportSvg}
+              onExportPng={scatterExportHandlers.exportPng}
+            />
+          )}
         </div>
       </div>
     </motion.section>

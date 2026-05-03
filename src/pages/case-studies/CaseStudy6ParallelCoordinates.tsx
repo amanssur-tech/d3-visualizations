@@ -12,9 +12,11 @@ import {
   type CaseStudy6MetricKey,
 } from '../../charts/CaseStudy6ParallelRenderer';
 import { renderCaseStudy6Star } from '../../charts/CaseStudy6StarRenderer';
+import ExportButtons from '../../components/ExportButtons';
 import rawData from '../../data/case-study06.json';
 import { useD3 } from '../../hooks/useD3';
 import { useTranslator } from '../../hooks/useTranslator';
+import type { ChartExportHandlers } from '../../utils/chartExport';
 
 interface RawCaseStudy6Datum {
   'Bundesland / Messnetz': string;
@@ -31,13 +33,17 @@ interface RawCaseStudy6Datum {
 
 interface ParallelViewProps {
   enableMotion?: boolean;
+  showHeader?: boolean;
 }
 
 const CaseStudy6ParallelCoordinates = ({
   enableMotion = true,
+  showHeader = true,
 }: ParallelViewProps): ReactElement => {
   const { translate } = useTranslator(['caseStudies', 'common', 'tooltips']);
   const [firstLoad, setFirstLoad] = useState(true);
+  const [parallelExportHandlers, setParallelExportHandlers] = useState<ChartExportHandlers | null>(null);
+  const [starExportHandlers, setStarExportHandlers] = useState<ChartExportHandlers | null>(null);
 
   useEffect(() => {
     setFirstLoad(false);
@@ -104,6 +110,7 @@ const CaseStudy6ParallelCoordinates = ({
         formatNetwork,
         formatEnvironment,
         formatStationType,
+        onExportReady: setParallelExportHandlers,
       });
     },
     [data, translate, metricLabels, formatNetwork, formatEnvironment, formatStationType]
@@ -119,6 +126,7 @@ const CaseStudy6ParallelCoordinates = ({
         translate,
         metricLabels,
         formatNetwork,
+        onExportReady: setStarExportHandlers,
       });
     },
     [data, translate, metricLabels, formatNetwork]
@@ -140,17 +148,19 @@ const CaseStudy6ParallelCoordinates = ({
       exit={exit}
       transition={{ duration: 0.45, ease: 'easeOut' }}
     >
-      <div className="rounded-2xl border border-white/50 bg-white/70 p-4 shadow-md dark:border-white/10 dark:bg-neutral-950/60 sm:p-6 md:p-8">
-        <p className="text-xs uppercase tracking-[0.4em] text-slate-500 dark:text-slate-400">
-          {translate('caseStudies:6.subtitle')}
-        </p>
-        <h1 className="mt-2 text-3xl font-semibold text-slate-900 dark:text-white">
-          {translate('caseStudies:6.title')}
-        </h1>
-        <p className="mt-4 max-w-3xl text-base text-slate-600 dark:text-slate-300">
-          {translate('caseStudies:6.description')}
-        </p>
-      </div>
+      {showHeader && (
+        <div className="rounded-2xl border border-white/50 bg-white/70 p-4 shadow-md dark:border-white/10 dark:bg-neutral-950/60 sm:p-6 md:p-8">
+          <p className="text-xs uppercase tracking-[0.4em] text-slate-500 dark:text-slate-400">
+            {translate('caseStudies:6.subtitle')}
+          </p>
+          <h1 className="mt-2 text-3xl font-semibold text-slate-900 dark:text-white">
+            {translate('caseStudies:6.title')}
+          </h1>
+          <p className="mt-4 max-w-3xl text-base text-slate-600 dark:text-slate-300">
+            {translate('caseStudies:6.description')}
+          </p>
+        </div>
+      )}
 
       <div className="space-y-6">
         <div className="rounded-2xl border border-white/50 bg-white/80 px-4 py-6 shadow-md dark:border-white/10 dark:bg-neutral-950/60 sm:px-6">
@@ -184,6 +194,13 @@ const CaseStudy6ParallelCoordinates = ({
               ))}
             </ul>
           </div>
+
+          {parallelExportHandlers && (
+            <ExportButtons
+              onExportSvg={parallelExportHandlers.exportSvg}
+              onExportPng={parallelExportHandlers.exportPng}
+            />
+          )}
         </div>
 
         <div className="rounded-2xl border border-white/50 bg-white/80 px-4 py-6 shadow-md dark:border-white/10 dark:bg-neutral-950/60 sm:px-6">
@@ -217,6 +234,13 @@ const CaseStudy6ParallelCoordinates = ({
               ))}
             </ul>
           </div>
+
+          {starExportHandlers && (
+            <ExportButtons
+              onExportSvg={starExportHandlers.exportSvg}
+              onExportPng={starExportHandlers.exportPng}
+            />
+          )}
         </div>
       </div>
     </motion.section>

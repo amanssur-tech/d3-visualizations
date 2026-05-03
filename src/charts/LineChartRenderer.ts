@@ -16,6 +16,7 @@ import * as d3 from 'd3';
 
 import { chartTheme, cssVar } from '../theme/chartTheme';
 import { chartConfig } from '../utils/config';
+import { createChartExportHandlers, type ChartExportHandlers } from '../utils/chartExport';
 import { createTooltip } from '../utils/tooltip';
 
 import type { TranslateFn } from '../i18n/translate';
@@ -38,6 +39,7 @@ export interface LineChartRenderOptions {
   data: RawLineData[];
   translate: TranslateFn;
   formatCityName: (name: string) => string;
+  onExportReady?: (handlers: ChartExportHandlers) => void;
 }
 
 export function renderLineChart({
@@ -46,6 +48,7 @@ export function renderLineChart({
   data,
   translate,
   formatCityName,
+  onExportReady,
 }: LineChartRenderOptions): (() => void) {
   const root = d3.select(container);
   root.selectAll('*').remove();
@@ -239,6 +242,17 @@ export function renderLineChart({
 
       item.append('span').text(formatCityName(city));
     });
+  }
+
+  const svgNode = svgRoot.node();
+  if (svgNode instanceof SVGSVGElement && onExportReady) {
+    const handlers = createChartExportHandlers(
+      svgNode,
+      svgWidth,
+      svgHeight,
+      'kebablaeden_linechart'
+    );
+    onExportReady(handlers);
   }
 
   return () => {

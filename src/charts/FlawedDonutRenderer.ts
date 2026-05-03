@@ -13,6 +13,7 @@ import * as d3 from 'd3';
 
 import { chartTheme } from '../theme/chartTheme';
 import { chartConfig } from '../utils/config';
+import { createChartExportHandlers, type ChartExportHandlers } from '../utils/chartExport';
 
 import type { AggregatedRow, TimeOfDay } from '../hooks/useTimeOfDayData';
 
@@ -48,6 +49,7 @@ export interface FlawedDonutOptions {
   container: HTMLElement;
   aggregated: AggregatedRow[];
   translate: (key: string) => string;
+  onExportReady?: (handlers: ChartExportHandlers) => void;
 }
 
 const buildDaySlices = (aggregated: AggregatedRow[], dayNumbers: number[]): SliceDatum[][] => {
@@ -118,6 +120,7 @@ export function renderFlawedDonut({
   container,
   aggregated,
   translate,
+  onExportReady,
 }: FlawedDonutOptions): () => void {
   const root = d3.select(container);
   root.selectAll('*').remove();
@@ -234,6 +237,17 @@ export function renderFlawedDonut({
     labelFontSize,
     legendStroke
   );
+
+  const svgNode = svg.node();
+  if (svgNode instanceof SVGSVGElement && onExportReady) {
+    const handlers = createChartExportHandlers(
+      svgNode,
+      chartWidth,
+      chartHeight,
+      'flawed_donut_chart'
+    );
+    onExportReady(handlers);
+  }
 
   return () => {
     root.selectAll('*').remove();

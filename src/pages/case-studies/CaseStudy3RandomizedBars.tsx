@@ -5,18 +5,21 @@
  * Sections guide translations, data/interval management, D3 rendering, and the UI shell.
  */
 import { motion } from 'framer-motion';
-import { useCallback, useMemo, type ReactElement } from 'react';
+import { useCallback, useMemo, useState, type ReactElement } from 'react';
 
 import { renderRandomizedBars } from '../../charts/RandomizedBarsRenderer';
+import ExportButtons from '../../components/ExportButtons';
 import { useD3 } from '../../hooks/useD3';
 import { randomizedBarsConfig, useRandomizedBars } from '../../hooks/useRandomizedBars';
 import { useTranslator } from '../../hooks/useTranslator';
+import type { ChartExportHandlers } from '../../utils/chartExport';
 
 // Tweak: edit `randomizedBarsConfig.slider` if you need different magnitude range/step.
 const MAGNITUDE_CONTROL = randomizedBarsConfig.slider;
 
 const CaseStudy3RandomizedBars = (): ReactElement => {
   const { translate } = useTranslator(['caseStudies', 'common', 'charts']);
+  const [exportHandlers, setExportHandlers] = useState<ChartExportHandlers | null>(null);
 
   const { data, loading, errorMessage, magnitude, setMagnitude, highlightedCity, formatCityName } =
     useRandomizedBars();
@@ -33,6 +36,7 @@ const CaseStudy3RandomizedBars = (): ReactElement => {
         formatCityName,
         svgTitle: translate('caseStudies:3.chart.title'),
         svgDescription: translate('caseStudies:3.chart.subtitle'),
+        onExportReady: setExportHandlers,
       });
     },
     [data, formatCityName, highlightedCity, translate]
@@ -141,6 +145,14 @@ const CaseStudy3RandomizedBars = (): ReactElement => {
             </div>
           )}
         </div>
+
+        {exportHandlers && (
+          <ExportButtons
+            onExportSvg={exportHandlers.exportSvg}
+            onExportPng={exportHandlers.exportPng}
+            disabled={loading}
+          />
+        )}
       </div>
     </motion.section>
   );

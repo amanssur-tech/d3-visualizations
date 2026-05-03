@@ -12,6 +12,7 @@
 import * as d3 from 'd3';
 
 import { chartTheme } from '../theme/chartTheme';
+import { createChartExportHandlers, type ChartExportHandlers } from '../utils/chartExport';
 import { createTooltip } from '../utils/tooltip';
 
 import { getMenuColor } from './caseStudy5MenuPalette';
@@ -32,6 +33,7 @@ interface DumbbellRenderOptions {
   translate: TranslateFn;
   formatCityName: (value: string) => string;
   formatMenuType: (value: string) => string;
+  onExportReady?: (handlers: ChartExportHandlers) => void;
 }
 
 const DUMBELL_CONFIG = {
@@ -49,6 +51,7 @@ export const renderCaseStudy5Dumbbell = ({
   translate,
   formatCityName,
   formatMenuType,
+  onExportReady,
 }: DumbbellRenderOptions): (() => void) => {
   const root = d3.select(container);
   root.selectAll('*').remove();
@@ -240,6 +243,17 @@ export const renderCaseStudy5Dumbbell = ({
       d3.select(this).transition().duration(150).attr('opacity', DUMBELL_CONFIG.dotOpacity);
       tooltip.hide();
     });
+
+  const svgNode = svgRoot.node();
+  if (svgNode instanceof SVGSVGElement && onExportReady) {
+    const handlers = createChartExportHandlers(
+      svgNode,
+      DUMBELL_CONFIG.dimensions.width,
+      DUMBELL_CONFIG.dimensions.height,
+      'dumbbell_chart'
+    );
+    onExportReady(handlers);
+  }
 
   return () => {
     tooltip.destroy();

@@ -8,6 +8,7 @@
 import * as d3 from 'd3';
 
 import { chartTheme } from '../theme/chartTheme';
+import { createChartExportHandlers, type ChartExportHandlers } from '../utils/chartExport';
 import { createTooltip } from '../utils/tooltip';
 
 import {
@@ -24,6 +25,7 @@ interface StarRenderOptions {
   translate: TranslateFn;
   metricLabels: Record<string, string>;
   formatNetwork: (network: string) => string;
+  onExportReady?: (handlers: ChartExportHandlers) => void;
 }
 
 const CONFIG = {
@@ -40,6 +42,7 @@ export const renderCaseStudy6Star = ({
   translate,
   metricLabels,
   formatNetwork,
+  onExportReady,
 }: StarRenderOptions): (() => void) => {
   const root = d3.select(container);
   root.selectAll('*').remove();
@@ -158,6 +161,17 @@ export const renderCaseStudy6Star = ({
       tooltip.hide();
       reset();
     });
+
+  const svgNode = svgRoot.node();
+  if (svgNode instanceof SVGSVGElement && onExportReady) {
+    const handlers = createChartExportHandlers(
+      svgNode,
+      CONFIG.dimensions.width,
+      CONFIG.dimensions.height,
+      'star_plot_chart'
+    );
+    onExportReady(handlers);
+  }
 
   return () => {
     tooltip.destroy();

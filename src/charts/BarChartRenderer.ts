@@ -15,6 +15,7 @@ import * as d3 from 'd3';
 
 import { chartTheme } from '../theme/chartTheme';
 import { chartConfig } from '../utils/config';
+import { createChartExportHandlers, type ChartExportHandlers } from '../utils/chartExport';
 import { createTooltip } from '../utils/tooltip';
 
 import {
@@ -40,6 +41,7 @@ interface RenderOptions {
   data: KebabData[];
   translate: TranslateFn;
   formatCityName: (name: string) => string;
+  onExportReady?: (handlers: ChartExportHandlers) => void;
 }
 
 export function renderBarChart({
@@ -47,6 +49,7 @@ export function renderBarChart({
   data,
   translate,
   formatCityName,
+  onExportReady,
 }: RenderOptions): () => void {
   const root = d3.select(container);
   root.selectAll('*').remove();
@@ -231,6 +234,17 @@ export function renderBarChart({
     .attr('text-anchor', 'middle')
     .attr('fill', textColor)
     .text(translate('charts.bar.axis.count'));
+
+  const svgNode = svgRoot.node();
+  if (svgNode instanceof SVGSVGElement && onExportReady) {
+    const handlers = createChartExportHandlers(
+      svgNode,
+      chartWidth,
+      chartHeight,
+      'kebablaeden_barchart'
+    );
+    onExportReady(handlers);
+  }
 
   return () => {
     tooltip.destroy();

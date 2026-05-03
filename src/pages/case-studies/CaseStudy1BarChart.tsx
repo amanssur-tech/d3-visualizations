@@ -8,9 +8,11 @@ import { motion } from 'framer-motion';
 import { useCallback, useEffect, useMemo, useState, type ReactElement } from 'react';
 
 import { renderBarChart } from '../../charts/BarChartRenderer';
+import ExportButtons from '../../components/ExportButtons';
 import kebabData from '../../data/case-study01.json';
 import { useD3 } from '../../hooks/useD3';
 import { useTranslator } from '../../hooks/useTranslator';
+import type { ChartExportHandlers } from '../../utils/chartExport';
 import { formatCityNameFactory } from '../../utils/formatCityName';
 
 interface KebabData {
@@ -31,6 +33,7 @@ const CaseStudy1BarChart = ({
   const [errorKey, setErrorKey] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [firstLoad, setFirstLoad] = useState(true);
+  const [exportHandlers, setExportHandlers] = useState<ChartExportHandlers | null>(null);
   const { translate } = useTranslator(['charts', 'common', 'tooltips']);
   const formatCityName = useMemo(() => formatCityNameFactory(translate), [translate]);
 
@@ -58,6 +61,7 @@ const CaseStudy1BarChart = ({
         data,
         translate,
         formatCityName,
+        onExportReady: setExportHandlers,
       });
     },
     [data, translate, formatCityName]
@@ -107,6 +111,14 @@ const CaseStudy1BarChart = ({
         }`}
         aria-live="polite"
       />
+
+      {exportHandlers && (
+        <ExportButtons
+          onExportSvg={exportHandlers.exportSvg}
+          onExportPng={exportHandlers.exportPng}
+          disabled={loading}
+        />
+      )}
     </motion.section>
   );
 };

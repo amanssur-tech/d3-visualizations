@@ -9,9 +9,11 @@ import { caseStudy4Palette } from '../../charts/caseStudy4Palette';
 import { caseStudy4TimePalette } from '../../charts/caseStudy4TimePalette';
 import { renderFixedTimeBands } from '../../charts/FixedTimeBandsRenderer';
 import { renderFlawedDonut } from '../../charts/FlawedDonutRenderer';
+import ExportButtons from '../../components/ExportButtons';
 import { useD3 } from '../../hooks/useD3';
 import { useTimeOfDayData } from '../../hooks/useTimeOfDayData';
 import { useTranslator } from '../../hooks/useTranslator';
+import type { ChartExportHandlers } from '../../utils/chartExport';
 
 type CaseStudy4Palette = typeof caseStudy4Palette & { Berlin?: string };
 const CASE4_PALETTE: CaseStudy4Palette = caseStudy4Palette;
@@ -24,6 +26,8 @@ const TALKING_POINT_KEYS = {
 const CaseStudy4TimeOfDay = (): ReactElement => {
   const { translate } = useTranslator(['caseStudies', 'common']);
   const [viewMode, setViewMode] = useState<'city' | 'timeOfDay'>('city');
+  const [flawedExportHandlers, setFlawedExportHandlers] = useState<ChartExportHandlers | null>(null);
+  const [fixedExportHandlers, setFixedExportHandlers] = useState<ChartExportHandlers | null>(null);
 
   const { timeOrder, aggregated, days, cities, getSales } = useTimeOfDayData();
   const defaultCityColor = CASE4_PALETTE.Berlin ?? '#6366f1';
@@ -86,6 +90,7 @@ const CaseStudy4TimeOfDay = (): ReactElement => {
         container,
         aggregated,
         translate,
+        onExportReady: setFlawedExportHandlers,
       });
     },
     [aggregated, translate]
@@ -98,6 +103,7 @@ const CaseStudy4TimeOfDay = (): ReactElement => {
         days,
         translate,
         view: activeView,
+        onExportReady: setFixedExportHandlers,
       });
     },
     [activeView, days, translate]
@@ -167,6 +173,13 @@ const CaseStudy4TimeOfDay = (): ReactElement => {
               ))}
             </ul>
           </div>
+
+          {flawedExportHandlers && (
+            <ExportButtons
+              onExportSvg={flawedExportHandlers.exportSvg}
+              onExportPng={flawedExportHandlers.exportPng}
+            />
+          )}
         </div>
 
         <div className="rounded-2xl border border-white/50 bg-white/80 px-4 py-6 shadow-md dark:border-white/10 dark:bg-neutral-950/60 sm:px-6">
@@ -236,6 +249,13 @@ const CaseStudy4TimeOfDay = (): ReactElement => {
               ))}
             </ul>
           </div>
+
+          {fixedExportHandlers && (
+            <ExportButtons
+              onExportSvg={fixedExportHandlers.exportSvg}
+              onExportPng={fixedExportHandlers.exportPng}
+            />
+          )}
         </div>
       </div>
     </motion.section>

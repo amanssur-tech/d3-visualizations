@@ -14,6 +14,7 @@ import * as d3 from 'd3';
 
 import { chartTheme } from '../theme/chartTheme';
 import { chartConfig } from '../utils/config';
+import { createChartExportHandlers, type ChartExportHandlers } from '../utils/chartExport';
 
 import {
   generateCaseStudy3GradientFromIndex,
@@ -45,6 +46,7 @@ export interface RandomizedBarsRenderOptions {
   formatCityName: (name: string) => string;
   svgTitle?: string;
   svgDescription?: string;
+  onExportReady?: (handlers: ChartExportHandlers) => void;
 }
 
 export function renderRandomizedBars({
@@ -54,6 +56,7 @@ export function renderRandomizedBars({
   formatCityName,
   svgTitle = 'Randomized kebab shop counts',
   svgDescription = 'Live updating randomized bar chart for Case Study 3',
+  onExportReady,
 }: RandomizedBarsRenderOptions): () => void {
   const host = d3.select(container);
   const chartWidth = randomizedBarsLayout.size.width;
@@ -252,6 +255,17 @@ export function renderRandomizedBars({
     .attr('y', (d) => y(d.value) - 10)
     .text((d) => valueFormat(d.value))
     .style('opacity', 1);
+
+  const svgNode = svg.node();
+  if (svgNode instanceof SVGSVGElement && onExportReady) {
+    const handlers = createChartExportHandlers(
+      svgNode,
+      chartWidth,
+      chartHeight,
+      'randomized_barchart'
+    );
+    onExportReady(handlers);
+  }
 
   return () => {
     host.selectAll('*').remove();

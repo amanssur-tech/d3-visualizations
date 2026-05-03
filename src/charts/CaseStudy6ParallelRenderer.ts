@@ -9,6 +9,7 @@
 import * as d3 from 'd3';
 
 import { chartTheme } from '../theme/chartTheme';
+import { createChartExportHandlers, type ChartExportHandlers } from '../utils/chartExport';
 import { createTooltip } from '../utils/tooltip';
 
 import type { TranslateFn } from '../i18n/translate';
@@ -54,6 +55,7 @@ interface ParallelRenderOptions {
   formatNetwork: (network: string) => string;
   formatEnvironment: (environment: string) => string;
   formatStationType: (stationType: string) => string;
+  onExportReady?: (handlers: ChartExportHandlers) => void;
 }
 
 const CONFIG = {
@@ -72,6 +74,7 @@ export const renderCaseStudy6Parallel = ({
   formatNetwork,
   formatEnvironment,
   formatStationType,
+  onExportReady,
 }: ParallelRenderOptions): (() => void) => {
   const metrics = metricOrder.filter((metric) => metricLabels[metric]);
   if (!metrics.length) {
@@ -296,6 +299,17 @@ export const renderCaseStudy6Parallel = ({
     .attr('fill', chartTheme.textMuted)
     .attr('font-size', 12)
     .text(translate('caseStudies:6.chart.note'));
+
+  const svgNode = svgRoot.node();
+  if (svgNode instanceof SVGSVGElement && onExportReady) {
+    const handlers = createChartExportHandlers(
+      svgNode,
+      CONFIG.dimensions.width,
+      CONFIG.dimensions.height,
+      'parallel_coordinates_chart'
+    );
+    onExportReady(handlers);
+  }
 
   return () => {
     tooltip.destroy();

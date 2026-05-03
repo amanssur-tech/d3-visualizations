@@ -9,6 +9,7 @@
 import * as d3 from 'd3';
 
 import { chartTheme } from '../theme/chartTheme';
+import { createChartExportHandlers, type ChartExportHandlers } from '../utils/chartExport';
 import { createTooltip } from '../utils/tooltip';
 
 import { getMenuColor } from './caseStudy5MenuPalette';
@@ -22,6 +23,7 @@ interface ScatterRenderOptions {
   translate: TranslateFn;
   formatCityName: (value: string) => string;
   formatMenuType: (value: string) => string;
+  onExportReady?: (handlers: ChartExportHandlers) => void;
 }
 
 const SCATTER_CONFIG = {
@@ -46,6 +48,7 @@ export const renderCaseStudy5Scatter = ({
   translate,
   formatCityName,
   formatMenuType,
+  onExportReady,
 }: ScatterRenderOptions): (() => void) => {
   const root = d3.select(container);
   root.selectAll('*').remove();
@@ -264,6 +267,17 @@ export const renderCaseStudy5Scatter = ({
     .attr('font-size', 14)
     .attr('font-weight', 600)
     .text((d) => formatCityName(d.city));
+
+  const svgNode = svgRoot.node();
+  if (svgNode instanceof SVGSVGElement && onExportReady) {
+    const handlers = createChartExportHandlers(
+      svgNode,
+      SCATTER_CONFIG.dimensions.width,
+      SCATTER_CONFIG.dimensions.height,
+      'scatter_chart'
+    );
+    onExportReady(handlers);
+  }
 
   return () => {
     tooltip.destroy();

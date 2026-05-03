@@ -7,9 +7,11 @@ import { motion } from 'framer-motion';
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactElement } from 'react';
 
 import { renderLineChart } from '../../charts/LineChartRenderer';
+import ExportButtons from '../../components/ExportButtons';
 import lineDataJson from '../../data/case-study02.json';
 import { useD3 } from '../../hooks/useD3';
 import { useTranslator } from '../../hooks/useTranslator';
+import type { ChartExportHandlers } from '../../utils/chartExport';
 import { formatCityNameFactory } from '../../utils/formatCityName';
 
 interface RawLineData {
@@ -32,6 +34,7 @@ const CaseStudy2LineChart = ({
   const [loading, setLoading] = useState(true);
   const legendRef = useRef<HTMLDivElement | null>(null);
   const [firstLoad, setFirstLoad] = useState(true);
+  const [exportHandlers, setExportHandlers] = useState<ChartExportHandlers | null>(null);
   const { translate } = useTranslator(['charts', 'common', 'tooltips']);
   const formatCityName = useMemo(() => formatCityNameFactory(translate), [translate]);
 
@@ -57,6 +60,7 @@ const CaseStudy2LineChart = ({
         data,
         translate,
         formatCityName,
+        onExportReady: setExportHandlers,
       });
     },
     [data, formatCityName, translate]
@@ -110,6 +114,14 @@ const CaseStudy2LineChart = ({
         }`}
         aria-live="polite"
       />
+
+      {exportHandlers && (
+        <ExportButtons
+          onExportSvg={exportHandlers.exportSvg}
+          onExportPng={exportHandlers.exportPng}
+          disabled={loading}
+        />
+      )}
     </motion.section>
   );
 };

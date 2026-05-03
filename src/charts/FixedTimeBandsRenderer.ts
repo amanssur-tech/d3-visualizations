@@ -14,6 +14,7 @@ import * as d3 from 'd3';
 
 import { chartTheme } from '../theme/chartTheme';
 import { chartConfig } from '../utils/config';
+import { createChartExportHandlers, type ChartExportHandlers } from '../utils/chartExport';
 
 const fixedBandsLayout = {
   margin: { top: 60, right: 180, bottom: 80, left: 70 },
@@ -43,6 +44,7 @@ export interface FixedTimeBandsOptions {
   days: number[];
   translate: (key: string) => string;
   view: FixedTimeBandsViewConfig;
+  onExportReady?: (handlers: ChartExportHandlers) => void;
 }
 
 const buildGroupClass = (base: string, extra?: string, mode?: FixedTimeBandViewMode) =>
@@ -53,6 +55,7 @@ export function renderFixedTimeBands({
   days,
   translate,
   view,
+  onExportReady,
 }: FixedTimeBandsOptions): () => void {
   const root = d3.select(container);
   root.selectAll('*').remove();
@@ -266,6 +269,17 @@ export function renderFixedTimeBands({
         .attr('font-weight', 600)
         .text(d.label);
     });
+
+  const svgNode = svg.node();
+  if (svgNode instanceof SVGSVGElement && onExportReady) {
+    const handlers = createChartExportHandlers(
+      svgNode,
+      chartWidth,
+      chartHeight,
+      'fixed_timebands_chart'
+    );
+    onExportReady(handlers);
+  }
 
   return () => {
     root.selectAll('*').remove();
