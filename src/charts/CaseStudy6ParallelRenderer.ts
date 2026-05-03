@@ -46,7 +46,7 @@ const NETWORK_COLORS: Record<string, string> = {
 export const getNetworkColor = (network: string): string => NETWORK_COLORS[network] ?? '#6366f1';
 
 interface ParallelRenderOptions {
-  container: HTMLDivElement;
+  container: HTMLElement;
   data: CaseStudy6Datum[];
   translate: TranslateFn;
   metricOrder?: CaseStudy6MetricKey[];
@@ -74,7 +74,11 @@ export const renderCaseStudy6Parallel = ({
   formatStationType,
 }: ParallelRenderOptions): (() => void) => {
   const metrics = metricOrder.filter((metric) => metricLabels[metric]);
-  if (!metrics.length) return () => undefined;
+  if (!metrics.length) {
+    return () => {
+      d3.select(container).selectAll('*').remove();
+    };
+  }
 
   const root = d3.select(container);
   root.selectAll('*').remove();
@@ -83,7 +87,6 @@ export const renderCaseStudy6Parallel = ({
   const { width, height } = CONFIG.dimensions;
   const margin = CONFIG.margins;
 
-  /* ----------------------------- SVG shell ----------------------------- */
   const svgRoot = root
     .append('svg')
     .attr('viewBox', `0 0 ${width} ${height}`)
@@ -94,7 +97,6 @@ export const renderCaseStudy6Parallel = ({
 
   const svg = svgRoot.append('g');
 
-  /* ----------------------------- Scales ----------------------------- */
   const xScale = d3
     .scalePoint<CaseStudy6MetricKey>()
     .domain(metrics)
@@ -115,7 +117,6 @@ export const renderCaseStudy6Parallel = ({
       .range([height - margin.bottom, margin.top]);
   });
 
-  /* ----------------------------- Axes + grid ----------------------------- */
   const axisGroups = svg
     .selectAll<SVGGElement, CaseStudy6MetricKey>('g.axis')
     .data(metrics)
@@ -147,7 +148,6 @@ export const renderCaseStudy6Parallel = ({
     .attr('font-weight', 700)
     .text((metric) => metricLabels[metric]);
 
-  /* ----------------------------- Legend ----------------------------- */
   const networks = Array.from(new Set(data.map((d) => d.network)));
   const legend = svg
     .append('g')
@@ -178,7 +178,6 @@ export const renderCaseStudy6Parallel = ({
         .text((network) => formatNetwork(network));
     });
 
-  /* ----------------------------- Lines + points ----------------------------- */
   const lineGenerator = d3
     .line<[number, number]>()
     .x(([x]) => x)
@@ -240,7 +239,6 @@ export const renderCaseStudy6Parallel = ({
     .attr('cx', (d) => d.x)
     .attr('cy', (d) => yScales[d.metric](d.value));
 
-  /* ----------------------------- Interactions ----------------------------- */
   const resetLines = () => {
     lines.attr('stroke-opacity', 0.9).attr('stroke-width', CONFIG.lineWidth);
     points.attr('opacity', 1);
@@ -300,7 +298,7 @@ export const renderCaseStudy6Parallel = ({
     .text(translate('caseStudies:6.chart.note'));
 
   return () => {
-    tooltip.hide();
+    tooltip.destroy();
     root.selectAll('*').remove();
   };
 };

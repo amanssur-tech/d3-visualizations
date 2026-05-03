@@ -3,19 +3,19 @@
  * to showcase data ethics lessons. Sections cover translations, data prep, both charts, and layout.
  */
 import { motion } from 'framer-motion';
-import { useEffect, useMemo, useRef, useState, type ReactElement } from 'react';
+import { useCallback, useMemo, useState, type ReactElement } from 'react';
 
 import { caseStudy4Palette } from '../../charts/caseStudy4Palette';
 import { caseStudy4TimePalette } from '../../charts/caseStudy4TimePalette';
 import { renderFixedTimeBands } from '../../charts/FixedTimeBandsRenderer';
 import { renderFlawedDonut } from '../../charts/FlawedDonutRenderer';
+import { useD3 } from '../../hooks/useD3';
 import { useTimeOfDayData } from '../../hooks/useTimeOfDayData';
 import { useTranslator } from '../../hooks/useTranslator';
 
 type CaseStudy4Palette = typeof caseStudy4Palette & { Berlin?: string };
 const CASE4_PALETTE: CaseStudy4Palette = caseStudy4Palette;
 
-// Translation keys powering the flawed vs fixed talking points; reorder/edit here to change the story beats.
 const TALKING_POINT_KEYS = {
   flawed: ['axis', 'colors', 'legend', 'order', 'aggregation', 'mapping'] as const,
   fixed: ['baseline', 'palette', 'legend', 'structure', 'fullData', 'mapping'] as const,
@@ -23,22 +23,11 @@ const TALKING_POINT_KEYS = {
 
 const CaseStudy4TimeOfDay = (): ReactElement => {
   const { translate } = useTranslator(['caseStudies', 'common']);
-  const flawedRef = useRef<HTMLDivElement | null>(null);
-  const fixedRef = useRef<HTMLDivElement | null>(null);
   const [viewMode, setViewMode] = useState<'city' | 'timeOfDay'>('city');
 
   const { timeOrder, aggregated, days, cities, getSales } = useTimeOfDayData();
   const defaultCityColor = CASE4_PALETTE.Berlin ?? '#6366f1';
   const defaultTimeColor = caseStudy4TimePalette.morgens;
-
-  useEffect(() => {
-    if (!flawedRef.current) return;
-    renderFlawedDonut({
-      container: flawedRef.current,
-      aggregated,
-      translate,
-    });
-  }, [aggregated, translate]);
 
   const preferredCityOrder = useMemo(() => {
     const ordered = ['Köln', 'Berlin'];
@@ -91,18 +80,32 @@ const CaseStudy4TimeOfDay = (): ReactElement => {
 
   const activeView = viewMode === 'city' ? cityComparisonView : timeOfDayComparisonView;
 
-  /* ----------------------------- Corrected multi-band chart ----------------------------- */
-  useEffect(() => {
-    if (!fixedRef.current) return;
-    renderFixedTimeBands({
-      container: fixedRef.current,
-      days,
-      translate,
-      view: activeView,
-    });
-  }, [activeView, days, translate]);
+  const renderFlawedChart = useCallback(
+    (container: HTMLElement) => {
+      return renderFlawedDonut({
+        container,
+        aggregated,
+        translate,
+      });
+    },
+    [aggregated, translate]
+  );
 
-  /* ----------------------------- Narrative bullet points ----------------------------- */
+  const renderFixedChart = useCallback(
+    (container: HTMLElement) => {
+      return renderFixedTimeBands({
+        container,
+        days,
+        translate,
+        view: activeView,
+      });
+    },
+    [activeView, days, translate]
+  );
+
+  const flawedRef = useD3(renderFlawedChart);
+  const fixedRef = useD3(renderFixedChart);
+
   const flawedPoints = useMemo(
     () => TALKING_POINT_KEYS.flawed.map((key) => translate(`caseStudies:4.flawed.reasons.${key}`)),
     [translate]
@@ -113,18 +116,14 @@ const CaseStudy4TimeOfDay = (): ReactElement => {
     [translate]
   );
 
-  /* ----------------------------- Page layout ----------------------------- */
   return (
-    // Tweak: page spacing + fade animation for flawed vs fixed comparison.
     <motion.section
       className="mx-auto w-full max-w-4xl space-y-6"
       initial={{ opacity: 0, y: 24 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, ease: 'easeOut' }}
     >
-      {/* Hero copy describing what this case examines */}
       <div className="rounded-2xl border border-white/50 bg-white/70 p-4 shadow-md dark:border-white/10 dark:bg-neutral-950/60 sm:p-6 md:p-8">
-        {/* Tweak: hero eyebrow/title/description text for case study intro. */}
         <p className="text-xs uppercase tracking-[0.4em] text-slate-500 dark:text-slate-400">
           {translate('caseStudies:4.subtitle')}
         </p>
@@ -137,7 +136,6 @@ const CaseStudy4TimeOfDay = (): ReactElement => {
       </div>
 
       <div className="space-y-6">
-        {/* Breakdown of what went wrong */}
         <div className="rounded-2xl border border-white/50 bg-white/80 px-4 py-6 shadow-md dark:border-white/10 dark:bg-neutral-950/60 sm:px-6">
           <div className="flex items-start justify-between gap-4">
             <div>
@@ -147,7 +145,7 @@ const CaseStudy4TimeOfDay = (): ReactElement => {
               <h2 className="mt-1 text-xl font-semibold text-slate-900 dark:text-white">
                 {translate('caseStudies:4.flawed.title')}
               </h2>
-              <p className="text-sm text-slate-600 dark:text-slate-300">
+              <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
                 {translate('caseStudies:4.flawed.caption')}
               </p>
             </div>
@@ -157,14 +155,12 @@ const CaseStudy4TimeOfDay = (): ReactElement => {
           </div>
           <div
             ref={flawedRef}
-            // Tweak: flawed donut host container background + border.
             className="mt-4 rounded-2xl border border-white/50 bg-linear-to-b from-white/85 to-white/60 p-3 shadow-inner dark:border-white/10 dark:from-white/10 dark:to-transparent"
           />
           <div className="mt-4 rounded-2xl border border-white/50 bg-white/80 p-4 text-sm text-slate-700 shadow-inner dark:border-white/10 dark:bg-neutral-950/60 dark:text-slate-200">
             <p className="font-semibold uppercase tracking-[0.2em] text-amber-600 dark:text-amber-200">
               {translate('caseStudies:4.flawed.listTitle')}
             </p>
-            {/* Tweak: reorder this list to change flawed talking point emphasis. */}
             <ul className="mt-2 list-disc space-y-1 pl-5">
               {flawedPoints.map((item) => (
                 <li key={item}>{item}</li>
@@ -173,7 +169,6 @@ const CaseStudy4TimeOfDay = (): ReactElement => {
           </div>
         </div>
 
-        {/* Corrected visualization with supporting talking points */}
         <div className="rounded-2xl border border-white/50 bg-white/80 px-4 py-6 shadow-md dark:border-white/10 dark:bg-neutral-950/60 sm:px-6">
           <div className="flex items-start justify-between gap-4">
             <div>
@@ -183,7 +178,7 @@ const CaseStudy4TimeOfDay = (): ReactElement => {
               <h2 className="mt-1 text-xl font-semibold text-slate-900 dark:text-white">
                 {translate('caseStudies:4.fixed.title')}
               </h2>
-              <p className="text-sm text-slate-600 dark:text-slate-300">
+              <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
                 {translate('caseStudies:4.fixed.caption')}
               </p>
               <div className="mt-2 flex flex-wrap items-center justify-between gap-3">
@@ -235,7 +230,6 @@ const CaseStudy4TimeOfDay = (): ReactElement => {
             <p className="font-semibold uppercase tracking-[0.2em] text-emerald-600 dark:text-emerald-200">
               {translate('caseStudies:4.fixed.listTitle')}
             </p>
-            {/* Tweak: positive talking points list order mirrors the corrected narrative. */}
             <ul className="mt-2 list-disc space-y-1 pl-5">
               {fixedPoints.map((item) => (
                 <li key={item}>{item}</li>

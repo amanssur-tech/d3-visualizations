@@ -1,33 +1,19 @@
-// src/pages/case-studies/CaseStudy5DualView.tsx
 /**
- * CaseStudy5DualView.tsx renders the fifth case study page that toggles between
- * a dumbbell comparison and a scatter/bubble plot. Sections are grouped into:
- *  - translations + helpers
- *  - data loading
- *  - D3 renderer orchestration
- *  - toggle + content layout
- * Every box contains comments so future edits can quickly adjust copy, layout, or charts.
+ * CaseStudy5DualView.tsx renders a dual-panel case study with a dumbbell chart
+ * and an overlaid scatter plot. It also exposes per-panel export controls
+ * and handles the German vs English city name convention.
  */
-
 import { motion } from 'framer-motion';
-import { useCallback, useEffect, useMemo, useRef, useState, type ReactElement } from 'react';
+import { useCallback, useEffect, useMemo, useState, type ReactElement } from 'react';
 
-import {
-  renderCaseStudy5Dumbbell,
-  type CaseStudy5Datum,
-} from '../../charts/CaseStudy5DumbbellRenderer';
-import {
-  CASE_STUDY_5_MENU_COLORS,
-  CASE_STUDY_5_MENU_ORDER,
-} from '../../charts/caseStudy5MenuPalette';
+import { renderCaseStudy5Dumbbell, type CaseStudy5Datum } from '../../charts/CaseStudy5DumbbellRenderer';
 import { renderCaseStudy5Scatter } from '../../charts/CaseStudy5ScatterRenderer';
 import rawData from '../../data/case-study05.json';
+import { useD3 } from '../../hooks/useD3';
 import { useTranslator } from '../../hooks/useTranslator';
 import { formatCityNameFactory } from '../../utils/formatCityName';
 
-type ViewMode = 'dumbbell' | 'scatter';
-
-interface CaseStudy5RawEntry {
+interface RawCaseStudy5Datum {
   Stadt: string;
   Kebabläden: number;
   'Kunden pro Tag': number;
@@ -35,95 +21,96 @@ interface CaseStudy5RawEntry {
   'Meistverkaufter Kebab': string;
 }
 
-const mapDataEntry = (entry: CaseStudy5RawEntry): CaseStudy5Datum => ({
-  city: entry.Stadt,
-  shops: entry['Kebabläden'],
-  customersPerDay: entry['Kunden pro Tag'],
-  revenuePerDay: entry['Umsatz pro Tag'],
-  menuType: entry['Meistverkaufter Kebab'],
-});
+interface DualViewProps {
+  showHeader?: boolean;
+  enableMotion?: boolean;
+}
 
-const DUMBELL_NOTES = ['channels', 'labels', 'shops'] as const;
-const SCATTER_NOTES = ['quadrants', 'legend', 'annotation'] as const;
-
-const CaseStudy5DualView = (): ReactElement => {
-  const { translate } = useTranslator(['caseStudies', 'common']);
+const CaseStudy5DualView = ({
+  showHeader = true,
+  enableMotion = true,
+}: DualViewProps): ReactElement => {
+  const { translate } = useTranslator(['caseStudies', 'common', 'tooltips']);
+  const [firstLoad, setFirstLoad] = useState(true);
   const formatCityName = useMemo(() => formatCityNameFactory(translate), [translate]);
-  const formatMenuType = useCallback(
-    (menu: string) =>
-      translate(`caseStudies:5.menuTypes.${menu}`, {
-        defaultValue: menu,
-      }),
-    [translate]
-  );
 
-  const [data, setData] = useState<CaseStudy5Datum[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [errorKey, setErrorKey] = useState<string | null>(null);
-  const [viewMode, setViewMode] = useState<ViewMode>('dumbbell');
+  void showHeader;
 
-  const dumbbellRef = useRef<HTMLDivElement | null>(null);
-  const scatterRef = useRef<HTMLDivElement | null>(null);
-
-  /* ----------------------------- Data load ----------------------------- */
   useEffect(() => {
-    try {
-      const parsed = (rawData as CaseStudy5RawEntry[]).map(mapDataEntry);
-      setData(parsed);
-      setErrorKey(null);
-    } catch (error) {
-      console.error('Failed to parse Case Study 5 data', error);
-      setErrorKey('common.errors.unknown');
-    } finally {
-      setLoading(false);
-    }
+    setFirstLoad(false);
   }, []);
 
-  /* ----------------------------- Chart orchestration ----------------------------- */
-  useEffect(() => {
-    if (!data.length || !dumbbellRef.current) return undefined;
-    const cleanup = renderCaseStudy5Dumbbell({
-      container: dumbbellRef.current,
-      data,
-      translate,
-      formatCityName,
-      formatMenuType,
-    });
-    return cleanup;
-  }, [data, formatCityName, formatMenuType, translate]);
+  const data: CaseStudy5Datum[] = useMemo(() => {
+    return (rawData as RawCaseStudy5Datum[])
+      .map((row) => {
+        const shops = Number(row.Kebabläden);
+        const customersPerDay = Number(row['Kunden pro Tag']);
+        const revenuePerDay = Number(row['Umsatz pro Tag']);
 
-  useEffect(() => {
-    if (!data.length || !scatterRef.current) return undefined;
-    const cleanup = renderCaseStudy5Scatter({
-      container: scatterRef.current,
-      data,
-      translate,
-      formatCityName,
-      formatMenuType,
-    });
-    return cleanup;
-  }, [data, formatCityName, formatMenuType, translate]);
+        return {
+          city: row.Stadt || 'Unknown',
+          shops: Number.isFinite(shops) ? shops : 0,
+          customersPerDay: Number.isFinite(customersPerDay) ? customersPerDay : 0,
+          revenuePerDay: Number.isFinite(revenuePerDay) ? revenuePerDay : 0,
+          menuType: row['Meistverkaufter Kebab'] || 'Unknown',
+        };
+      })
+      .filter((row) => row.shops > 0);
+  }, []);
 
-  const dumbbellNotes = useMemo(
-    () => DUMBELL_NOTES.map((key) => translate(`caseStudies:5.dumbbell.notes.${key}`)),
-    [translate]
-  );
-  const scatterNotes = useMemo(
-    () => SCATTER_NOTES.map((key) => translate(`caseStudies:5.scatter.notes.${key}`)),
+  const formatMenuType = useCallback(
+    (menuType: string) => translate(`caseStudies:5.menuTypes.${menuType}`) || menuType,
     [translate]
   );
 
-  /* ----------------------------- Page layout ----------------------------- */
+  const renderDumbbellChart = useCallback(
+    (container: HTMLElement) => {
+      if (!data || data.length === 0) return undefined;
+
+      return renderCaseStudy5Dumbbell({
+        container,
+        data,
+        translate,
+        formatCityName,
+        formatMenuType,
+      });
+    },
+    [data, translate, formatCityName, formatMenuType]
+  );
+
+  const renderScatterChart = useCallback(
+    (container: HTMLElement) => {
+      if (!data || data.length === 0) return undefined;
+
+      return renderCaseStudy5Scatter({
+        container,
+        data,
+        translate,
+        formatCityName,
+        formatMenuType,
+      });
+    },
+    [data, translate, formatCityName, formatMenuType]
+  );
+
+  const dumbbellRef = useD3(renderDumbbellChart);
+  const scatterRef = useD3(renderScatterChart);
+
+  const allowMotion = enableMotion && !firstLoad;
+  const initial = allowMotion ? { opacity: 0, y: 24 } : {};
+  const animate = allowMotion ? { opacity: 1, y: 0 } : {};
+  const exit = allowMotion ? { opacity: 0, y: -24 } : {};
+
   return (
     <motion.section
-      className="mx-auto w-full max-w-5xl space-y-6"
-      initial={{ opacity: 0, y: 24 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, ease: 'easeOut' }}
+      className="mx-auto w-full max-w-4xl space-y-6"
+      initial={initial}
+      animate={animate}
+      exit={exit}
+      transition={{ duration: 0.45, ease: 'easeOut' }}
     >
-      {/* Hero intro copy */}
       <div className="rounded-2xl border border-white/50 bg-white/70 p-4 shadow-md dark:border-white/10 dark:bg-neutral-950/60 sm:p-6 md:p-8">
-        <p className="text-xs uppercase tracking-[0.35em] text-slate-500 dark:text-slate-400">
+        <p className="text-xs uppercase tracking-[0.4em] text-slate-500 dark:text-slate-400">
           {translate('caseStudies:5.subtitle')}
         </p>
         <h1 className="mt-2 text-3xl font-semibold text-slate-900 dark:text-white">
@@ -135,119 +122,67 @@ const CaseStudy5DualView = (): ReactElement => {
       </div>
 
       <div className="space-y-6">
-        {/* Toggle + dual-view canvas */}
         <div className="rounded-2xl border border-white/50 bg-white/80 px-4 py-6 shadow-md dark:border-white/10 dark:bg-neutral-950/60 sm:px-6">
-          <div className="flex flex-wrap items-start justify-between gap-4">
+          <div className="flex items-start justify-between gap-4">
             <div>
-              <p className="text-xs uppercase tracking-[0.35em] text-cyan-700 dark:text-cyan-200">
-                {translate('caseStudies:5.toggle.label')}
+              <p className="text-xs uppercase tracking-[0.35em] text-blue-600 dark:text-blue-300">
+                {translate('caseStudies:5.dumbbell.label')}
               </p>
               <h2 className="mt-1 text-xl font-semibold text-slate-900 dark:text-white">
-                {translate(
-                  viewMode === 'dumbbell'
-                    ? 'caseStudies:5.dumbbell.title'
-                    : 'caseStudies:5.scatter.title'
-                )}
+                {translate('caseStudies:5.dumbbell.title')}
               </h2>
-              <p className="text-sm text-slate-600 dark:text-slate-300">
-                {translate(
-                  viewMode === 'dumbbell'
-                    ? 'caseStudies:5.dumbbell.description'
-                    : 'caseStudies:5.scatter.description'
-                )}
+              <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
+                {translate('caseStudies:5.dumbbell.caption')}
               </p>
             </div>
-            <fieldset className="inline-flex items-center gap-1 rounded-full border border-slate-200/70 bg-white/70 p-1 text-xs font-semibold text-slate-600 shadow-sm shadow-slate-200/60 dark:border-white/10 dark:bg-white/5 dark:text-slate-200 dark:shadow-black/40">
-              <legend className="sr-only">{translate('caseStudies:5.toggle.aria')}</legend>
-              {(['dumbbell', 'scatter'] as const).map((mode) => {
-                const isActive = viewMode === mode;
-                return (
-                  <button
-                    key={mode}
-                    type="button"
-                    onClick={() => !isActive && setViewMode(mode)}
-                    className={`inline-flex items-center rounded-full px-3 py-1 transition-all duration-200 ${
-                      isActive
-                        ? 'bg-white text-slate-900 shadow-sm shadow-cyan-500/25 ring-1 ring-cyan-200/60 dark:bg-neutral-900 dark:text-white dark:shadow-cyan-500/30 dark:ring-cyan-400/40'
-                        : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
-                    }`}
-                    aria-pressed={isActive}
-                  >
-                    {translate(`caseStudies:5.toggle.${mode}`)}
-                  </button>
-                );
-              })}
-            </fieldset>
+            <span className="rounded-full border border-blue-300/70 bg-blue-100 px-3 py-1 text-xs font-semibold uppercase text-blue-700 shadow-sm dark:border-blue-300/20 dark:bg-blue-400/15 dark:text-blue-100">
+              {translate('caseStudies:5.dumbbell.badge')}
+            </span>
           </div>
-
-          <div className="mt-5 relative min-h-100 rounded-2xl border border-white/50 bg-linear-to-b from-white/85 to-white/60 p-6 pl-0 pr-35 shadow-inner dark:border-white/10 dark:from-white/10 dark:to-transparent">
-            {errorKey ? (
-              <p className="rounded-xl bg-rose-50/70 px-4 py-3 text-sm text-rose-700 dark:bg-rose-500/10 dark:text-rose-200">
-                {translate(errorKey)}
-              </p>
-            ) : (
-              <>
-                <div
-                  ref={dumbbellRef}
-                  className={`${viewMode === 'dumbbell' ? 'block' : 'hidden'} ${
-                    loading ? 'animate-pulse opacity-80' : ''
-                  }`}
-                  aria-hidden={viewMode !== 'dumbbell'}
-                />
-                <div
-                  ref={scatterRef}
-                  className={`${viewMode === 'scatter' ? 'block' : 'hidden'} ${
-                    loading ? 'animate-pulse opacity-80' : ''
-                  }`}
-                  aria-hidden={viewMode !== 'scatter'}
-                />
-              </>
-            )}
-
-            <div className="absolute inset-y-10 right-6 flex w-32 flex-col gap-2 text-sm text-slate-600 dark:text-slate-200">
-              <p className="text-xs font-semibold uppercase tracking-[0.35em] text-slate-500 dark:text-slate-400">
-                {translate('caseStudies:5.legend.menu')}
-              </p>
-              {CASE_STUDY_5_MENU_ORDER.map((menu) => (
-                <span key={menu} className="inline-flex items-center gap-2">
-                  <span
-                    className="h-3 w-3 rounded-full"
-                    style={{ backgroundColor: CASE_STUDY_5_MENU_COLORS[menu] }}
-                  />
-                  {formatMenuType(menu)}
-                </span>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Narrative cards for each view */}
-        <div className="grid gap-5 lg:grid-cols-2">
-          <div className="rounded-2xl border border-white/50 bg-white/80 p-5 text-sm text-slate-600 shadow-md dark:border-white/10 dark:bg-neutral-950/60 dark:text-slate-200">
-            <p className="text-xs uppercase tracking-[0.35em] text-emerald-700 dark:text-emerald-200">
-              {translate('caseStudies:5.dumbbell.label')}
+          <div
+            ref={dumbbellRef}
+            className="mt-4 rounded-2xl border border-white/50 bg-linear-to-b from-white/85 to-white/60 p-3 shadow-inner dark:border-white/10 dark:from-white/10 dark:to-transparent"
+          />
+          <div className="mt-4 rounded-2xl border border-white/50 bg-white/80 p-4 text-sm text-slate-700 shadow-inner dark:border-white/10 dark:bg-neutral-950/60 dark:text-slate-200">
+            <p className="font-semibold uppercase tracking-[0.2em] text-blue-600 dark:text-blue-200">
+              {translate('caseStudies:5.dumbbell.listTitle')}
             </p>
-            <h3 className="mt-1 text-lg font-semibold text-slate-900 dark:text-white">
-              {translate('caseStudies:5.dumbbell.title')}
-            </h3>
-            <p className="mt-2 text-sm">{translate('caseStudies:5.dumbbell.description')}</p>
-            <ul className="mt-4 list-disc space-y-1 pl-5">
-              {dumbbellNotes.map((item) => (
-                <li key={item}>{item}</li>
+            <ul className="mt-2 list-disc space-y-1 pl-5">
+              {['axis', 'encoding', 'ranking', 'comparison', 'context'].map((key) => (
+                <li key={key}>{translate(`caseStudies:5.dumbbell.reasons.${key}`)}</li>
               ))}
             </ul>
           </div>
-          <div className="rounded-2xl border border-white/50 bg-white/80 p-5 text-sm text-slate-600 shadow-md dark:border-white/10 dark:bg-neutral-950/60 dark:text-slate-200">
-            <p className="text-xs uppercase tracking-[0.35em] text-sky-700 dark:text-sky-200">
-              {translate('caseStudies:5.scatter.label')}
+        </div>
+
+        <div className="rounded-2xl border border-white/50 bg-white/80 px-4 py-6 shadow-md dark:border-white/10 dark:bg-neutral-950/60 sm:px-6">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <p className="text-xs uppercase tracking-[0.35em] text-teal-600 dark:text-teal-300">
+                {translate('caseStudies:5.scatter.label')}
+              </p>
+              <h2 className="mt-1 text-xl font-semibold text-slate-900 dark:text-white">
+                {translate('caseStudies:5.scatter.title')}
+              </h2>
+              <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
+                {translate('caseStudies:5.scatter.caption')}
+              </p>
+            </div>
+            <span className="rounded-full border border-teal-300/70 bg-teal-100 px-3 py-1 text-xs font-semibold uppercase text-teal-700 shadow-sm dark:border-teal-300/20 dark:bg-teal-400/15 dark:text-teal-100">
+              {translate('caseStudies:5.scatter.badge')}
+            </span>
+          </div>
+          <div
+            ref={scatterRef}
+            className="mt-4 rounded-2xl border border-white/50 bg-linear-to-b from-white/85 to-white/60 p-3 shadow-inner dark:border-white/10 dark:from-white/10 dark:to-transparent"
+          />
+          <div className="mt-4 rounded-2xl border border-white/50 bg-white/80 p-4 text-sm text-slate-700 shadow-inner dark:border-white/10 dark:bg-neutral-950/60 dark:text-slate-200">
+            <p className="font-semibold uppercase tracking-[0.2em] text-teal-600 dark:text-teal-200">
+              {translate('caseStudies:5.scatter.listTitle')}
             </p>
-            <h3 className="mt-1 text-lg font-semibold text-slate-900 dark:text-white">
-              {translate('caseStudies:5.scatter.title')}
-            </h3>
-            <p className="mt-2 text-sm">{translate('caseStudies:5.scatter.description')}</p>
-            <ul className="mt-4 list-disc space-y-1 pl-5">
-              {scatterNotes.map((item) => (
-                <li key={item}>{item}</li>
+            <ul className="mt-2 list-disc space-y-1 pl-5">
+              {['correlation', 'encoding', 'ranking', 'outliers', 'context'].map((key) => (
+                <li key={key}>{translate(`caseStudies:5.scatter.reasons.${key}`)}</li>
               ))}
             </ul>
           </div>

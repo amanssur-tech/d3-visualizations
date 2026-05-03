@@ -16,7 +16,6 @@ import { chartConfig } from '../utils/config';
 
 import type { AggregatedRow, TimeOfDay } from '../hooks/useTimeOfDayData';
 
-// Keep the slices grouped by time of day so the donut looks polished (but hides meaning).
 const flawedOrder: readonly TimeOfDay[] = ['morgens', 'mittags', 'abends'];
 
 const flawedPalette: Record<TimeOfDay, string> = {
@@ -115,13 +114,20 @@ const renderLegend = (
     });
 };
 
-export function renderFlawedDonut({ container, aggregated, translate }: FlawedDonutOptions): void {
+export function renderFlawedDonut({
+  container,
+  aggregated,
+  translate,
+}: FlawedDonutOptions): () => void {
   const root = d3.select(container);
   root.selectAll('*').remove();
 
-  if (!aggregated.length) return;
+  if (!aggregated.length) {
+    return () => {
+      root.selectAll('*').remove();
+    };
+  }
 
-  // Tweak: adjust canvas size here if the flawed donut should occupy more/less space.
   const chartWidth = chartConfig.dimensions.line.width;
   const chartHeight = 550;
   const innerRadius = flawedDonutConfig.innerRadius;
@@ -228,4 +234,8 @@ export function renderFlawedDonut({ container, aggregated, translate }: FlawedDo
     labelFontSize,
     legendStroke
   );
+
+  return () => {
+    root.selectAll('*').remove();
+  };
 }

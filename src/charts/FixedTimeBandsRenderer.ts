@@ -15,8 +15,6 @@ import * as d3 from 'd3';
 import { chartTheme } from '../theme/chartTheme';
 import { chartConfig } from '../utils/config';
 
-// Master layout for the corrected time-band chart; change margins/band sizing here to retune spacing.
-// Tweak: layout knobs for corrected multi-band chart (margins, band heights, gaps).
 const fixedBandsLayout = {
   margin: { top: 60, right: 180, bottom: 80, left: 70 },
   band: {
@@ -55,11 +53,15 @@ export function renderFixedTimeBands({
   days,
   translate,
   view,
-}: FixedTimeBandsOptions): void {
+}: FixedTimeBandsOptions): () => void {
   const root = d3.select(container);
   root.selectAll('*').remove();
 
-  if (!view.panelIds.length || !view.seriesIds.length || !days.length) return;
+  if (!view.panelIds.length || !view.seriesIds.length || !days.length) {
+    return () => {
+      root.selectAll('*').remove();
+    };
+  }
 
   const chartWidth = chartConfig.dimensions.line.width;
   const margin = fixedBandsLayout.margin;
@@ -69,7 +71,6 @@ export function renderFixedTimeBands({
   const headerSpacing = 10;
   const chartHeight = margin.top + margin.bottom + bandsTotalHeight + headerSpacing;
 
-  // Tweak: update CSS vars if the corrected chart should follow a different palette.
   const textColor = chartTheme.textPrimary;
   const textSoft = chartTheme.textMuted;
   const gridColor = chartTheme.grid;
@@ -78,10 +79,8 @@ export function renderFixedTimeBands({
 
   const innerWidth = chartWidth - margin.left - margin.right;
 
-  // Tweak: adjust `.padding(0.3)` to spread/squish day markers horizontally.
   const x = d3.scalePoint<number>().domain(days).range([0, innerWidth]).padding(0.3);
 
-  /* Root SVG */
   const svg = root
     .append('svg')
     .attr('viewBox', `0 0 ${chartWidth} ${chartHeight}`)
@@ -109,7 +108,6 @@ export function renderFixedTimeBands({
     .append('g')
     .attr('transform', `translate(${margin.left},${margin.top + headerSpacing})`);
 
-  /* One stacked band per panel */
   view.panelIds.forEach((panelId, index) => {
     const panelValues = days.flatMap((day) =>
       view.seriesIds.map((seriesId) => view.getValue(panelId, seriesId, day))
@@ -129,7 +127,6 @@ export function renderFixedTimeBands({
         `translate(0, ${index * (fixedBandsLayout.band.height + fixedBandsLayout.band.gap)})`
       );
 
-    /* Grid */
     bandGroup
       .append('g')
       .attr('class', 'grid')
@@ -145,7 +142,6 @@ export function renderFixedTimeBands({
       .attr('stroke-opacity', 0.6)
       .attr('shape-rendering', 'crispEdges');
 
-    /* Y axis */
     const yAxisGroup = bandGroup
       .append('g')
       .attr('class', 'axis axis-y')
@@ -159,7 +155,6 @@ export function renderFixedTimeBands({
 
     yAxisGroup.selectAll('path, line').attr('stroke', textSoft).attr('stroke-opacity', 0.25);
 
-    /* Title left inside band */
     bandGroup
       .append('text')
       .attr('x', -12)
@@ -169,14 +164,12 @@ export function renderFixedTimeBands({
       .attr('font-weight', 700)
       .text(view.getPanelLabel(panelId));
 
-    /* Line generator */
     const line = d3
       .line<{ day: number; value: number }>()
       .x((d) => x(d.day) ?? 0)
       .y((d) => y(d.value))
       .curve(d3.curveCatmullRom.alpha(chartConfig.curves.smooth));
 
-    /* Each series line */
     view.seriesIds.forEach((seriesId) => {
       const values = days.map((day) => ({
         day,
@@ -187,7 +180,6 @@ export function renderFixedTimeBands({
       bandGroup
         .append('path')
         .datum(values)
-        // Tweak: stroke color/width determines how each series reads.
         .attr('class', `line ${seriesId}`)
         .attr('fill', 'none')
         .attr('stroke', seriesColor)
@@ -198,7 +190,6 @@ export function renderFixedTimeBands({
         .selectAll(`circle.${seriesId}`)
         .data(values)
         .join('circle')
-        // Tweak: dot radius + stroke colors highlight per-day emphasis.
         .attr('class', seriesId)
         .attr('cx', (d) => x(d.day) ?? 0)
         .attr('cy', (d) => y(d.value))
@@ -209,7 +200,6 @@ export function renderFixedTimeBands({
     });
   });
 
-  /* Shared X axis */
   const xAxisGroup = rootG
     .append('g')
     .attr('transform', `translate(0, ${bandsTotalHeight})`)
@@ -233,7 +223,6 @@ export function renderFixedTimeBands({
     .attr('font-weight', 600)
     .text(translate('caseStudies:4.fixed.axisDays'));
 
-  /* Legend */
   const legendData = view.seriesIds.map((seriesId) => ({
     label: view.getSeriesLabel(seriesId),
     color: view.getSeriesColor(seriesId) ?? accent,
@@ -265,7 +254,6 @@ export function renderFixedTimeBands({
         .attr('width', 16)
         .attr('height', 16)
         .attr('rx', 5)
-        // Tweak: change fill/outline to restyle legend swatches.
         .attr('fill', d.color)
         .attr('stroke', accent)
         .attr('stroke-opacity', 0.35);
@@ -276,7 +264,10 @@ export function renderFixedTimeBands({
         .attr('fill', textSoft)
         .attr('font-size', 12)
         .attr('font-weight', 600)
-        // Tweak: legend labels pull city names directly.
         .text(d.label);
     });
+
+  return () => {
+    root.selectAll('*').remove();
+  };
 }
