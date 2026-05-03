@@ -19,7 +19,7 @@ import {
 import type { TranslateFn } from '../i18n/translate';
 
 interface StarRenderOptions {
-  container: HTMLDivElement;
+  container: HTMLElement;
   data: CaseStudy6Datum[];
   translate: TranslateFn;
   metricLabels: Record<string, string>;
@@ -43,6 +43,7 @@ export const renderCaseStudy6Star = ({
 }: StarRenderOptions): (() => void) => {
   const root = d3.select(container);
   root.selectAll('*').remove();
+
   const tooltip = createTooltip();
 
   const { width, height } = CONFIG.dimensions;
@@ -61,10 +62,8 @@ export const renderCaseStudy6Star = ({
 
   const svg = svgRoot.append('g').attr('transform', `translate(${center.x}, ${center.y})`);
 
-  // Normalized 0-10 scale for radius
   const rScale = d3.scaleLinear().domain([0, 10]).range([0, radius]);
 
-  /* ----------------------------- Grid rings + axes ----------------------------- */
   const angleStep = (Math.PI * 2) / CASE_STUDY_6_METRICS.length;
 
   const rings = d3.range(1, CONFIG.ringCount + 1);
@@ -105,7 +104,6 @@ export const renderCaseStudy6Star = ({
       .text(metricLabels[metric] ?? metric);
   });
 
-  /* ----------------------------- Polygons ----------------------------- */
   const lineGenerator = d3
     .lineRadial<number>()
     .radius((value) => rScale(value))
@@ -125,7 +123,6 @@ export const renderCaseStudy6Star = ({
     .attr('stroke-width', 1.5)
     .attr('d', (d) => lineGenerator(CASE_STUDY_6_METRICS.map((metric) => d.values[metric])));
 
-  /* ----------------------------- Interaction ----------------------------- */
   const reset = () => {
     polygons.attr('fill-opacity', CONFIG.polygonOpacity).attr('stroke-width', 1.5);
   };
@@ -139,7 +136,6 @@ export const renderCaseStudy6Star = ({
         .attr('stroke-width', 2.4);
 
       const [mouseX, mouseY] = d3.pointer(event, svg.node());
-      // Find nearest axis to show more specific value
       const angle = Math.atan2(mouseY, mouseX) + Math.PI / 2;
       const normalizedAngle = (angle + Math.PI * 2) % (Math.PI * 2);
       const index = Math.round(normalizedAngle / angleStep) % CASE_STUDY_6_METRICS.length;
@@ -164,7 +160,7 @@ export const renderCaseStudy6Star = ({
     });
 
   return () => {
-    tooltip.hide();
+    tooltip.destroy();
     root.selectAll('*').remove();
   };
 };
