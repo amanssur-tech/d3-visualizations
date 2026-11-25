@@ -84,14 +84,6 @@ pnpm run preview
 
 ---
 
-## Testing
-
-├── tests/
-│   └── e2e/                # End-to-end tests
-├── playwright.config.ts    # Playwright configuration
-
----
-
 ## 🌐 Deployment
 
 Deployed live at **[viz.amanssur.com](https://viz.amanssur.com)** via **Vercel**.  
