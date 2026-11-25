@@ -1,13 +1,15 @@
-# 🧭 D3 Visualizations — React + D3 + Tailwind
+# 🧭 D3 Visualizations
 
-A sleek, modern data visualization dashboard built with **React**, **Vite**, **D3.js**, and **Tailwind CSS**.  
-Originally inspired by an academic project, it has evolved into a professional-grade template for interactive data dashboards with smooth animations, dark mode, and export capabilities.
+An interactive data visualization dashboard built with React, TypeScript, D3.js, Vite, and Tailwind CSS.
+
+Originally inspired by an academic project, it has evolved into an extensible dashboard with reusable chart components, responsive layouts, bilingual support (EN/DE), light and dark themes, and SVG/PNG exports.
 
 ---
 
-## 🚀 Live Demo
+## 🚀 Demo & Case Study
 
-**[https://viz.amanssur.com](https://viz.amanssur.com)**
+- **[Live Dashboard](https://viz.amanssur.com)**
+- **[Technical Case Study](https://amanssur.com/portfolio/viz-dashboard)**
 
 ---
 
@@ -19,12 +21,13 @@ Originally inspired by an academic project, it has evolved into a professional-g
 
 ## ✨ Highlights
 
-- ⚛️ **Modern React architecture** — modular components, reusable charts, and clean routing (dashboard, case-study index, and deep links for each visualization).
-- 📊 **D3.js inside React** — a custom `useD3` hook bridges the gap between React’s virtual DOM and D3’s SVG rendering.
-- 🎨 **Tailwind CSS styling** — consistent design tokens, light/dark mode, and responsive layouts.
-- 🌀 **Framer Motion** — subtle page and chart transitions for a smooth, app-like experience.
-- 💾 **Export-ready charts** — one click to download all visualizations in SVG/PNG.
-- 🧩 **TypeScript migration** — strongly typed components for scalability and long-term maintainability.
+- ⚛️ **Modular React architecture:** Reusable chart components, shared UI primitives, and dedicated visualization routes.
+- 📊 **D3.js integration:** Custom `useD3` hook synchronizing SVG rendering with React's component lifecycle.
+- 🎨 **Responsive UI:** Tailwind CSS, consistent design tokens, and light/dark themes.
+- 🌀 **Framer Motion:** Animated page and chart transitions.
+- 💾 **Chart exports:** SVG/PNG downloads through shared export utilities.
+- 🧩 **TypeScript:** Strongly typed components and reusable interfaces.
+- 🌐 **Internationalization:** English and German localization using i18next with persistent language preferences.
 
 ---
 
@@ -81,6 +84,14 @@ pnpm run preview
 
 ---
 
+## Testing
+
+├── tests/
+│   └── e2e/                # End-to-end tests
+├── playwright.config.ts    # Playwright configuration
+
+---
+
 ## 🌐 Deployment
 
 Deployed live at **[viz.amanssur.com](https://viz.amanssur.com)** via **Vercel**.  
@@ -96,12 +107,16 @@ For local or alternative hosting:
 
 | Category   | Tools                               |
 | ---------- | ----------------------------------- |
-| Framework  | React + Vite                        |
+| Frontend   | React                               |
+| Build Tool | Vite                                |
 | Charts     | D3.js                               |
 | Styling    | Tailwind CSS                        |
 | Animations | Framer Motion                       |
 | Language   | TypeScript                          |
 | Hosting    | Vercel (<https://viz.amanssur.com>) |
+| i18n       | i18next                             |
+| Testing    | Playwright                          |
+| Routing    | React Router                        |
 
 ---
 
